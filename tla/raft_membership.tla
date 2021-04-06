@@ -1,4 +1,4 @@
---------------------------------- MODULE raft ---------------------------------
+--------------------------------- MODULE raft_membership ---------------------------------
 \* This is the formal specification for the Raft consensus algorithm.
 \*
 \* Original Copyright 2014 Diego Ongaro

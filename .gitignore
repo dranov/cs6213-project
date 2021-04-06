@@ -1,3 +1,4 @@
+# LaTeX
 *.aux
 *.bbl
 *.bcf
@@ -10,3 +11,7 @@
 *.run.xml
 *.synctex*
 *.xdv
+
+# TLA stuff
+*.out
+tla/states/
