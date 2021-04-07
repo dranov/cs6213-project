@@ -236,7 +236,7 @@ WrapMsg(m) ==
             [ wrapped |-> TRUE, mtype |-> m.mtype, mterm |-> m.mterm, msource |-> m.msource, mdest |-> m.mdest, RVReq |-> m, RVResp |-> EmptyRVRespMsg, AEReq |-> EmptyAEReqMsg, AEResp |-> EmptyAERespMsg ]
         ELSE IF m.mtype = RequestVoteResponse THEN
             [ wrapped |-> TRUE, mtype |-> m.mtype, mterm |-> m.mterm, msource |-> m.msource, mdest |-> m.mdest, RVReq |-> EmptyRVReqMsg, RVResp |-> m, AEReq |-> EmptyAEReqMsg, AEResp |-> EmptyAERespMsg ]
-        ELSE IF m.type = AppendEntriesRequest THEN
+        ELSE IF m.mtype = AppendEntriesRequest THEN
             [ wrapped |-> TRUE, mtype |-> m.mtype, mterm |-> m.mterm, msource |-> m.msource, mdest |-> m.mdest, RVReq |-> EmptyRVReqMsg, RVResp |-> EmptyRVReqMsg, AEReq |-> m, AEResp |-> EmptyAERespMsg ]
         ELSE
             [ wrapped |-> TRUE, mtype |-> m.mtype, mterm |-> m.mterm, msource |-> m.msource, mdest |-> m.mdest, RVReq |-> EmptyRVReqMsg, RVResp |-> EmptyRVReqMsg, AEReq |-> EmptyAEReqMsg, AEResp |-> m ]
