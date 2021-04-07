@@ -110,7 +110,7 @@ VARIABLE
 \* implementation.
 \* Keeps track of every log ever in the system (set of logs).
 VARIABLE 
-    \* @type: Set(t);
+    \* @type: Set(LOGT);
     allLogs
 
 ----
@@ -202,7 +202,7 @@ vars == <<messages, allLogs, serverVars, candidateVars, leaderVars, logVars>>
 Quorum == {i \in SUBSET(Server) : Cardinality(i) * 2 > Cardinality(Server)}
 
 \* The term of the last entry in a log, or 0 if the log is empty.
-\* @type: (Seq([term: Int, value: Int])) => Int;
+\* @type: LOGT => Int;
 LastTerm(xlog) == IF Len(xlog) = 0 THEN 0 ELSE xlog[Len(xlog)].term
 
 \* Helper for Send and Reply. Given a message m and bag of messages, return a
@@ -250,11 +250,13 @@ Send(m) ==
 
 \* Remove a message from the bag of messages. Used when a server is done
 \* processing a message.
+\* @type: a => Bool;
 Discard(m) ==
     LET w == WrapMsg(m) IN
     messages' = WithoutMessage(w, messages)
 
 \* Combination of Send and Discard
+\* @type: (a, b) => Bool;
 Reply(response, request) ==
     LET wreq == WrapMsg(request) IN
     LET wresp == WrapMsg(response) IN
@@ -625,6 +627,8 @@ Next == /\ \/ \E i \in Server : Restart(i)
            \/ \E m \in ValidMessage(messages) : DropMessage(m)
            \* History variable that tracks every log ever:
         /\ allLogs' = allLogs \cup {log[i] : i \in Server}
+        \* Bound the size of the log
+        /\ \A i \in Server : Len(log[i]) <= MaxClientRequests
 
 \* The specification must start with the initial state and transition according
 \* to Next.
@@ -665,8 +669,8 @@ LeaderCompleteness ==
             => (\E index \in 1..Len(log[l]) : log[l][index] = entry)
         )
 
-Test == \A i \in Server: commitIndex[i] <= 0
-Test2 == \A i \in Server: Len(log[i]) <= 0
+BoundedCommit == \A i \in Server: commitIndex[i] <= 5
+BoundedLog == \A i \in Server: Len(log[i]) <= 5
 
 ===============================================================================
 
