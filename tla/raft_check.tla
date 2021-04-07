@@ -49,7 +49,8 @@ CONSTANTS
 \* to another. TLAPS doesn't support the Bags module, so this is a function
 \* mapping Message to Nat.
 VARIABLE 
-    \* @type: [mtype: Str, mterm: Int, mlastLogTerm: Int, mlastLogIndex: Int, msource: Int, mdest: Int] -> Int;
+    \* (This is a super-type of the three types of messages: search for Send and Reply to find them.) 
+    \* @type: [ mtype: Str, mterm: Int, mlastLogTerm: Int, mlastLogIndex: Int, msuccess: Bool, mmatchIndex: Int, mprevLogTerm: Int, mprevLogIndex: Int, mentries: Seq([term: Int, value: Int]), mlog: Seq([term: Int, value: Int]), mcommitIndex: Int, msource: Int, mdest: Int ] -> Int;
     messages
 
 \* A history variable used in the proof. This would not be present in an
@@ -65,7 +66,7 @@ VARIABLE
 \* implementation.
 \* Keeps track of every log ever in the system (set of logs).
 VARIABLE 
-    \* @type: Set(Int -> Seq([term: Int, value: Int]));
+    \* @type: Set(t);
     allLogs
 
 ----
@@ -394,7 +395,9 @@ HandleRequestVoteResponse(i, j, m) ==
                                   votesGranted[i] \cup {j}]
           /\ voterLog' = [voterLog EXCEPT ![i] =
                               voterLog[i] @@ (j :> m.mlog)]
-          /\ UNCHANGED <<votesSent>>
+        \*   /\ UNCHANGED <<votesSent>>
+        \* work-around Apalache model checker quirk
+          /\ votesSent' = votesSent
        \/ /\ ~m.mvoteGranted
           /\ UNCHANGED <<votesSent, votesGranted, voterLog>>
     /\ Discard(m)
@@ -404,6 +407,7 @@ HandleRequestVoteResponse(i, j, m) ==
 \* m.mterm <= currentTerm[i]. This just handles m.entries of length 0 or 1, but
 \* implementations could safely accept more by treating them the same as
 \* multiple independent requests of 1 entry.
+\* @type: (Int, Int, [ mtype: Str, mterm: Int, mprevLogTerm: Int, mprevLogIndex: Int, mentries: Seq([term: Int, value: Int]), mlog: Seq([term: Int, value: Int]), mcommitIndex: Int, msource: Int, mdest: Int ]) => Bool;
 HandleAppendEntriesRequest(i, j, m) ==
     LET logOk == \/ m.mprevLogIndex = 0
                  \/ /\ m.mprevLogIndex > 0
@@ -470,6 +474,7 @@ HandleAppendEntriesRequest(i, j, m) ==
 
 \* Server i receives an AppendEntries response from server j with
 \* m.mterm = currentTerm[i].
+\* @type: (Int, Int, [ mtype: Str, mterm: Int, msuccess: Bool, mmatchIndex: Int, msource: Int, mdest: Int ]) => Bool;
 HandleAppendEntriesResponse(i, j, m) ==
     /\ m.mterm = currentTerm[i]
     /\ \/ /\ m.msuccess \* successful
@@ -478,11 +483,13 @@ HandleAppendEntriesResponse(i, j, m) ==
        \/ /\ \lnot m.msuccess \* not successful
           /\ nextIndex' = [nextIndex EXCEPT ![i][j] =
                                Max({nextIndex[i][j] - 1, 1})]
-          /\ UNCHANGED <<matchIndex>>
+        \*   /\ UNCHANGED <<matchIndex>>
+          /\ matchIndex' = matchIndex
     /\ Discard(m)
     /\ UNCHANGED <<serverVars, candidateVars, logVars, elections>>
 
 \* Any RPC with a newer term causes the recipient to advance its term first.
+\* @type: (Int, Int, [mterm: Int]) => Bool;
 UpdateTerm(i, j, m) ==
     /\ m.mterm > currentTerm[i]
     /\ currentTerm'    = [currentTerm EXCEPT ![i] = m.mterm]
@@ -492,12 +499,14 @@ UpdateTerm(i, j, m) ==
     /\ UNCHANGED <<messages, candidateVars, leaderVars, logVars>>
 
 \* Responses with stale terms are ignored.
+\* @type: (Int, Int, [mterm: Int]) => Bool;
 DropStaleResponse(i, j, m) ==
     /\ m.mterm < currentTerm[i]
     /\ Discard(m)
     /\ UNCHANGED <<serverVars, candidateVars, leaderVars, logVars>>
 
 \* Receive a message.
+\* @type: [ mtype: Str, mterm: Int, mlastLogTerm: Int, mlastLogIndex: Int, msuccess: Bool, mmatchIndex: Int, mprevLogTerm: Int, mprevLogIndex: Int, mentries: Seq([term: Int, value: Int]), mlog: Seq([term: Int, value: Int]), mcommitIndex: Int, msource: Int, mdest: Int ] => Bool;
 Receive(m) ==
     LET i == m.mdest
         j == m.msource
