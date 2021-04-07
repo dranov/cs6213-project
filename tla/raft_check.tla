@@ -263,8 +263,10 @@ Reply(response, request) ==
     messages' = WithoutMessage(wreq, WithMessage(wresp, messages))
 
 \* Return the minimum value from a set, or undefined if the set is empty.
+\* @type: Set(Int) => Int;
 Min(s) == CHOOSE x \in s : \A y \in s : x <= y
 \* Return the maximum value from a set, or undefined if the set is empty.
+\* @type: Set(Int) => Int;
 Max(s) == CHOOSE x \in s : \A y \in s : x >= y
 
 ----
