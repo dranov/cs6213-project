@@ -8,63 +8,151 @@
 EXTENDS Naturals, Integers, TypedBags, FiniteSets, Sequences, SequencesExt, TLC
 
 \* The set of server IDs
-CONSTANTS Server
+CONSTANTS 
+    \* @type: Set(Int);
+    Server
 
 \* The set of requests that can go into the log
-CONSTANTS Value
+CONSTANTS 
+    \* @type: Set(Int);
+    Value
 
 \* Server states.
-CONSTANTS Follower, Candidate, Leader
+CONSTANTS 
+    \* @type: Str;
+    Follower,
+    \* @type: Str;
+    Candidate,
+    \* @type: Str;
+    Leader
 
 \* A reserved value.
-CONSTANTS Nil
+CONSTANTS 
+    \* @type: Int;
+    Nil
 
 \* Message types:
-CONSTANTS RequestVoteRequest, RequestVoteResponse,
-          AppendEntriesRequest, AppendEntriesResponse
+CONSTANTS 
+    \* @type: Str;
+    RequestVoteRequest,
+    \* @type: Str;
+    RequestVoteResponse,
+    \* @type: Str;
+    AppendEntriesRequest,
+    \* @type: Str;
+    AppendEntriesResponse
+
+
+EmptyRVReqMsg == [
+    mtype         |-> RequestVoteRequest,
+    mterm         |-> Nil,
+    mlastLogTerm  |-> Nil,
+    mlastLogIndex |-> Nil,
+    msource       |-> Nil,
+    mdest         |-> Nil
+]
+
+EmptyRVRespMsg == [
+    mtype        |-> RequestVoteResponse,
+    mterm        |-> Nil,
+    mvoteGranted |-> FALSE,
+    mlog         |-> << >>,
+    msource      |-> Nil,
+    mdest        |-> Nil
+]
+
+EmptyAEReqMsg == [
+    mtype          |-> AppendEntriesRequest,
+    mterm          |-> Nil,
+    mprevLogIndex  |-> Nil,
+    mprevLogTerm   |-> Nil,
+    mentries       |-> << >>,
+    mlog           |-> << >>,
+    mcommitIndex   |-> Nil,
+    msource        |-> Nil,
+    mdest          |-> Nil
+]
+
+EmptyAERespMsg == [
+    mtype           |-> AppendEntriesResponse,
+    mterm           |-> Nil,
+    msuccess        |-> FALSE,
+    mmatchIndex     |-> Nil,
+    msource         |-> Nil,
+    mdest           |-> Nil
+]
 
 ----
 \* Global variables
 
 \* A bag of records representing requests and responses sent from one server
-\* to another.
-VARIABLE messages
+\* to another. We differentiate between the message types to support Apalache.
+VARIABLE
+    \* @typeAlias: ENTRY = [term: Int, value: Int];
+    \* @typeAlias: LOGT = Seq(ENTRY);
+    \* @typeAlias: RVREQT = [mtype: Str, mterm: Int, mlastLogTerm: Int, mlastLogIndex: Int, msource: Int, mdest: Int];
+    \* @typeAlias: RVRESPT = [mtype: Str, mterm: Int, mvoteGranted: Bool, mlog: LOGT, msource: Int, mdest: Int ];
+    \* @typeAlias: AEREQT = [mtype: Str, mterm: Int, mprevLogIndex: Int, mprevLogTerm: Int, mentries: LOGT, mlog: LOGT, mcommitIndex: Int, msource: Int, mdest: Int ];
+    \* @typeAlias: AERESPT = [mtype: Str, mterm: Int, msuccess: Bool, mmatchIndex: Int, msource: Int, mdest: Int ];
+    \* @typeAlias: MSG = [ wrapped: Bool, mtype: Str, mterm: Int, msource: Int, mdest: Int, RVReq: RVREQT, RVResp: RVRESPT, AEReq: AEREQT, AEResp: AERESPT ];
+    \* @type: MSG -> Int;
+    messages
 
 ----
 \* The following variables are all per server (functions with domain Server).
 
 \* The server's term number.
-VARIABLE currentTerm
+VARIABLE 
+    \* @type: Int -> Int;
+    currentTerm
 \* The server's state (Follower, Candidate, or Leader).
-VARIABLE state
+VARIABLE 
+    \* @type: Int -> Str;
+    state
 \* The candidate the server voted for in its current term, or
 \* Nil if it hasn't voted for any.
-VARIABLE votedFor
+VARIABLE 
+    \* @type: Int -> Int;
+    votedFor
 serverVars == <<currentTerm, state, votedFor>>
 
 \* A Sequence of log entries. The index into this sequence is the index of the
 \* log entry. Unfortunately, the Sequence module defines Head(s) as the entry
 \* with index 1, so be careful not to use that!
-VARIABLE log
+VARIABLE 
+    \* @type: Int -> LOGT;
+    log
 \* The index of the latest entry in the log the state machine may apply.
-VARIABLE commitIndex
+VARIABLE 
+    \* @type: Int -> Int;
+    commitIndex
 logVars == <<log, commitIndex>>
 
 \* The following variables are used only on candidates:
 \* The set of servers from which the candidate has received a RequestVote
 \* response in its currentTerm.
-VARIABLE votesResponded
+VARIABLE 
+    \* @type: Int -> Set(Int);
+    votesResponded
 \* The set of servers from which the candidate has received a vote in its
 \* currentTerm.
-VARIABLE votesGranted
+VARIABLE 
+    \* @type: Int -> Set(Int);
+    votesGranted
+\* @type: Seq(Int -> Set(Int));
 candidateVars == <<votesResponded, votesGranted>>
 
 \* The following variables are used only on leaders:
 \* The next entry to send to each follower.
-VARIABLE nextIndex
+VARIABLE 
+    \* @type: Int -> (Int -> Int);
+    nextIndex
 \* The latest entry that each follower has acknowledged is the same as the
 \* leader's. This is used to calculate commitIndex on the leader.
-VARIABLE matchIndex
+VARIABLE 
+    \* @type: Int -> (Int -> Int);
+    matchIndex
+\* @type: Seq(Int -> (Int -> Int));
 leaderVars == <<nextIndex, matchIndex>>
 
 \* End of per server variables.
@@ -81,6 +169,7 @@ vars == <<messages, serverVars, candidateVars, leaderVars, logVars>>
 Quorum == {i \in SUBSET(Server) : Cardinality(i) * 2 > Cardinality(Server)}
 
 \* The term of the last entry in a log, or 0 if the log is empty.
+\* @type: LOGT => Int;
 LastTerm(xlog) == IF Len(xlog) = 0 THEN 0 ELSE xlog[Len(xlog)].term
 
 \* Helper for Send and Reply. Given a message m and bag of messages, return a
@@ -91,20 +180,44 @@ WithMessage(m, msgs) == msgs (+) SetToBag({m})
 \* a new bag of messages with one less m in it.
 WithoutMessage(m, msgs) == msgs (-) SetToBag({m})
 
+\* @type: a => MSG;
+WrapMsg(m) == 
+    IF "wrapped" \notin DOMAIN m THEN
+        IF m.mtype = RequestVoteRequest THEN
+            [ wrapped |-> TRUE, mtype |-> m.mtype, mterm |-> m.mterm, msource |-> m.msource, mdest |-> m.mdest, RVReq |-> m, RVResp |-> EmptyRVRespMsg, AEReq |-> EmptyAEReqMsg, AEResp |-> EmptyAERespMsg ]
+        ELSE IF m.mtype = RequestVoteResponse THEN
+            [ wrapped |-> TRUE, mtype |-> m.mtype, mterm |-> m.mterm, msource |-> m.msource, mdest |-> m.mdest, RVReq |-> EmptyRVReqMsg, RVResp |-> m, AEReq |-> EmptyAEReqMsg, AEResp |-> EmptyAERespMsg ]
+        ELSE IF m.mtype = AppendEntriesRequest THEN
+            [ wrapped |-> TRUE, mtype |-> m.mtype, mterm |-> m.mterm, msource |-> m.msource, mdest |-> m.mdest, RVReq |-> EmptyRVReqMsg, RVResp |-> EmptyRVReqMsg, AEReq |-> m, AEResp |-> EmptyAERespMsg ]
+        ELSE
+            [ wrapped |-> TRUE, mtype |-> m.mtype, mterm |-> m.mterm, msource |-> m.msource, mdest |-> m.mdest, RVReq |-> EmptyRVReqMsg, RVResp |-> EmptyRVReqMsg, AEReq |-> EmptyAEReqMsg, AEResp |-> m ]
+    ELSE m
+
 \* Add a message to the bag of messages.
-Send(m) == messages' = WithMessage(m, messages)
+\* @type: a => Bool;
+Send(m) == 
+    LET w == WrapMsg(m) IN
+    messages' = WithMessage(w, messages)
 
 \* Remove a message from the bag of messages. Used when a server is done
 \* processing a message.
-Discard(m) == messages' = WithoutMessage(m, messages)
+\* @type: a => Bool;
+Discard(m) ==
+    LET w == WrapMsg(m) IN
+    messages' = WithoutMessage(w, messages)
 
 \* Combination of Send and Discard
+\* @type: (a, b) => Bool;
 Reply(response, request) ==
-    messages' = WithoutMessage(request, WithMessage(response, messages))
+    LET wreq == WrapMsg(request) IN
+    LET wresp == WrapMsg(response) IN
+    messages' = WithoutMessage(wreq, WithMessage(wresp, messages))
 
 \* Return the minimum value from a set, or undefined if the set is empty.
+\* @type: Set(Int) => Int;
 Min(s) == CHOOSE x \in s : \A y \in s : x <= y
 \* Return the maximum value from a set, or undefined if the set is empty.
+\* @type: Set(Int) => Int;
 Max(s) == CHOOSE x \in s : \A y \in s : x >= y
 
 ----
@@ -241,6 +354,7 @@ AdvanceCommitIndex(i) ==
 
 \* Server i receives a RequestVote request from server j with
 \* m.mterm <= currentTerm[i].
+\* @type: (Int, Int, RVREQT) => Bool;
 HandleRequestVoteRequest(i, j, m) ==
     LET logOk == \/ m.mlastLogTerm > LastTerm(log[i])
                  \/ /\ m.mlastLogTerm = LastTerm(log[i])
@@ -264,6 +378,7 @@ HandleRequestVoteRequest(i, j, m) ==
 
 \* Server i receives a RequestVote response from server j with
 \* m.mterm = currentTerm[i].
+\* @type: (Int, Int, RVRESPT) => Bool;
 HandleRequestVoteResponse(i, j, m) ==
     \* This tallies votes even when the current state is not Candidate, but
     \* they won't be looked at, so it doesn't matter.
@@ -278,6 +393,7 @@ HandleRequestVoteResponse(i, j, m) ==
     /\ Discard(m)
     /\ UNCHANGED <<serverVars, votedFor, leaderVars, logVars>>
 
+\* @type: (Int, Int, AEREQT, Bool) => Bool;
 RejectAppendEntriesRequest(i, j, m, logOk) ==
     /\ \/ m.mterm < currentTerm[i]
        \/ /\ m.mterm = currentTerm[i]
@@ -292,12 +408,14 @@ RejectAppendEntriesRequest(i, j, m, logOk) ==
               m)
     /\ UNCHANGED <<serverVars, logVars>>
 
+\* @type: (Int, MSG) => Bool;
 ReturnToFollowerState(i, m) ==
     /\ m.mterm = currentTerm[i]
     /\ state[i] = Candidate
     /\ state' = [state EXCEPT ![i] = Follower]
     /\ UNCHANGED <<currentTerm, votedFor, logVars, messages>>
 
+\* @type: (Int, Int, Int, AEREQT) => Bool;
 AppendEntriesAlreadyDone(i, j, index, m) ==
     /\ \/ m.mentries = << >>
        \/ /\ m.mentries /= << >>
@@ -316,20 +434,24 @@ AppendEntriesAlreadyDone(i, j, index, m) ==
               m)
     /\ UNCHANGED <<serverVars, logVars>>
 
+\* @type: (Int, Int, AEREQT) => Bool;
 ConflictAppendEntriesRequest(i, index, m) ==
     /\ m.mentries /= << >>
     /\ Len(log[i]) >= index
     /\ log[i][index].term /= m.mentries[1].term
-    /\ LET new == [index2 \in 1..(Len(log[i]) - 1) |-> log[i][index2]]
+    \* /\ LET new == [index2 \in 1..(Len(log[i]) - 1) |-> log[i][index2]]
+    /\ LET new == SubSeq(log[i], 1, Len(log[i]) - 1)
        IN log' = [log EXCEPT ![i] = new]
     /\ UNCHANGED <<serverVars, commitIndex, messages>>
 
+\* @type: (Int, AEREQT) => Bool;
 NoConflictAppendEntriesRequest(i, m) ==
     /\ m.mentries /= << >>
     /\ Len(log[i]) = m.mprevLogIndex
     /\ log' = [log EXCEPT ![i] = Append(log[i], m.mentries[1])]
     /\ UNCHANGED <<serverVars, commitIndex, messages>>
 
+\* @type: (Int, Int, Bool, AEREQT) => Bool;
 AcceptAppendEntriesRequest(i, j, logOk, m) ==
     \* accept request
              /\ m.mterm = currentTerm[i]
@@ -344,6 +466,7 @@ AcceptAppendEntriesRequest(i, j, logOk, m) ==
 \* m.mterm <= currentTerm[i]. This just handles m.entries of length 0 or 1, but
 \* implementations could safely accept more by treating them the same as
 \* multiple independent requests of 1 entry.
+\* @type: (Int, Int, AEREQT) => Bool;
 HandleAppendEntriesRequest(i, j, m) ==
     LET logOk == \/ m.mprevLogIndex = 0
                  \/ /\ m.mprevLogIndex > 0
@@ -357,6 +480,7 @@ HandleAppendEntriesRequest(i, j, m) ==
 
 \* Server i receives an AppendEntries response from server j with
 \* m.mterm = currentTerm[i].
+\* @type: (Int, Int, AERESPT) => Bool;
 HandleAppendEntriesResponse(i, j, m) ==
     /\ m.mterm = currentTerm[i]
     /\ \/ /\ m.msuccess \* successful
@@ -370,6 +494,7 @@ HandleAppendEntriesResponse(i, j, m) ==
     /\ UNCHANGED <<serverVars, candidateVars, logVars>>
 
 \* Any RPC with a newer term causes the recipient to advance its term first.
+\* @type: (Int, Int, MSG) => Bool;
 UpdateTerm(i, j, m) ==
     /\ m.mterm > currentTerm[i]
     /\ currentTerm'    = [currentTerm EXCEPT ![i] = m.mterm]
@@ -379,12 +504,14 @@ UpdateTerm(i, j, m) ==
     /\ UNCHANGED <<messages, candidateVars, leaderVars, logVars>>
 
 \* Responses with stale terms are ignored.
+\* @type: (Int, Int, MSG) => Bool;
 DropStaleResponse(i, j, m) ==
     /\ m.mterm < currentTerm[i]
     /\ Discard(m)
     /\ UNCHANGED <<serverVars, candidateVars, leaderVars, logVars>>
 
 \* Receive a message.
+\* @type: MSG => Bool;
 Receive(m) ==
     LET i == m.mdest
         j == m.msource
@@ -392,15 +519,15 @@ Receive(m) ==
        \* its term first. Responses with stale terms are ignored.
        \/ UpdateTerm(i, j, m)
        \/ /\ m.mtype = RequestVoteRequest
-          /\ HandleRequestVoteRequest(i, j, m)
+          /\ HandleRequestVoteRequest(i, j, m.RVReq)
        \/ /\ m.mtype = RequestVoteResponse
           /\ \/ DropStaleResponse(i, j, m)
-             \/ HandleRequestVoteResponse(i, j, m)
+             \/ HandleRequestVoteResponse(i, j, m.RVResp)
        \/ /\ m.mtype = AppendEntriesRequest
-          /\ HandleAppendEntriesRequest(i, j, m)
+          /\ HandleAppendEntriesRequest(i, j, m.AEReq)
        \/ /\ m.mtype = AppendEntriesResponse
           /\ \/ DropStaleResponse(i, j, m)
-             \/ HandleAppendEntriesResponse(i, j, m)
+             \/ HandleAppendEntriesResponse(i, j, m.AEResp)
 
 \* End of message handlers.
 ----
@@ -544,6 +671,7 @@ AppendEntriesRequestInv(m) ==
 
 \* The current term of any server is at least the term
 \* of any message sent by that server
+\* @type: MSG => Bool;
 MessageTermsLtCurrentTerm(m) ==
     m.mterm <= currentTerm[m.msource]
 
