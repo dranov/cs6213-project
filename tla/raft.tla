@@ -7,6 +7,8 @@
 
 EXTENDS Naturals, Integers, TypedBags, FiniteSets, Sequences, SequencesExt, TLC
 
+MaxLogLength == 5
+
 \* The set of server IDs
 CONSTANTS 
     \* @type: Set(Int);
@@ -42,14 +44,58 @@ CONSTANTS
     \* @type: Str;
     AppendEntriesResponse
 
+-----
+
+\* Message types
+
+\* The next four definitions give the types of each type of message
+RequestVoteRequestType ==[
+    mtype : {RequestVoteRequest},
+    mterm : Nat,
+    mlastLogTerm : Nat,
+    mlastLogIndex : Nat,
+    msource : {Nil} \cup Server,
+    mdest : {Nil} \cup Server
+]
 
 EmptyRVReqMsg == [
     mtype         |-> RequestVoteRequest,
-    mterm         |-> Nil,
-    mlastLogTerm  |-> Nil,
-    mlastLogIndex |-> Nil,
+    mterm         |-> 0,
+    mlastLogTerm  |-> 0,
+    mlastLogIndex |-> 0,
     msource       |-> Nil,
     mdest         |-> Nil
+] ASSUME EmptyRVReqMsg \in RequestVoteRequestType
+
+AppendEntriesRequestType == [
+    mtype : {AppendEntriesRequest},
+    mterm : Nat,
+    mprevLogIndex : Int,
+    mprevLogTerm : Nat,
+    mentries : Seq([term : Nat, value : Value]),
+    mcommitIndex : Nat,
+    msource : {Nil} \cup Server,
+    mdest : {Nil} \cup Server
+]
+
+EmptyAEReqMsg == [
+    mtype          |-> AppendEntriesRequest,
+    mterm          |-> 0,
+    mprevLogIndex  |-> 0,
+    mprevLogTerm   |-> 0,
+    mentries       |-> << >>,
+    mcommitIndex   |-> Nil,
+    msource        |-> Nil,
+    mdest          |-> Nil
+] ASSUME EmptyAEReqMsg \in AppendEntriesRequestType
+
+RequestVoteResponseType ==[
+    mtype : {RequestVoteResponse},
+    mterm : Nat,
+    mvoteGranted : BOOLEAN,
+    mlog : Seq([term : Nat, value : Value]),
+    msource : {Nil} \cup Server,
+    mdest : {Nil} \cup Server
 ]
 
 EmptyRVRespMsg == [
@@ -59,27 +105,33 @@ EmptyRVRespMsg == [
     mlog         |-> << >>,
     msource      |-> Nil,
     mdest        |-> Nil
-]
+] ASSUME EmptyRVRespMsg \in RequestVoteResponseType
 
-EmptyAEReqMsg == [
-    mtype          |-> AppendEntriesRequest,
-    mterm          |-> Nil,
-    mprevLogIndex  |-> Nil,
-    mprevLogTerm   |-> Nil,
-    mentries       |-> << >>,
-    mlog           |-> << >>,
-    mcommitIndex   |-> Nil,
-    msource        |-> Nil,
-    mdest          |-> Nil
+AppendEntriesResponseType ==[
+    mtype : {AppendEntriesResponse},
+    mterm : Nat,
+    msuccess : BOOLEAN,
+    mmatchIndex : Nat,
+    msource : {Nil} \cup Server,
+    mdest : {Nil} \cup Server
 ]
 
 EmptyAERespMsg == [
     mtype           |-> AppendEntriesResponse,
-    mterm           |-> Nil,
+    mterm           |-> 0,
     msuccess        |-> FALSE,
-    mmatchIndex     |-> Nil,
+    mmatchIndex     |-> 0,
     msource         |-> Nil,
     mdest           |-> Nil
+] ASSUME EmptyAERespMsg \in AppendEntriesResponseType
+
+MessageType == [ 
+    wrapped: BOOLEAN , mterm : Nat, msource : {Nil} \cup Server, mdest : {Nil} \cup Server,
+    mtype : {RequestVoteRequest, RequestVoteResponse, AppendEntriesRequest, AppendEntriesResponse},
+    RVReq : RequestVoteRequestType,
+    RVResp: RequestVoteResponseType,
+    AEReq: AppendEntriesRequestType,
+    AEResp: AppendEntriesResponseType
 ]
 
 ----
@@ -91,8 +143,8 @@ VARIABLE
     \* @typeAlias: ENTRY = [term: Int, value: Int];
     \* @typeAlias: LOGT = Seq(ENTRY);
     \* @typeAlias: RVREQT = [mtype: Str, mterm: Int, mlastLogTerm: Int, mlastLogIndex: Int, msource: Int, mdest: Int];
-    \* @typeAlias: RVRESPT = [mtype: Str, mterm: Int, mvoteGranted: Bool, mlog: LOGT, msource: Int, mdest: Int ];
-    \* @typeAlias: AEREQT = [mtype: Str, mterm: Int, mprevLogIndex: Int, mprevLogTerm: Int, mentries: LOGT, mlog: LOGT, mcommitIndex: Int, msource: Int, mdest: Int ];
+    \* @typeAlias: RVRESPT = [mtype: Str, mterm: Int, mvoteGranted: Bool, msource: Int, mdest: Int ];
+    \* @typeAlias: AEREQT = [mtype: Str, mterm: Int, mprevLogIndex: Int, mprevLogTerm: Int, mentries: LOGT, mcommitIndex: Int, msource: Int, mdest: Int ];
     \* @typeAlias: AERESPT = [mtype: Str, mterm: Int, msuccess: Bool, mmatchIndex: Int, msource: Int, mdest: Int ];
     \* @typeAlias: MSG = [ wrapped: Bool, mtype: Str, mterm: Int, msource: Int, mdest: Int, RVReq: RVREQT, RVResp: RVRESPT, AEReq: AEREQT, AEResp: AERESPT ];
     \* @type: MSG -> Int;
@@ -246,6 +298,7 @@ Init == /\ messages = EmptyBag
 
 \* Server i restarts from stable storage.
 \* It loses everything but its currentTerm, votedFor, and log.
+\* @type: Int => Bool;
 Restart(i) ==
     /\ state'          = [state EXCEPT ![i] = Follower]
     /\ votesResponded' = [votesResponded EXCEPT ![i] = {}]
@@ -256,6 +309,7 @@ Restart(i) ==
     /\ UNCHANGED <<messages, currentTerm, votedFor, log>>
 
 \* Server i times out and starts a new election.
+\* @type: Int => Bool;
 Timeout(i) == /\ state[i] \in {Follower, Candidate}
               /\ state' = [state EXCEPT ![i] = Candidate]
               /\ currentTerm' = [currentTerm EXCEPT ![i] = currentTerm[i] + 1]
@@ -267,6 +321,7 @@ Timeout(i) == /\ state[i] \in {Follower, Candidate}
               /\ UNCHANGED <<messages, leaderVars, logVars>>
 
 \* Candidate i sends j a RequestVote request.
+\* @type: (Int, Int) => Bool;
 RequestVote(i, j) ==
     /\ state[i] = Candidate
     /\ j \notin votesResponded[i]
@@ -281,6 +336,7 @@ RequestVote(i, j) ==
 \* Leader i sends j an AppendEntries request containing up to 1 entry.
 \* While implementations may want to send more than 1 at a time, this spec uses
 \* just 1 because it minimizes atomic regions without loss of generality.
+\* @type: (Int, Int) => Bool;
 AppendEntries(i, j) ==
     /\ i /= j
     /\ state[i] = Leader
@@ -305,6 +361,7 @@ AppendEntries(i, j) ==
     /\ UNCHANGED <<serverVars, candidateVars, leaderVars, logVars>>
 
 \* Candidate i transitions to leader.
+\* @type: Int => Bool;
 BecomeLeader(i) ==
     /\ state[i] = Candidate
     /\ votesGranted[i] \in Quorum
@@ -316,6 +373,7 @@ BecomeLeader(i) ==
     /\ UNCHANGED <<messages, currentTerm, votedFor, candidateVars, logVars>>
 
 \* Leader i receives a client request to add v to the log.
+\* @type: (Int, Int) => Bool;
 ClientRequest(i, v) ==
     /\ state[i] = Leader
     /\ LET entry == [term  |-> currentTerm[i],
@@ -329,13 +387,16 @@ ClientRequest(i, v) ==
 \* This is done as a separate step from handling AppendEntries responses,
 \* in part to minimize atomic regions, and in part so that leaders of
 \* single-server clusters are able to mark entries committed.
+\* @type: Int => Bool;
 AdvanceCommitIndex(i) ==
     /\ state[i] = Leader
     /\ LET \* The set of servers that agree up through index.
            Agree(index) == {i} \cup {k \in Server :
                                          matchIndex[i][k] >= index}
+           \*  logSize == Len(log[i])
+           logSize == MaxLogLength
            \* The maximum indexes for which a quorum agrees
-           agreeIndexes == {index \in 1..Len(log[i]) :
+           agreeIndexes == {index \in 1..MaxLogLength :
                                 Agree(index) \in Quorum}
            \* New value for commitIndex'[i]
            newCommitIndex ==
@@ -521,12 +582,12 @@ Receive(m) ==
        \/ /\ m.mtype = RequestVoteRequest
           /\ HandleRequestVoteRequest(i, j, m.RVReq)
        \/ /\ m.mtype = RequestVoteResponse
-          /\ \/ DropStaleResponse(i, j, m)
+          /\ \/ DropStaleResponse(i, j, m.RVResp)
              \/ HandleRequestVoteResponse(i, j, m.RVResp)
        \/ /\ m.mtype = AppendEntriesRequest
           /\ HandleAppendEntriesRequest(i, j, m.AEReq)
        \/ /\ m.mtype = AppendEntriesResponse
-          /\ \/ DropStaleResponse(i, j, m)
+          /\ \/ DropStaleResponse(i, j, m.AEResp)
              \/ HandleAppendEntriesResponse(i, j, m.AEResp)
 
 \* End of message handlers.
@@ -565,45 +626,6 @@ Spec == Init /\ [][Next]_vars
 (***************************************************************************)
 ----
 \* Type invariants
-
-\* The next four definitions give the types of each type of message
-RequestVoteRequestType ==
-    [mtype : {RequestVoteRequest},
-     mterm : Nat,
-     mlastLogTerm : Nat,
-     mlastLogIndex : Nat,
-     msource : Server,
-     mdest : Server]
-
-AppendEntriesRequestType ==
-    [mtype : {AppendEntriesRequest},
-       mterm : Nat,
-       mprevLogIndex : Int,
-       mprevLogTerm : Nat,
-       mentries : Seq([term : Nat, value : Value]),
-       mcommitIndex : Nat,
-       msource : Server,
-       mdest : Server]
-
-RequestVoteResponseType ==
-    [mtype : {RequestVoteResponse},
-     mterm : Nat,
-     mvoteGranted : BOOLEAN,
-     mlog : Seq([term : Nat, value : Value]),
-     msource : Server,
-     mdest : Server]
-
-AppendEntriesResponseType ==
-    [mtype : {AppendEntriesResponse},
-     mterm : Nat,
-     msuccess : BOOLEAN,
-     mmatchIndex : Nat,
-     msource : Server,
-     mdest : Server]
-
-MessageType ==
-    RequestVoteRequestType \cup AppendEntriesRequestType \cup
-    RequestVoteResponseType \cup AppendEntriesResponseType
 
 \* The full type invariant for the system
 TypeOK ==
@@ -780,8 +802,9 @@ LeaderCompleteness ==
 
 \* Constraints to make model checking more feasible
 
- ElectionsUncontested ==
-   /\ Cardinality({c \in DOMAIN state : state[c] = Candidate}) <= 1
+BoundedLogSize == \A i \in Server: Len(log[i]) <= MaxLogLength
+
+ElectionsUncontested == Cardinality({c \in DOMAIN state : state[c] = Candidate}) <= 1
 
 ===============================================================================
 
