@@ -591,6 +591,9 @@ ElectionSafety ==
     \A i \in Server :
         state[i] = Leader =>
         \A j \in Server :
+            \* Max does not work on empty sets
+            (/\ DOMAIN log[i] /= {}
+             /\ DOMAIN log[j] /= {}) =>
             Max({n \in DOMAIN log[i] : log[i][n].term = currentTerm[i]}) >=
             Max({n \in DOMAIN log[j] : log[j][n].term = currentTerm[i]})
 ----
@@ -644,6 +647,13 @@ LeaderCompleteness ==
         state[i] = Leader =>
         \A j \in Server :
             IsPrefix(Committed(j),log[i])
+
+-----
+
+\* Constraints to make model checking more feasible
+
+ ElectionsUncontested ==
+   /\ Cardinality({c \in DOMAIN state : state[c] = Candidate}) <= 1
 
 ===============================================================================
 
