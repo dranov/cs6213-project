@@ -10,6 +10,7 @@
 (***************************************************************************)
 (* Restriction of a function to a set (should be a subset of the domain).  *)
 (***************************************************************************)
+\* @type: (a -> b, Set(a)) => (a -> b);
 Restrict(f,S) == [ x \in S |-> f[x] ]
 
 (***************************************************************************)
@@ -17,12 +18,14 @@ Restrict(f,S) == [ x \in S |-> f[x] ]
 (* Note: The image of a set under function f can be defined as             *)
 (*       Range(Restrict(f,S)).                                             *)
 (***************************************************************************)
+\* @type: (a -> b) => Set(a);
 Range(f) == { f[x] : x \in DOMAIN f }
 
 
 (***************************************************************************)
 (* The inverse of a function.                                              *)
 (***************************************************************************)
+\* @type: (a -> b, Set(a), Set(b)) => (b -> a);
 Inverse(f,S,T) == [t \in T |-> CHOOSE s \in S : t \in Range(f) => f[s] = t]
 
 
@@ -33,11 +36,13 @@ Inverse(f,S,T) == [t \in T |-> CHOOSE s \in S : t \in Range(f) => f[s] = t]
 (* This definition is overridden by TLC in the Java class SequencesExt.    *)
 (* The operator is overridden by the Java method with the same name.       *)
 (***************************************************************************)
+\* @type: (a -> b) => Bool;
 IsInjective(f) == \A a,b \in DOMAIN f : f[a] = f[b] => a = b
 
 (***************************************************************************)
 (* Set of injections between two sets.                                     *)
 (***************************************************************************)
+\* @type: (Set(a), Set(b)) => (Set(a -> b));
 Injection(S,T) == { M \in [S -> T] : IsInjective(M) }
 
 
@@ -45,12 +50,14 @@ Injection(S,T) == { M \in [S -> T] : IsInjective(M) }
 (* A map is a surjection iff for each element in the range there is some   *)
 (* element in the domain that maps to it.                                  *)
 (***************************************************************************)
+\* @type: (Set(a), Set(b)) => (Set(a -> b));
 Surjection(S,T) == { M \in [S -> T] : \A t \in T : \E s \in S : M[s] = t }
 
 
 (***************************************************************************)
 (* A map is a bijection iff it is both an injection and a surjection.      *)
 (***************************************************************************)
+\* @type: (Set(a), Set(b)) => (Set(a -> b));
 Bijection(S,T) == Injection(S,T) \cap Surjection(S,T)
 
 

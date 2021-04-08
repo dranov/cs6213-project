@@ -15,3 +15,4 @@
 # TLA stuff
 *.out
 tla/states/
+tla/x/

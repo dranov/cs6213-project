@@ -11,6 +11,7 @@ LOCAL INSTANCE Functions
 
 -----------------------------------------------------------------------------
 
+\* @type: Seq(a) => Set(a);
 ToSet(s) ==
   (*************************************************************************)
   (* The image of the given sequence s. Cardinality(ToSet(s)) <= Len(s)    *)
@@ -53,12 +54,12 @@ Contains(s, e) ==
   (**************************************************************************)
   \E i \in 1..Len(s) : s[i] = e
 
-Reverse(s) ==
-  (**************************************************************************)
-  (* Reverse the given sequence s:  Let l be Len(s) (length of s).          *)
-  (* Equals a sequence s.t. << S[l], S[l-1], ..., S[1]>>                    *)
-  (**************************************************************************)
-  [ i \in 1..Len(s) |-> s[(Len(s) - i) + 1] ]
+\* Reverse(s) ==
+\*   (**************************************************************************)
+\*   (* Reverse the given sequence s:  Let l be Len(s) (length of s).          *)
+\*   (* Equals a sequence s.t. << S[l], S[l-1], ..., S[1]>>                    *)
+\*   (**************************************************************************)
+\*   [ i \in 1..Len(s) |-> s[(Len(s) - i) + 1] ]
 
 Remove(s, e) ==
     (************************************************************************)
@@ -94,6 +95,7 @@ InsertAt(s, i, e) ==
   (**************************************************************************)
   SubSeq(s, 1, i-1) \o <<e>> \o SubSeq(s, i, Len(s))
 
+\* @type: (Seq(a), Int, a) => Seq(a);
 ReplaceAt(s, i, e) ==
   (**************************************************************************)
   (* Replaces the element at position i with the element e.                 *)
@@ -128,6 +130,7 @@ Last(s) ==
 
 -----------------------------------------------------------------------------
 
+\* @type: (Seq(a), Seq(b)) => Bool;
 IsPrefix(s, t) ==
   (**************************************************************************)
   (* TRUE iff the sequence s is a prefix of the sequence t, s.t.            *)
@@ -142,19 +145,19 @@ IsStrictPrefix(s,t) ==
   (**************************************************************************)
   IsPrefix(s, t) /\ s # t
 
-IsSuffix(s, t) ==
-  (**************************************************************************)
-  (* TRUE iff the sequence s is a suffix of the sequence t, s.t.            *)
-  (* \E u \in Seq(Range(t)) : t = u \o s. In other words, there exists a    *)
-  (* prefix that with s appended equals t.                                  *)
-  (**************************************************************************)
-  IsPrefix(Reverse(s), Reverse(t))
+\* IsSuffix(s, t) ==
+\*   (**************************************************************************)
+\*   (* TRUE iff the sequence s is a suffix of the sequence t, s.t.            *)
+\*   (* \E u \in Seq(Range(t)) : t = u \o s. In other words, there exists a    *)
+\*   (* prefix that with s appended equals t.                                  *)
+\*   (**************************************************************************)
+\*   IsPrefix(Reverse(s), Reverse(t))
 
-IsStrictSuffix(s, t) ==
-  (**************************************************************************)
-  (* TRUE iff the sequence s is a suffix of the sequence t and s # t        *)
-  (**************************************************************************)
-  IsSuffix(s,t) /\ s # t
+\* IsStrictSuffix(s, t) ==
+\*   (**************************************************************************)
+\*   (* TRUE iff the sequence s is a suffix of the sequence t and s # t        *)
+\*   (**************************************************************************)
+\*   IsSuffix(s,t) /\ s # t
 
 -----------------------------------------------------------------------------
 
@@ -167,11 +170,11 @@ SeqMod(a, b) ==
   IF a % b = 0 THEN b ELSE a % b
 
 
-ReduceSeq(op(_, _), seq, acc) == 
-  (***************************************************************************)
-  (* We can't just apply ReduceSet to the Range(seq) because the same        *)
-  (* element might appear twice in the sequence.                             *)
-  (***************************************************************************)
-  ReduceSet(LAMBDA i, a: op(seq[i], a), DOMAIN seq, acc)
+\* ReduceSeq(op(_, _), seq, acc) == 
+\*   (***************************************************************************)
+\*   (* We can't just apply ReduceSet to the Range(seq) because the same        *)
+\*   (* element might appear twice in the sequence.                             *)
+\*   (***************************************************************************)
+\*   ReduceSet(LAMBDA i, a: op(seq[i], a), DOMAIN seq, acc)
 
 =============================================================================

@@ -62,7 +62,9 @@ kSubset(k, S) ==
 (* We define Max(S) and Min(S) to be the maximum and minimum,              *)
 (* respectively, of a finite, non-empty set S of integers.                 *)
 (***************************************************************************)
+\* @type: Set(Int) => Int;
 Max(S) == CHOOSE x \in S : \A y \in S : x >= y
+\* @type: Set(Int) => Int;
 Min(S) == CHOOSE x \in S : \A y \in S : x =< y
 
 -----------------------------------------------------------------------------
@@ -74,9 +76,9 @@ Min(S) == CHOOSE x \in S : \A y \in S : x =< y
 (*          Choices({{1,2}, {2,3}, {5}}) =                                 *)
 (*                         {{2, 5}, {1, 2, 5}, {1, 3, 5}, {2, 3, 5}}       *)
 (***************************************************************************) 
-Choices(Sets) == LET ChoiceFunction(Ts) == { f \in [Ts -> UNION Ts] : 
-                                               \A T \in Ts : f[T] \in T }
-                 IN  { Range(f) : f \in ChoiceFunction(Sets) }
+\* Choices(Sets) == LET ChoiceFunction(Ts) == { f \in [Ts -> UNION Ts] : 
+\*                                                \A T \in Ts : f[T] \in T }
+\*                  IN  { Range(f) : f \in ChoiceFunction(Sets) }
 
 -----------------------------------------------------------------------------
 
