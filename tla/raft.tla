@@ -1,7 +1,7 @@
 --------------------------------- MODULE raft ---------------------------------
 \* This is the formal specification for the Raft consensus algorithm.
 \*
-\* Copyright 2014 Diego Ongaro.
+\* Copyright 2014 Diego Ongaro, 2016 Daniel Ricketts, 2021 George Pîrlea.
 \* This work is licensed under the Creative Commons Attribution-4.0
 \* International License https://creativecommons.org/licenses/by/4.0/
 
@@ -48,15 +48,15 @@ CONSTANTS
 
 \* Message types
 
-\* The next four definitions give the types of each type of message
-RequestVoteRequestType ==[
-    mtype : {RequestVoteRequest},
-    mterm : Nat,
-    mlastLogTerm : Nat,
-    mlastLogIndex : Nat,
-    msource : {Nil} \cup Server,
-    mdest : {Nil} \cup Server
-]
+\* \* The next four definitions give the types of each type of message
+\* RequestVoteRequestType ==[
+\*     mtype : {RequestVoteRequest},
+\*     mterm : Nat,
+\*     mlastLogTerm : Nat,
+\*     mlastLogIndex : Nat,
+\*     msource : {Nil} \cup Server,
+\*     mdest : {Nil} \cup Server
+\* ]
 
 EmptyRVReqMsg == [
     mtype         |-> RequestVoteRequest,
@@ -65,18 +65,19 @@ EmptyRVReqMsg == [
     mlastLogIndex |-> 0,
     msource       |-> Nil,
     mdest         |-> Nil
-] ASSUME EmptyRVReqMsg \in RequestVoteRequestType
-
-AppendEntriesRequestType == [
-    mtype : {AppendEntriesRequest},
-    mterm : Nat,
-    mprevLogIndex : Int,
-    mprevLogTerm : Nat,
-    mentries : Seq([term : Nat, value : Value]),
-    mcommitIndex : Nat,
-    msource : {Nil} \cup Server,
-    mdest : {Nil} \cup Server
 ]
+\* ASSUME EmptyRVReqMsg \in RequestVoteRequestType
+
+\* AppendEntriesRequestType == [
+\*     mtype : {AppendEntriesRequest},
+\*     mterm : Nat,
+\*     mprevLogIndex : Int,
+\*     mprevLogTerm : Nat,
+\*     mentries : Seq([term : Nat, value : Value]),
+\*     mcommitIndex : Nat,
+\*     msource : {Nil} \cup Server,
+\*     mdest : {Nil} \cup Server
+\* ]
 
 EmptyAEReqMsg == [
     mtype          |-> AppendEntriesRequest,
@@ -87,16 +88,17 @@ EmptyAEReqMsg == [
     mcommitIndex   |-> Nil,
     msource        |-> Nil,
     mdest          |-> Nil
-] ASSUME EmptyAEReqMsg \in AppendEntriesRequestType
-
-RequestVoteResponseType ==[
-    mtype : {RequestVoteResponse},
-    mterm : Nat,
-    mvoteGranted : BOOLEAN,
-    mlog : Seq([term : Nat, value : Value]),
-    msource : {Nil} \cup Server,
-    mdest : {Nil} \cup Server
 ]
+\* ASSUME EmptyAEReqMsg \in AppendEntriesRequestType
+
+\* RequestVoteResponseType == [
+\*     mtype : {RequestVoteResponse},
+\*     mterm : Nat,
+\*     mvoteGranted : BOOLEAN,
+\*     mlog : Seq([term : Nat, value : Value]),
+\*     msource : {Nil} \cup Server,
+\*     mdest : {Nil} \cup Server
+\* ]
 
 EmptyRVRespMsg == [
     mtype        |-> RequestVoteResponse,
@@ -105,16 +107,17 @@ EmptyRVRespMsg == [
     mlog         |-> << >>,
     msource      |-> Nil,
     mdest        |-> Nil
-] ASSUME EmptyRVRespMsg \in RequestVoteResponseType
-
-AppendEntriesResponseType ==[
-    mtype : {AppendEntriesResponse},
-    mterm : Nat,
-    msuccess : BOOLEAN,
-    mmatchIndex : Nat,
-    msource : {Nil} \cup Server,
-    mdest : {Nil} \cup Server
 ]
+\* ASSUME EmptyRVRespMsg \in RequestVoteResponseType
+
+\* AppendEntriesResponseType == [
+\*     mtype : {AppendEntriesResponse},
+\*     mterm : Nat,
+\*     msuccess : BOOLEAN,
+\*     mmatchIndex : Nat,
+\*     msource : {Nil} \cup Server,
+\*     mdest : {Nil} \cup Server
+\* ]
 
 EmptyAERespMsg == [
     mtype           |-> AppendEntriesResponse,
@@ -123,16 +126,17 @@ EmptyAERespMsg == [
     mmatchIndex     |-> 0,
     msource         |-> Nil,
     mdest           |-> Nil
-] ASSUME EmptyAERespMsg \in AppendEntriesResponseType
-
-MessageType == [ 
-    wrapped: BOOLEAN , mterm : Nat, msource : {Nil} \cup Server, mdest : {Nil} \cup Server,
-    mtype : {RequestVoteRequest, RequestVoteResponse, AppendEntriesRequest, AppendEntriesResponse},
-    RVReq : RequestVoteRequestType,
-    RVResp: RequestVoteResponseType,
-    AEReq: AppendEntriesRequestType,
-    AEResp: AppendEntriesResponseType
 ]
+\* ASSUME EmptyAERespMsg \in AppendEntriesResponseType
+
+\* MessageType == [ 
+\*     wrapped: BOOLEAN , mterm : Nat, msource : {Nil} \cup Server, mdest : {Nil} \cup Server,
+\*     mtype : {RequestVoteRequest, RequestVoteResponse, AppendEntriesRequest, AppendEntriesResponse},
+\*     RVReq : RequestVoteRequestType,
+\*     RVResp: RequestVoteResponseType,
+\*     AEReq: AppendEntriesRequestType,
+\*     AEResp: AppendEntriesResponseType
+\* ]
 
 ----
 \* Global variables
@@ -226,10 +230,12 @@ LastTerm(xlog) == IF Len(xlog) = 0 THEN 0 ELSE xlog[Len(xlog)].term
 
 \* Helper for Send and Reply. Given a message m and bag of messages, return a
 \* new bag of messages with one more m in it.
+\* @type: (MSG, MSG -> Int) => MSG -> Int;
 WithMessage(m, msgs) == msgs (+) SetToBag({m})
 
 \* Helper for Discard and Reply. Given a message m and bag of messages, return
 \* a new bag of messages with one less m in it.
+\* @type: (MSG, MSG -> Int) => MSG -> Int;
 WithoutMessage(m, msgs) == msgs (-) SetToBag({m})
 
 \* @type: a => MSG;
@@ -595,11 +601,13 @@ Receive(m) ==
 \* Network state transitions
 
 \* The network duplicates a message
+\* @type: MSG => Bool;
 DuplicateMessage(m) ==
     /\ Send(m)
     /\ UNCHANGED <<serverVars, candidateVars, leaderVars, logVars>>
 
 \* The network drops a message
+\* @type: MSG => Bool;
 DropMessage(m) ==
     /\ Discard(m)
     /\ UNCHANGED <<serverVars, candidateVars, leaderVars, logVars>>
@@ -629,11 +637,12 @@ Spec == Init /\ [][Next]_vars
 
 \* The full type invariant for the system
 TypeOK ==
-    /\ IsABag(messages) /\ BagToSet(messages) \subseteq MessageType
+    /\ IsABag(messages)
+    \* /\ BagToSet(messages) \subseteq MessageType
     /\ currentTerm \in [Server -> Nat]
     /\ state \in [Server -> {Follower, Candidate, Leader}]
     /\ votedFor \in [Server -> Server \cup {Nil}]
-    /\ log \in [Server -> Seq([term : Nat, value : Value])]
+    \* /\ log \in [Server -> Seq([term : Nat, value : Value])]
     /\ commitIndex \in [Server -> Nat]
     /\ votesResponded \in [Server -> SUBSET Server]
     /\ votesGranted \in [Server -> SUBSET Server]
@@ -660,36 +669,36 @@ Committed(i) == SubSeq(log[i],1,commitIndex[i])
 ----
 \* Invariants for messages
 
-\* If server i casts a vote for server j and their terms
-\* are the same, then i's committed log is a prefix of j's log
-RequestVoteResponseInv(m) ==
-    m \in RequestVoteResponseType =>
-        ((/\ m.mvoteGranted
-          /\ currentTerm[m.msource] = currentTerm[m.mdest]
-          /\ currentTerm[m.msource] = m.mterm) =>
-         (\/ LastTerm(log[m.mdest]) > LastTerm(log[m.msource])
-          \/ /\ LastTerm(log[m.mdest]) = LastTerm(log[m.msource])
-             /\ Len(log[m.dest]) >= Len(log[m.msource])))
+\* \* If server i casts a vote for server j and their terms
+\* \* are the same, then i's committed log is a prefix of j's log
+\* RequestVoteResponseInv(m) ==
+\*     m \in RequestVoteResponseType =>
+\*         ((/\ m.mvoteGranted
+\*           /\ currentTerm[m.msource] = currentTerm[m.mdest]
+\*           /\ currentTerm[m.msource] = m.mterm) =>
+\*          (\/ LastTerm(log[m.mdest]) > LastTerm(log[m.msource])
+\*           \/ /\ LastTerm(log[m.mdest]) = LastTerm(log[m.msource])
+\*              /\ Len(log[m.dest]) >= Len(log[m.msource])))
 
-\* Request vote messages give at most the last log
-\* index and term of the requester, as long as the requester
-\* is a Candidate
-RequestVoteRequestInv(m) ==
-    m \in RequestVoteRequestType =>
-       ((/\ state[m.msource] = Candidate
-         /\ currentTerm[m.msource] = m.mterm) =>
-        (/\ m.mlastLogIndex = Len(log[m.msource])
-         /\ m.mlastLogTerm = LastTerm(log[m.msource])))
+\* \* Request vote messages give at most the last log
+\* \* index and term of the requester, as long as the requester
+\* \* is a Candidate
+\* RequestVoteRequestInv(m) ==
+\*     m \in RequestVoteRequestType =>
+\*        ((/\ state[m.msource] = Candidate
+\*          /\ currentTerm[m.msource] = m.mterm) =>
+\*         (/\ m.mlastLogIndex = Len(log[m.msource])
+\*          /\ m.mlastLogTerm = LastTerm(log[m.msource])))
 
-\* Append entries requests give the correct previous term
-\* and index of the source server
-AppendEntriesRequestInv(m) ==
-    m \in AppendEntriesRequestType =>
-      ((/\ m.mentries /= << >>
-        /\ m.mterm = currentTerm[m.msource]) =>
-       (/\ log[m.msource][m.mprevLogIndex + 1] = m.mentries[1]
-        /\ m.mprevLogIndex > 0 /\ m.mprevLogIndex <= Len(log[m.msource])=>
-           log[m.msource][m.mprevLogIndex].term = m.mprevLogTerm))
+\* \* Append entries requests give the correct previous term
+\* \* and index of the source server
+\* AppendEntriesRequestInv(m) ==
+\*     m \in AppendEntriesRequestType =>
+\*       ((/\ m.mentries /= << >>
+\*         /\ m.mterm = currentTerm[m.msource]) =>
+\*        (/\ log[m.msource][m.mprevLogIndex + 1] = m.mentries[1]
+\*         /\ m.mprevLogIndex > 0 /\ m.mprevLogIndex <= Len(log[m.msource])=>
+\*            log[m.msource][m.mprevLogIndex].term = m.mprevLogTerm))
 
 \* The current term of any server is at least the term
 \* of any message sent by that server
@@ -697,16 +706,16 @@ AppendEntriesRequestInv(m) ==
 MessageTermsLtCurrentTerm(m) ==
     m.mterm <= currentTerm[m.msource]
 
-\* This invariant encodes everything in messages
-\* that is necessary for safety. I don't think that
-\* AppendEntriesResponses are relevant to safety,
-\* only progress.
-MessagesInv ==
-    \A m \in DOMAIN messages :
-        /\ RequestVoteResponseInv(m)
-        /\ RequestVoteRequestInv(m)
-        /\ AppendEntriesRequestInv(m)
-        /\ MessageTermsLtCurrentTerm(m)
+\* \* This invariant encodes everything in messages
+\* \* that is necessary for safety. I don't think that
+\* \* AppendEntriesResponses are relevant to safety,
+\* \* only progress.
+\* MessagesInv ==
+\*     \A m \in DOMAIN messages :
+\*         /\ RequestVoteResponseInv(m)
+\*         /\ RequestVoteRequestInv(m)
+\*         /\ AppendEntriesRequestInv(m)
+\*         /\ MessageTermsLtCurrentTerm(m)
 
 ----
 \* I believe that the election safety property in the Raft
@@ -809,6 +818,10 @@ ElectionsUncontested == Cardinality({c \in DOMAIN state : state[c] = Candidate})
 ===============================================================================
 
 \* Changelog:
+\* 
+\* 2021-04-09:
+\* - Added type annotations for Apalache symbolic model checker. As part of
+\*   this change, the message format was changed to a tagged union.
 \* 
 \* 2016-09-09:
 \* - Daniel Ricketts added the major safety invariants and proved them in
