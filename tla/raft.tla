@@ -16,6 +16,8 @@ CONSTANTS
     \* @type: Set(Int);
     Server
 
+MaxInFlightMessages == LET card == 2 * Cardinality(Server) IN card * card
+
 \* The set of requests that can go into the log
 CONSTANTS 
     \* @type: Set(Int);
@@ -581,8 +583,14 @@ Next == \/ \E i \in Server : Restart(i)
         \/ \E i \in Server : AdvanceCommitIndex(i)
         \/ \E i,j \in Server : AppendEntries(i, j)
         \/ \E m \in DOMAIN messages : Receive(m)
-        \/ \E m \in DOMAIN messages : DuplicateMessage(m)
-        \/ \E m \in DOMAIN messages : DropMessage(m)
+        \* Only duplicate once
+        \/ \E m \in DOMAIN messages : 
+            /\ messages[m] = 1
+            /\ DuplicateMessage(m)
+        \* Only drop if it makes a difference
+        \/ \E m \in DOMAIN messages : 
+            /\ messages[m] = 1
+            /\ DropMessage(m)
 
 \* The specification must start with the initial state and transition according
 \* to Next.
@@ -709,6 +717,8 @@ LeaderCompleteness ==
 -----
 
 \* Constraints to make model checking more feasible
+
+BoundedInFlightMessagess == BagCardinality(messages) <= MaxInFlightMessages
 
 BoundedLogSize == \A i \in Server: Len(log[i]) <= MaxLogLength
 
