@@ -48,16 +48,6 @@ CONSTANTS
 
 \* Message types
 
-\* \* The next four definitions give the types of each type of message
-\* RequestVoteRequestType ==[
-\*     mtype : {RequestVoteRequest},
-\*     mterm : Nat,
-\*     mlastLogTerm : Nat,
-\*     mlastLogIndex : Nat,
-\*     msource : {Nil} \cup Server,
-\*     mdest : {Nil} \cup Server
-\* ]
-
 EmptyRVReqMsg == [
     mtype         |-> RequestVoteRequest,
     mterm         |-> 0,
@@ -66,18 +56,6 @@ EmptyRVReqMsg == [
     msource       |-> Nil,
     mdest         |-> Nil
 ]
-\* ASSUME EmptyRVReqMsg \in RequestVoteRequestType
-
-\* AppendEntriesRequestType == [
-\*     mtype : {AppendEntriesRequest},
-\*     mterm : Nat,
-\*     mprevLogIndex : Int,
-\*     mprevLogTerm : Nat,
-\*     mentries : Seq([term : Nat, value : Value]),
-\*     mcommitIndex : Nat,
-\*     msource : {Nil} \cup Server,
-\*     mdest : {Nil} \cup Server
-\* ]
 
 EmptyAEReqMsg == [
     mtype          |-> AppendEntriesRequest,
@@ -89,16 +67,6 @@ EmptyAEReqMsg == [
     msource        |-> Nil,
     mdest          |-> Nil
 ]
-\* ASSUME EmptyAEReqMsg \in AppendEntriesRequestType
-
-\* RequestVoteResponseType == [
-\*     mtype : {RequestVoteResponse},
-\*     mterm : Nat,
-\*     mvoteGranted : BOOLEAN,
-\*     mlog : Seq([term : Nat, value : Value]),
-\*     msource : {Nil} \cup Server,
-\*     mdest : {Nil} \cup Server
-\* ]
 
 EmptyRVRespMsg == [
     mtype        |-> RequestVoteResponse,
@@ -108,16 +76,6 @@ EmptyRVRespMsg == [
     msource      |-> Nil,
     mdest        |-> Nil
 ]
-\* ASSUME EmptyRVRespMsg \in RequestVoteResponseType
-
-\* AppendEntriesResponseType == [
-\*     mtype : {AppendEntriesResponse},
-\*     mterm : Nat,
-\*     msuccess : BOOLEAN,
-\*     mmatchIndex : Nat,
-\*     msource : {Nil} \cup Server,
-\*     mdest : {Nil} \cup Server
-\* ]
 
 EmptyAERespMsg == [
     mtype           |-> AppendEntriesResponse,
@@ -127,16 +85,6 @@ EmptyAERespMsg == [
     msource         |-> Nil,
     mdest           |-> Nil
 ]
-\* ASSUME EmptyAERespMsg \in AppendEntriesResponseType
-
-\* MessageType == [ 
-\*     wrapped: BOOLEAN , mterm : Nat, msource : {Nil} \cup Server, mdest : {Nil} \cup Server,
-\*     mtype : {RequestVoteRequest, RequestVoteResponse, AppendEntriesRequest, AppendEntriesResponse},
-\*     RVReq : RequestVoteRequestType,
-\*     RVResp: RequestVoteResponseType,
-\*     AEReq: AppendEntriesRequestType,
-\*     AEResp: AppendEntriesResponseType
-\* ]
 
 ----
 \* Global variables
@@ -633,21 +581,6 @@ Spec == Init /\ [][Next]_vars
 (* The main safety properties are below                                    *)
 (***************************************************************************)
 ----
-\* Type invariants
-
-\* The full type invariant for the system
-TypeOK ==
-    /\ IsABag(messages)
-    \* /\ BagToSet(messages) \subseteq MessageType
-    /\ currentTerm \in [Server -> Nat]
-    /\ state \in [Server -> {Follower, Candidate, Leader}]
-    /\ votedFor \in [Server -> Server \cup {Nil}]
-    \* /\ log \in [Server -> Seq([term : Nat, value : Value])]
-    /\ commitIndex \in [Server -> Nat]
-    /\ votesResponded \in [Server -> SUBSET Server]
-    /\ votesGranted \in [Server -> SUBSET Server]
-    /\ nextIndex \in [Server -> [Server -> { n \in Nat : 1 <= n } ]]
-    /\ matchIndex \in [Server -> [Server -> Nat]]
 
 ASSUME DistinctRoles == /\ Leader /= Candidate
                         /\ Candidate /= Follower
@@ -666,56 +599,11 @@ ASSUME DistinctMessageTypes == /\ RequestVoteRequest /= AppendEntriesRequest
 \* The prefix of the log of server i that has been committed
 Committed(i) == SubSeq(log[i],1,commitIndex[i])
 
-----
-\* Invariants for messages
-
-\* \* If server i casts a vote for server j and their terms
-\* \* are the same, then i's committed log is a prefix of j's log
-\* RequestVoteResponseInv(m) ==
-\*     m \in RequestVoteResponseType =>
-\*         ((/\ m.mvoteGranted
-\*           /\ currentTerm[m.msource] = currentTerm[m.mdest]
-\*           /\ currentTerm[m.msource] = m.mterm) =>
-\*          (\/ LastTerm(log[m.mdest]) > LastTerm(log[m.msource])
-\*           \/ /\ LastTerm(log[m.mdest]) = LastTerm(log[m.msource])
-\*              /\ Len(log[m.dest]) >= Len(log[m.msource])))
-
-\* \* Request vote messages give at most the last log
-\* \* index and term of the requester, as long as the requester
-\* \* is a Candidate
-\* RequestVoteRequestInv(m) ==
-\*     m \in RequestVoteRequestType =>
-\*        ((/\ state[m.msource] = Candidate
-\*          /\ currentTerm[m.msource] = m.mterm) =>
-\*         (/\ m.mlastLogIndex = Len(log[m.msource])
-\*          /\ m.mlastLogTerm = LastTerm(log[m.msource])))
-
-\* \* Append entries requests give the correct previous term
-\* \* and index of the source server
-\* AppendEntriesRequestInv(m) ==
-\*     m \in AppendEntriesRequestType =>
-\*       ((/\ m.mentries /= << >>
-\*         /\ m.mterm = currentTerm[m.msource]) =>
-\*        (/\ log[m.msource][m.mprevLogIndex + 1] = m.mentries[1]
-\*         /\ m.mprevLogIndex > 0 /\ m.mprevLogIndex <= Len(log[m.msource])=>
-\*            log[m.msource][m.mprevLogIndex].term = m.mprevLogTerm))
-
 \* The current term of any server is at least the term
 \* of any message sent by that server
 \* @type: MSG => Bool;
 MessageTermsLtCurrentTerm(m) ==
     m.mterm <= currentTerm[m.msource]
-
-\* \* This invariant encodes everything in messages
-\* \* that is necessary for safety. I don't think that
-\* \* AppendEntriesResponses are relevant to safety,
-\* \* only progress.
-\* MessagesInv ==
-\*     \A m \in DOMAIN messages :
-\*         /\ RequestVoteResponseInv(m)
-\*         /\ RequestVoteRequestInv(m)
-\*         /\ AppendEntriesRequestInv(m)
-\*         /\ MessageTermsLtCurrentTerm(m)
 
 ----
 \* I believe that the election safety property in the Raft
