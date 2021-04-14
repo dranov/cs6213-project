@@ -7,15 +7,16 @@
 
 EXTENDS Naturals, Integers, TypedBags, FiniteSets, Sequences, SequencesExt, TLC
 
-MaxLogLength == 5
-MaxRestarts == 3
-MaxTimeouts == 3
 
 \* The set of server IDs
 CONSTANTS 
     \* @type: Set(Int);
     Server
 
+\* Constraints
+MaxLogLength == 5
+MaxRestarts == 3
+MaxTimeouts == 3
 MaxInFlightMessages == LET card == 2 * Cardinality(Server) IN card * card
 
 \* The set of requests that can go into the log
@@ -90,6 +91,14 @@ EmptyAERespMsg == [
     mdest           |-> Nil
 ]
 
+EmptyMsg == [
+    wrapped |-> TRUE, mtype |-> "", mterm |-> 0, msource |-> Nil, mdest |-> Nil,
+    RVReq |-> EmptyRVReqMsg,
+    RVResp |-> EmptyRVRespMsg,
+    AEReq |-> EmptyAEReqMsg,
+    AEResp |-> EmptyAERespMsg
+]
+
 ----
 \* Global variables
 
@@ -109,7 +118,8 @@ VARIABLE
 \* history variable used to constraining the search space
 \* restarted: how many times each server restarted
 VARIABLE
-    \* @type: Int -> [restarted: Int, timeout: Int];
+    \* @typeAlias: ACTION = [action: Str, executedOn: Int, msg: MSG];
+    \* @type: [server: Int -> [restarted: Int, timeout: Int], global: Seq(ACTION)];
     history
 
 ----
@@ -210,10 +220,12 @@ WrapMsg(m) ==
     ELSE m
 
 \* Add a message to the bag of messages.
-\* @type: a => Bool;
+\* @type: [msource: Int] => Bool;
 Send(m) == 
     LET w == WrapMsg(m) IN
-    messages' = WithMessage(w, messages)
+    LET action == [action |-> "Send", executedOn |-> m.msource, msg |-> w] IN
+    /\ messages'    = WithMessage(w, messages)
+    /\ history'     = [history EXCEPT !["global"] = Append(history["global"], action)]
 
 \* Remove a message from the bag of messages. Used when a server is done
 \* processing a message.
@@ -251,8 +263,13 @@ InitLeaderVars == /\ nextIndex  = [i \in Server |-> [j \in Server |-> 1]]
                   /\ matchIndex = [i \in Server |-> [j \in Server |-> 0]]
 InitLogVars == /\ log          = [i \in Server |-> << >>]
                /\ commitIndex  = [i \in Server |-> 0]
+InitHistory == [
+    server |-> [i \in Server |-> [restarted |-> 0, timeout |-> 0]],
+    global |-> << >>
+]
+
 Init == /\ messages = EmptyBag
-        /\ history  = [i \in Server |-> [restarted |-> 0, timeout |-> 0]]
+        /\ history  = InitHistory
         /\ InitServerVars
         /\ InitCandidateVars
         /\ InitLeaderVars
@@ -271,7 +288,7 @@ Restart(i) ==
     /\ nextIndex'      = [nextIndex EXCEPT ![i] = [j \in Server |-> 1]]
     /\ matchIndex'     = [matchIndex EXCEPT ![i] = [j \in Server |-> 0]]
     /\ commitIndex'    = [commitIndex EXCEPT ![i] = 0]
-    /\ history'        = [history EXCEPT ![i] ["restarted"] = history[i]["restarted"] + 1]
+    /\ history'        = [history EXCEPT !["server"] [i] ["restarted"] = history["server"][i]["restarted"] + 1]
     /\ UNCHANGED <<messages, currentTerm, votedFor, log>>
 
 \* Server i times out and starts a new election.
@@ -284,7 +301,10 @@ Timeout(i) == /\ state[i] \in {Follower, Candidate}
               /\ votedFor' = [votedFor EXCEPT ![i] = Nil]
               /\ votesResponded' = [votesResponded EXCEPT ![i] = {}]
               /\ votesGranted'   = [votesGranted EXCEPT ![i] = {}]
-              /\ history'        = [history EXCEPT ![i] ["timeout"] = history[i]["timeout"] + 1]
+              /\ history'        = [history EXCEPT 
+                                        !["server"] [i] ["timeout"] = history["server"][i]["timeout"] + 1,
+                                        !["global"] = Append(history["global"], [action |-> "Timeout", executedOn |-> i, msg |-> EmptyMsg])
+                                   ]
               /\ UNCHANGED <<messages, leaderVars, logVars>>
 
 \* Candidate i sends j a RequestVote request.
@@ -298,7 +318,7 @@ RequestVote(i, j) ==
              mlastLogIndex |-> Len(log[i]),
              msource       |-> i,
              mdest         |-> j])
-    /\ UNCHANGED <<serverVars, candidateVars, leaderVars, logVars, history>>
+    /\ UNCHANGED <<serverVars, candidateVars, leaderVars, logVars>>
 
 \* Leader i sends j an AppendEntries request containing up to 1 entry.
 \* While implementations may want to send more than 1 at a time, this spec uses
@@ -402,7 +422,7 @@ HandleRequestVoteRequest(i, j, m) ==
                  msource      |-> i,
                  mdest        |-> j],
                  m)
-       /\ UNCHANGED <<state, currentTerm, candidateVars, leaderVars, logVars, history>>
+       /\ UNCHANGED <<state, currentTerm, candidateVars, leaderVars, logVars>>
 
 \* Server i receives a RequestVote response from server j with
 \* m.mterm = currentTerm[i].
@@ -419,7 +439,7 @@ HandleRequestVoteResponse(i, j, m) ==
        \/ /\ ~m.mvoteGranted
           /\ UNCHANGED <<votesGranted>>
     /\ Discard(m)
-    /\ UNCHANGED <<serverVars, votedFor, leaderVars, logVars, history>>
+    /\ UNCHANGED <<serverVars, votedFor, leaderVars, logVars>>
 
 \* @type: (Int, Int, AEREQT, Bool) => Bool;
 RejectAppendEntriesRequest(i, j, m, logOk) ==
@@ -529,23 +549,25 @@ UpdateTerm(i, j, m) ==
     /\ state'          = [state       EXCEPT ![i] = Follower]
     /\ votedFor'       = [votedFor    EXCEPT ![i] = Nil]
        \* messages is unchanged so m can be processed further.
-    /\ UNCHANGED <<messages, candidateVars, leaderVars, logVars, history>>
+    /\ UNCHANGED <<messages, candidateVars, leaderVars, logVars>>
 
 \* Responses with stale terms are ignored.
 \* @type: (Int, Int, MSG) => Bool;
 DropStaleResponse(i, j, m) ==
     /\ m.mterm < currentTerm[i]
     /\ Discard(m)
-    /\ UNCHANGED <<serverVars, candidateVars, leaderVars, logVars, history>>
+    /\ UNCHANGED <<serverVars, candidateVars, leaderVars, logVars>>
 
 \* Receive a message.
 \* @type: MSG => Bool;
 Receive(m) ==
     LET i == m.mdest
         j == m.msource
+        action == [action |-> "Receive", executedOn |-> i, msg |-> WrapMsg(m)]
     IN \* Any RPC with a newer term causes the recipient to advance
        \* its term first. Responses with stale terms are ignored.
-       \/ UpdateTerm(i, j, m)
+    /\ history' = [history EXCEPT !["global"] = Append(history["global"], action)]
+    /\ \/ UpdateTerm(i, j, m)
        \/ /\ m.mtype = RequestVoteRequest
           /\ HandleRequestVoteRequest(i, j, m.RVReq)
        \/ /\ m.mtype = RequestVoteResponse
@@ -565,7 +587,7 @@ Receive(m) ==
 \* @type: MSG => Bool;
 DuplicateMessage(m) ==
     /\ Send(m)
-    /\ UNCHANGED <<serverVars, candidateVars, leaderVars, logVars, history>>
+    /\ UNCHANGED <<serverVars, candidateVars, leaderVars, logVars>>
 
 \* The network drops a message
 \* @type: MSG => Bool;
@@ -722,11 +744,17 @@ BoundedInFlightMessagess == BagCardinality(messages) <= MaxInFlightMessages
 
 BoundedLogSize == \A i \in Server: Len(log[i]) <= MaxLogLength
 
-BoundedRestarts == \A i \in Server: history[i]["restarted"] <= MaxRestarts
+BoundedRestarts == Sum([i \in Server |-> history["server"][i]["restarted"]]) <= MaxRestarts
 
-BoundedTimeouts == \A i \in Server: history[i]["timeout"] <= MaxTimeouts
+BoundedTimeouts == Sum([i \in Server |-> history["server"][i]["timeout"]]) <= MaxTimeouts
 
 ElectionsUncontested == Cardinality({c \in DOMAIN state : state[c] = Candidate}) <= 1
+
+-----
+
+\* Generate interesting traces
+
+BoundedTrace == Len(history["global"]) <= 7
 
 ===============================================================================
 

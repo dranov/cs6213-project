@@ -70,7 +70,7 @@ B1 (-) B2  ==
 
 
 \* @type: (a -> Int) => Int;
-LOCAL Sum(f) ==
+Sum(f) ==
         (******************************************************************)
         (* The sum of f[x] for all x in DOMAIN f.  The definition assumes *)
         (* that f is a Nat-valued function and that f[x] equals 0 for all *)
