@@ -215,7 +215,7 @@ WrapMsg(m) ==
 \* @type: [msource: Int] => Bool;
 Send(m) == 
     LET w == WrapMsg(m) IN
-    LET action == [action |-> "Send", executedOn |-> m.msource, msg |-> w] IN
+    LET action == [action |-> "Send", executedOn |-> w.msource, msg |-> w] IN
     /\ messages'    = WithMessage(w, messages)
     /\ history'     = [history EXCEPT !["global"] = Append(history["global"], action)]
 
@@ -230,7 +230,7 @@ SendWithoutHistory(m) ==
 \* @type: a => Bool;
 Discard(m) ==
     LET w == WrapMsg(m) IN
-    LET action == [action |-> "Receive", executedOn |-> m.mdest, msg |-> w] IN
+    LET action == [action |-> "Receive", executedOn |-> w.mdest, msg |-> w] IN
     /\ messages'    = WithoutMessage(w, messages)
     /\ history'     = [history EXCEPT !["global"] = Append(history["global"], action)]
 
@@ -245,8 +245,8 @@ DiscardWithoutHistory(m) ==
 Reply(response, request) ==
     LET wreq == WrapMsg(request) IN
     LET wresp == WrapMsg(response) IN
-    LET recvA == [action |-> "Receive", executedOn |-> request.mdest, msg |-> wreq] IN
-    LET respA == [action |-> "Send", executedOn |-> response.msource, msg |-> wresp] IN
+    LET recvA == [action |-> "Receive", executedOn |-> wreq.mdest, msg |-> wreq] IN
+    LET respA == [action |-> "Send", executedOn |-> wresp.msource, msg |-> wresp] IN
     /\ messages'    = WithoutMessage(wreq, WithMessage(wresp, messages))
     /\ history'     = [history EXCEPT !["global"] = Append(Append(history["global"], recvA), respA)]
 
@@ -500,14 +500,14 @@ ConflictAppendEntriesRequest(i, index, m) ==
     \* /\ LET new == [index2 \in 1..(Len(log[i]) - 1) |-> log[i][index2]]
     /\ LET new == SubSeq(log[i], 1, Len(log[i]) - 1)
        IN log' = [log EXCEPT ![i] = new]
-    /\ UNCHANGED <<serverVars, commitIndex, messages>>
+    /\ UNCHANGED <<serverVars, commitIndex, messages, history>>
 
 \* @type: (Int, AEREQT) => Bool;
 NoConflictAppendEntriesRequest(i, m) ==
     /\ m.mentries /= << >>
     /\ Len(log[i]) = m.mprevLogIndex
     /\ log' = [log EXCEPT ![i] = Append(log[i], m.mentries[1])]
-    /\ UNCHANGED <<serverVars, commitIndex, messages>>
+    /\ UNCHANGED <<serverVars, commitIndex, messages, history>>
 
 \* @type: (Int, Int, Bool, AEREQT) => Bool;
 AcceptAppendEntriesRequest(i, j, logOk, m) ==
@@ -612,7 +612,8 @@ Next == \/ \E i \in Server : Restart(i)
         \/ \E i \in Server, v \in Value : ClientRequest(i, v)
         \/ \E i \in Server : AdvanceCommitIndex(i)
         \/ \E i,j \in Server : AppendEntries(i, j)
-        \/ \E m \in DOMAIN messages : Receive(m)
+        \/ \E m \in DOMAIN messages :
+            Receive(m)
         \* Only duplicate once
         \/ \E m \in DOMAIN messages : 
             /\ messages[m] = 1
