@@ -39,7 +39,15 @@ BagIn(e,B) == e \in BagToSet(B)
 \* @type: a -> Int;
 EmptyBag == SetToBag({})
 
-\* @type: (a -> Int, a -> Int) => a -> Int;
+\* @typeAlias: ENTRY = [term: Int, value: Int];
+\* @typeAlias: LOGT = Seq(ENTRY);
+\* @typeAlias: RVREQT = [mtype: Str, mterm: Int, mlastLogTerm: Int, mlastLogIndex: Int, msource: Int, mdest: Int];
+\* @typeAlias: RVRESPT = [mtype: Str, mterm: Int, mvoteGranted: Bool, mlog: LOGT, msource: Int, mdest: Int ];
+\* @typeAlias: AEREQT = [mtype: Str, mterm: Int, mprevLogIndex: Int, mprevLogTerm: Int, mentries: LOGT, mcommitIndex: Int, msource: Int, mdest: Int ];
+\* @typeAlias: AERESPT = [mtype: Str, mterm: Int, msuccess: Bool, mmatchIndex: Int, msource: Int, mdest: Int ];
+\* @typeAlias: MSG = [ wrapped: Bool, mtype: Str, mterm: Int, msource: Int, mdest: Int, RVReq: RVREQT, RVResp: RVRESPT, AEReq: AEREQT, AEResp: AERESPT ];
+
+\* @type: (MSG -> Int, MSG -> Int) => MSG -> Int;
 B1 (+) B2  ==
   (************************************************************************)
   (* The union of bags B1 and B2.                                         *)
@@ -48,7 +56,7 @@ B1 (+) B2  ==
       (IF e \in DOMAIN B1 THEN B1[e] ELSE 0) 
     + (IF e \in DOMAIN B2 THEN B2[e] ELSE 0) ]
 
-\* @type: (a -> Int, a -> Int) => a -> Int;
+\* @type: (MSG -> Int, MSG -> Int) => MSG -> Int;
 B1 (-) B2  == 
   (************************************************************************)
   (* The bag B1 with the elements of B2 removed--that is, with one copy   *)
@@ -62,7 +70,7 @@ B1 (-) B2  ==
 
 
 \* @type: (a -> Int) => Int;
-LOCAL Sum(f) ==
+Sum(f) ==
         (******************************************************************)
         (* The sum of f[x] for all x in DOMAIN f.  The definition assumes *)
         (* that f is a Nat-valued function and that f[x] equals 0 for all *)
