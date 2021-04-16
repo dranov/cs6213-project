@@ -111,7 +111,7 @@ VARIABLE
 \* restarted: how many times each server restarted
 VARIABLE
     \* @typeAlias: ACTION = [action: Str, executedOn: Int, msg: MSG];
-    \* @type: [server: Int -> [restarted: Int, timeout: Int], global: Seq(ACTION)];
+    \* @type: [server: Int -> [restarted: Int, timeout: Int], global: Seq(ACTION), hadAtLeastOneLeader: Bool];
     history
 
 ----
@@ -275,6 +275,7 @@ InitLogVars == /\ log          = [i \in Server |-> << >>]
 InitHistory == [
     server |-> [i \in Server |-> [restarted |-> 0, timeout |-> 0]],
     global |-> << >>,
+    hadAtLeastOneLeader |-> FALSE
 ]
 
 Init == /\ messages = EmptyBag
@@ -367,7 +368,8 @@ BecomeLeader(i) ==
                          [j \in Server |-> Len(log[i]) + 1]]
     /\ matchIndex' = [matchIndex EXCEPT ![i] =
                          [j \in Server |-> 0]]
-    /\ UNCHANGED <<messages, currentTerm, votedFor, candidateVars, logVars, history>>
+    /\ history'    = [history EXCEPT !["hadAtLeastOneLeader"] = TRUE]
+    /\ UNCHANGED <<messages, currentTerm, votedFor, candidateVars, logVars>>
     
 \* Leader i receives a client request to add v to the log.
 \* @type: (Int, Int) => Bool;
@@ -749,7 +751,7 @@ LeaderCompleteness ==
 
 \* Constraints to make model checking more feasible
 
-BoundedInFlightMessagess == BagCardinality(messages) <= MaxInFlightMessages
+BoundedInFlightMessages == BagCardinality(messages) <= MaxInFlightMessages
 
 BoundedLogSize == \A i \in Server: Len(log[i]) <= MaxLogLength
 
@@ -758,6 +760,12 @@ BoundedRestarts == \A i \in Server: history["server"][i]["restarted"] <= MaxRest
 BoundedTimeouts == \A i \in Server: history["server"][i]["timeout"] <= MaxTimeouts
 
 ElectionsUncontested == Cardinality({c \in DOMAIN state : state[c] = Candidate}) <= 1
+
+CleanFirstLeaderElection ==
+    (~ history["hadAtLeastOneLeader"]) =>
+    /\ \A i \in Server: history["server"][i]["restarted"] = 0
+    /\ \A i \in Server: history["server"][i]["restarted"] <= 1
+    /\ ElectionsUncontested
 
 -----
 
