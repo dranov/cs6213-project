@@ -111,7 +111,7 @@ VARIABLE
 \* restarted: how many times each server restarted
 VARIABLE
     \* @typeAlias: ACTION = [action: Str, executedOn: Int, msg: MSG];
-    \* @type: [server: Int -> [restarted: Int, timeout: Int], global: Seq(ACTION), hadAtLeastOneLeader: Bool];
+    \* @type: [server: Int -> [restarted: Int, timeout: Int], global: Seq(ACTION), hadAtLeastOneLeader: Bool, hadAtLeastOneRequest: Bool];
     history
 
 ----
@@ -275,7 +275,8 @@ InitLogVars == /\ log          = [i \in Server |-> << >>]
 InitHistory == [
     server |-> [i \in Server |-> [restarted |-> 0, timeout |-> 0]],
     global |-> << >>,
-    hadAtLeastOneLeader |-> FALSE
+    hadAtLeastOneLeader |-> FALSE,
+    hadAtLeastOneClientRequest |-> FALSE
 ]
 
 Init == /\ messages = EmptyBag
@@ -379,8 +380,9 @@ ClientRequest(i, v) ==
                      value |-> v]
            newLog == Append(log[i], entry)
        IN  log' = [log EXCEPT ![i] = newLog]
+    /\ history'    = [history EXCEPT !["hadAtLeastOneClientRequest"] = TRUE]
     /\ UNCHANGED <<messages, serverVars, candidateVars,
-                   leaderVars, commitIndex, history>>
+                   leaderVars, commitIndex>>
 
 \* Leader i advances its commitIndex.
 \* This is done as a separate step from handling AppendEntries responses,
@@ -761,10 +763,10 @@ BoundedTimeouts == \A i \in Server: history["server"][i]["timeout"] <= MaxTimeou
 
 ElectionsUncontested == Cardinality({c \in DOMAIN state : state[c] = Candidate}) <= 1
 
-CleanFirstLeaderElection ==
-    (~ history["hadAtLeastOneLeader"]) =>
+CleanStartUntilFirstRequest ==
+    (~ (history["hadAtLeastOneLeader"] /\ history["hadAtLeastOneClientRequest"])) =>
     /\ \A i \in Server: history["server"][i]["restarted"] = 0
-    /\ \A i \in Server: history["server"][i]["restarted"] <= 1
+    /\ \A i \in Server: history["server"][i]["timeout"] <= 1
     /\ ElectionsUncontested
 
 -----
