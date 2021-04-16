@@ -15,8 +15,8 @@ CONSTANTS
 
 \* Constraints
 MaxLogLength == 5
-MaxRestarts == 3
-MaxTimeouts == 3
+MaxRestarts == 2
+MaxTimeouts == 2
 MaxInFlightMessages == LET card == 2 * Cardinality(Server) IN card * card
 
 \* The set of requests that can go into the log
@@ -464,7 +464,7 @@ RejectAppendEntriesRequest(i, j, m, logOk) ==
               msource         |-> i,
               mdest           |-> j],
               m)
-    /\ UNCHANGED <<serverVars, logVars, history>>
+    /\ UNCHANGED <<serverVars, logVars>>
 
 \* @type: (Int, MSG) => Bool;
 ReturnToFollowerState(i, m) ==
@@ -500,14 +500,14 @@ ConflictAppendEntriesRequest(i, index, m) ==
     \* /\ LET new == [index2 \in 1..(Len(log[i]) - 1) |-> log[i][index2]]
     /\ LET new == SubSeq(log[i], 1, Len(log[i]) - 1)
        IN log' = [log EXCEPT ![i] = new]
-    /\ UNCHANGED <<serverVars, commitIndex, messages, history>>
+    /\ UNCHANGED <<serverVars, commitIndex, messages>>
 
 \* @type: (Int, AEREQT) => Bool;
 NoConflictAppendEntriesRequest(i, m) ==
     /\ m.mentries /= << >>
     /\ Len(log[i]) = m.mprevLogIndex
     /\ log' = [log EXCEPT ![i] = Append(log[i], m.mentries[1])]
-    /\ UNCHANGED <<serverVars, commitIndex, messages, history>>
+    /\ UNCHANGED <<serverVars, commitIndex, messages>>
 
 \* @type: (Int, Int, Bool, AEREQT) => Bool;
 AcceptAppendEntriesRequest(i, j, logOk, m) ==
@@ -534,7 +534,7 @@ HandleAppendEntriesRequest(i, j, m) ==
        /\ \/ RejectAppendEntriesRequest(i, j, m, logOk)
           \/ ReturnToFollowerState(i, m)
           \/ AcceptAppendEntriesRequest(i, j, logOk, m)
-       /\ UNCHANGED <<candidateVars, leaderVars, history>>
+       /\ UNCHANGED <<candidateVars, leaderVars>>
 
 \* Server i receives an AppendEntries response from server j with
 \* m.mterm = currentTerm[i].
@@ -576,15 +576,15 @@ Receive(m) ==
     IN \* Any RPC with a newer term causes the recipient to advance
        \* its term first. Responses with stale terms are ignored.
     \/ UpdateTerm(i, j, m)
-    \/ /\ m.mtype = RequestVoteRequest
+    \/  /\ m.mtype = RequestVoteRequest
         /\ HandleRequestVoteRequest(i, j, m.RVReq)
-    \/ /\ m.mtype = RequestVoteResponse
-        /\ \/ DropStaleResponse(i, j, m.RVResp)
+    \/  /\ m.mtype = RequestVoteResponse
+        /\  \/ DropStaleResponse(i, j, m.RVResp)
             \/ HandleRequestVoteResponse(i, j, m.RVResp)
-    \/ /\ m.mtype = AppendEntriesRequest
+    \/  /\ m.mtype = AppendEntriesRequest
         /\ HandleAppendEntriesRequest(i, j, m.AEReq)
-    \/ /\ m.mtype = AppendEntriesResponse
-        /\ \/ DropStaleResponse(i, j, m.AEResp)
+    \/  /\ m.mtype = AppendEntriesResponse
+        /\  \/ DropStaleResponse(i, j, m.AEResp)
             \/ HandleAppendEntriesResponse(i, j, m.AEResp)
 
 \* End of message handlers.
@@ -762,7 +762,17 @@ ElectionsUncontested == Cardinality({c \in DOMAIN state : state[c] = Candidate})
 
 \* Generate interesting traces
 
-BoundedTrace == Len(history["global"]) <= 7
+BoundedTrace == Len(history["global"]) <= 12
+
+FirstBecomeLeader == ~ \E i, j \in DOMAIN history["global"] :
+    /\ i /= j
+    /\ LET x == history["global"][i]
+           y == history["global"][j] IN
+        x.action = "Receive" /\ x.msg.mtype = RequestVoteResponse
+        /\ y.action = "Receive" /\ y.msg.mtype = RequestVoteResponse
+        /\ x.msg.msource /= y.msg.msource
+        /\ state[x.msg.mdest] = Leader
+
 
 ===============================================================================
 
