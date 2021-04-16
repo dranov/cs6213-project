@@ -215,7 +215,7 @@ WrapMsg(m) ==
 \* @type: [msource: Int] => Bool;
 Send(m) == 
     LET w == WrapMsg(m) IN
-    LET action == [action |-> "Send", executedOn |-> w.msource, msg |-> w] IN
+    LET action == [action |-> "Send", executedOn |-> m.msource, msg |-> w] IN
     /\ messages'    = WithMessage(w, messages)
     /\ history'     = [history EXCEPT !["global"] = Append(history["global"], action)]
 
@@ -227,10 +227,10 @@ SendWithoutHistory(m) ==
 
 \* Remove a message from the bag of messages. Used when a server is done
 \* processing a message.
-\* @type: a => Bool;
+\* @type: [mdest: Int] => Bool;
 Discard(m) ==
     LET w == WrapMsg(m) IN
-    LET action == [action |-> "Receive", executedOn |-> w.mdest, msg |-> w] IN
+    LET action == [action |-> "Receive", executedOn |-> m.mdest, msg |-> w] IN
     /\ messages'    = WithoutMessage(w, messages)
     /\ history'     = [history EXCEPT !["global"] = Append(history["global"], action)]
 
@@ -241,12 +241,12 @@ DiscardWithoutHistory(m) ==
     messages' = WithoutMessage(w, messages)
 
 \* Combination of Send and Discard
-\* @type: (a, b) => Bool;
+\* @type: ([msource: Int], [mdest: Int]) => Bool;
 Reply(response, request) ==
     LET wreq == WrapMsg(request) IN
     LET wresp == WrapMsg(response) IN
-    LET recvA == [action |-> "Receive", executedOn |-> wreq.mdest, msg |-> wreq] IN
-    LET respA == [action |-> "Send", executedOn |-> wresp.msource, msg |-> wresp] IN
+    LET recvA == [action |-> "Receive", executedOn |-> request.mdest, msg |-> wreq] IN
+    LET respA == [action |-> "Send", executedOn |-> response.msource, msg |-> wresp] IN
     /\ messages'    = WithoutMessage(wreq, WithMessage(wresp, messages))
     /\ history'     = [history EXCEPT !["global"] = Append(Append(history["global"], recvA), respA)]
 
@@ -274,7 +274,7 @@ InitLogVars == /\ log          = [i \in Server |-> << >>]
                /\ commitIndex  = [i \in Server |-> 0]
 InitHistory == [
     server |-> [i \in Server |-> [restarted |-> 0, timeout |-> 0]],
-    global |-> << >>
+    global |-> << >>,
 ]
 
 Init == /\ messages = EmptyBag
