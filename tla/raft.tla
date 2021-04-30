@@ -369,7 +369,9 @@ BecomeLeader(i) ==
                          [j \in Server |-> Len(log[i]) + 1]]
     /\ matchIndex' = [matchIndex EXCEPT ![i] =
                          [j \in Server |-> 0]]
-    /\ history'    = [history EXCEPT !["hadAtLeastOneLeader"] = TRUE]
+    /\ history'    = [history EXCEPT 
+                            !["hadAtLeastOneLeader"] = TRUE,
+                            !["global"] = Append(history["global"], [action |-> "BecomeLeader", executedOn |-> i])]
     /\ UNCHANGED <<messages, currentTerm, votedFor, candidateVars, logVars>>
     
 \* Leader i receives a client request to add v to the log.
@@ -783,6 +785,18 @@ FirstBecomeLeader == ~ \E i, j \in DOMAIN history["global"] :
         /\ y.action = "Receive" /\ y.msg.mtype = RequestVoteResponse
         /\ x.msg.msource /= y.msg.msource
         /\ state[x.msg.mdest] = Leader
+
+MultipleLeaders == ~ \E i, j \in Server :
+    /\ i /= j
+    /\ state[i] = Leader
+    /\ state[j] = Leader
+    \* /\ \E idx \in DOMAIN history["global"] :
+    \*     LET x == history["global"][idx] IN
+    \*     /\ x.executedOn = j
+    \*     /\ x.action = "BecomeLeader"
+        \* /\ idx + 1 < Len(history["global"])
+
+ perms == Permutations(Server)
 
 ===============================================================================
 
