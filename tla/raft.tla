@@ -111,7 +111,7 @@ VARIABLE
 \* restarted: how many times each server restarted
 VARIABLE
     \* @typeAlias: ACTION = [action: Str, executedOn: Int, msg: MSG];
-    \* @type: [server: Int -> [restarted: Int, timeout: Int], global: Seq(ACTION), hadAtLeastOneLeader: Bool, hadAtLeastOneRequest: Bool];
+    \* @type: [server: Int -> [restarted: Int, timeout: Int], global: Seq(ACTION), hadNumLeaders: Int, hadNumClientRequests: Int];
     history
 
 ----
@@ -275,8 +275,8 @@ InitLogVars == /\ log          = [i \in Server |-> << >>]
 InitHistory == [
     server |-> [i \in Server |-> [restarted |-> 0, timeout |-> 0]],
     global |-> << >>,
-    hadAtLeastOneLeader |-> FALSE,
-    hadAtLeastOneClientRequest |-> FALSE
+    hadNumLeaders |-> 0,
+    hadNumClientRequests |-> 0
 ]
 
 Init == /\ messages = EmptyBag
@@ -370,7 +370,7 @@ BecomeLeader(i) ==
     /\ matchIndex' = [matchIndex EXCEPT ![i] =
                          [j \in Server |-> 0]]
     /\ history'    = [history EXCEPT 
-                            !["hadAtLeastOneLeader"] = TRUE,
+                            !["hadNumLeaders"] = history["hadNumLeaders"] + 1,
                             !["global"] = Append(history["global"], [action |-> "BecomeLeader", executedOn |-> i])]
     /\ UNCHANGED <<messages, currentTerm, votedFor, candidateVars, logVars>>
     
@@ -382,7 +382,7 @@ ClientRequest(i, v) ==
                      value |-> v]
            newLog == Append(log[i], entry)
        IN  log' = [log EXCEPT ![i] = newLog]
-    /\ history'    = [history EXCEPT !["hadAtLeastOneClientRequest"] = TRUE]
+    /\ history'    = [history EXCEPT !["hadNumClientRequests"] = history["hadNumClientRequests"] + 1]
     /\ UNCHANGED <<messages, serverVars, candidateVars,
                    leaderVars, commitIndex>>
 
@@ -766,7 +766,13 @@ BoundedTimeouts == \A i \in Server: history["server"][i]["timeout"] <= MaxTimeou
 ElectionsUncontested == Cardinality({c \in DOMAIN state : state[c] = Candidate}) <= 1
 
 CleanStartUntilFirstRequest ==
-    (~ (history["hadAtLeastOneLeader"] /\ history["hadAtLeastOneClientRequest"])) =>
+    ((history["hadNumLeaders"] < 1 /\ history["hadNumClientRequests"] < 1)) =>
+    /\ \A i \in Server: history["server"][i]["restarted"] = 0
+    /\ \A i \in Server: history["server"][i]["timeout"] <= 1
+    /\ ElectionsUncontested
+
+CleanStartUntilTwoLeaders ==
+    (history["hadNumLeaders"] < 2) =>
     /\ \A i \in Server: history["server"][i]["restarted"] = 0
     /\ \A i \in Server: history["server"][i]["timeout"] <= 1
     /\ ElectionsUncontested
