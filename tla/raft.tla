@@ -214,43 +214,73 @@ WrapMsg(m) ==
     ELSE m
 
 \* Add a message to the bag of messages.
-\* @type: [msource: Int] => Bool;
-Send(m) == 
-    LET w == WrapMsg(m) IN
-    LET action == [action |-> "Send", executedOn |-> m.msource, msg |-> w] IN
-    /\ messages'    = WithMessage(w, messages)
+SendDirect(m) == 
+    LET action == [action |-> "Send", executedOn |-> m.msource, msg |-> m] IN
+    /\ messages'    = WithMessage(m, messages)
     /\ history'     = [history EXCEPT !["global"] = Append(history["global"], action)]
+
+\* @type: [msource: Int] => Bool;
+SendWrapped(m) == 
+    LET w == WrapMsg(m) IN
+    SendDirect(w)
 
 \* Used by the environment to duplicate messges.
+SendWithoutHistoryDirect(m) == 
+    messages' = WithMessage(m, messages)
+
 \* @type: [msource: Int] => Bool;
-SendWithoutHistory(m) == 
+SendWithoutHistoryWrapped(m) == 
     LET w == WrapMsg(m) IN
-    messages' = WithMessage(w, messages)
+    SendWithoutHistoryDirect(w)
 
 \* Remove a message from the bag of messages. Used when a server is done
-\* processing a message.
-\* @type: [mdest: Int] => Bool;
-Discard(m) ==
-    LET w == WrapMsg(m) IN
-    LET action == [action |-> "Receive", executedOn |-> m.mdest, msg |-> w] IN
-    /\ messages'    = WithoutMessage(w, messages)
+DiscardDirect(m) ==
+    LET action == [action |-> "Receive", executedOn |-> m.mdest, msg |-> m] IN
+    /\ messages'    = WithoutMessage(m, messages)
     /\ history'     = [history EXCEPT !["global"] = Append(history["global"], action)]
 
-\* Used by the environment to drop messges.
-\* @type: a => Bool;
-DiscardWithoutHistory(m) ==
+\* processing a message.
+\* @type: [mdest: Int] => Bool;
+DiscardWrapped(m) ==
     LET w == WrapMsg(m) IN
-    messages' = WithoutMessage(w, messages)
+    DiscardDirect(w)
+
+\* Used by the environment to drop messges.
+DiscardWithoutHistoryDirect(m) ==
+    messages' = WithoutMessage(m, messages)
+
+\* @type: a => Bool;
+DiscardWithoutHistoryWrapped(m) ==
+    LET w == WrapMsg(m) IN
+    DiscardWithoutHistoryDirect(w)
 
 \* Combination of Send and Discard
-\* @type: ([msource: Int], [mdest: Int]) => Bool;
-Reply(response, request) ==
-    LET wreq == WrapMsg(request) IN
-    LET wresp == WrapMsg(response) IN
-    LET recvA == [action |-> "Receive", executedOn |-> request.mdest, msg |-> wreq] IN
-    LET respA == [action |-> "Send", executedOn |-> response.msource, msg |-> wresp] IN
-    /\ messages'    = WithoutMessage(wreq, WithMessage(wresp, messages))
+ReplyDirect(response, request) ==
+    LET req == request IN
+    LET resp == response IN
+    LET recvA == [action |-> "Receive", executedOn |-> request.mdest, msg |-> req] IN
+    LET respA == [action |-> "Send", executedOn |-> response.msource, msg |-> resp] IN
+    /\ messages'    = WithoutMessage(req, WithMessage(resp, messages))
     /\ history'     = [history EXCEPT !["global"] = Append(Append(history["global"], recvA), respA)]
+
+\* @type: ([msource: Int], [mdest: Int]) => Bool;
+ReplyWrapped(response, request) ==
+    LET wresp == WrapMsg(response) IN
+    LET wreq == WrapMsg(request) IN
+    ReplyDirect(wresp, wreq)
+
+\* Default: change when needed
+ Send(m) == SendDirect(m)
+ Reply(response, request) == ReplyDirect(response, request)
+ Discard(m) == DiscardDirect(m)
+ SendWithoutHistory(m) == SendWithoutHistoryDirect(m)
+ DiscardWithoutHistory(m) == DiscardWithoutHistoryDirect(m) 
+
+\*Send(m) == SendWrapped(m)
+\*Reply(response, request) == ReplyWrapped(response, request)
+\*Discard(m) == DiscardWrapped(m)
+\*SendWithoutHistory(m) == SendWithoutHistoryWrapped(m)
+\*DiscardWithoutHistory(m) == DiscardWithoutHistoryWrapped(m) 
 
 \* Return the minimum value from a set, or undefined if the set is empty.
 \* @type: Set(Int) => Int;
@@ -577,8 +607,25 @@ DropStaleResponse(i, j, m) ==
     /\ UNCHANGED <<serverVars, candidateVars, leaderVars, logVars>>
 
 \* Receive a message.
+ReceiveDirect(m) ==
+    LET i == m.mdest
+        j == m.msource
+    IN \* Any RPC with a newer term causes the recipient to advance
+       \* its term first. Responses with stale terms are ignored.
+    \/ UpdateTerm(i, j, m)
+    \/  /\ m.mtype = RequestVoteRequest
+        /\ HandleRequestVoteRequest(i, j, m)
+    \/  /\ m.mtype = RequestVoteResponse
+        /\  \/ DropStaleResponse(i, j, m)
+            \/ HandleRequestVoteResponse(i, j, m)
+    \/  /\ m.mtype = AppendEntriesRequest
+        /\ HandleAppendEntriesRequest(i, j, m)
+    \/  /\ m.mtype = AppendEntriesResponse
+        /\  \/ DropStaleResponse(i, j, m)
+            \/ HandleAppendEntriesResponse(i, j, m)
+
 \* @type: MSG => Bool;
-Receive(m) ==
+ReceiveWrapped(m) ==
     LET i == m.mdest
         j == m.msource
     IN \* Any RPC with a newer term causes the recipient to advance
@@ -594,6 +641,9 @@ Receive(m) ==
     \/  /\ m.mtype = AppendEntriesResponse
         /\  \/ DropStaleResponse(i, j, m.AEResp)
             \/ HandleAppendEntriesResponse(i, j, m.AEResp)
+
+ Receive(m) == ReceiveDirect(m)
+\*Receive(m) == ReceiveWrapped(m)
 
 \* End of message handlers.
 ----
