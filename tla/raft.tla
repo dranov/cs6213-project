@@ -16,7 +16,8 @@ CONSTANTS
 \* Constraints
 MaxLogLength == 5
 MaxRestarts == 2
-MaxTimeouts == 2
+MaxTimeouts == 3
+MaxTerms == 5
 MaxInFlightMessages == LET card == 2 * Cardinality(Server) IN card * card
 
 \* The set of requests that can go into the log
@@ -757,11 +758,18 @@ LeaderCompleteness ==
 
 BoundedInFlightMessages == BagCardinality(messages) <= MaxInFlightMessages
 
+\* The spec allows for a candidate to send as many RequestVote messages as they want
+BoundedRequestVote ==
+    \A m \in DOMAIN messages:
+        m.mtype = RequestVoteRequest => messages[m] <= 1
+
 BoundedLogSize == \A i \in Server: Len(log[i]) <= MaxLogLength
 
 BoundedRestarts == \A i \in Server: history["server"][i]["restarted"] <= MaxRestarts
 
 BoundedTimeouts == \A i \in Server: history["server"][i]["timeout"] <= MaxTimeouts
+
+BoundedTerms == \A i \in Server: currentTerm[i] <= MaxTerms
 
 ElectionsUncontested == Cardinality({c \in DOMAIN state : state[c] = Candidate}) <= 1
 
@@ -774,8 +782,7 @@ CleanStartUntilFirstRequest ==
 CleanStartUntilTwoLeaders ==
     (history["hadNumLeaders"] < 2) =>
     /\ \A i \in Server: history["server"][i]["restarted"] = 0
-    /\ \A i \in Server: history["server"][i]["timeout"] <= 1
-    /\ ElectionsUncontested
+    /\ \A i \in Server: history["server"][i]["timeout"] <= 2
 
 -----
 
