@@ -839,19 +839,19 @@ ElectionsUncontested == Cardinality({c \in DOMAIN state : state[c] = Candidate})
 CleanStartUntilFirstRequest ==
     ((history["hadNumLeaders"] < 1 /\ history["hadNumClientRequests"] < 1)) =>
     /\ \A i \in Server: history["server"][i]["restarted"] = 0
-    /\ \A i \in Server: history["server"][i]["timeout"] <= 1
+    /\ Sum([i \in Server |-> history["server"][i]["timeout"]]) <= 1        
     /\ ElectionsUncontested
 
 CleanStartUntilTwoLeaders ==
     (history["hadNumLeaders"] < 2) =>
-    /\ \A i \in Server: history["server"][i]["restarted"] <= 1
-    /\ \A i \in Server: history["server"][i]["timeout"] <= 1
+    /\ Sum([i \in Server |-> history["server"][i]["restarted"]]) = 0      
+    /\ Sum([i \in Server |-> history["server"][i]["timeout"]]) <= 2        
 
 -----
 
 \* Generate interesting traces
 
-BoundedTrace == Len(history["global"]) <= 12
+BoundedTrace == Len(history["global"]) <= 24
 
 FirstBecomeLeader == ~ \E i, j \in DOMAIN history["global"] :
     /\ i /= j
@@ -864,17 +864,14 @@ FirstBecomeLeader == ~ \E i, j \in DOMAIN history["global"] :
 
 FirstCommit == ~ \E i \in Server : commitIndex[i] > 0
 
-MultipleLeaders == ~ \E i, j \in Server :
+LeadershipChange == history["hadNumLeaders"] < 2
+
+ConcurrentLeaders == ~ \E i, j \in Server :
     /\ i /= j
     /\ state[i] = Leader
     /\ state[j] = Leader
-    \* /\ \E idx \in DOMAIN history["global"] :
-    \*     LET x == history["global"][idx] IN
-    \*     /\ x.executedOn = j
-    \*     /\ x.action = "BecomeLeader"
-        \* /\ idx + 1 < Len(history["global"])
 
- perms == Permutations(Server)
+perms == Permutations(Server)
 
 ===============================================================================
 
