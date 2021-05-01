@@ -528,7 +528,7 @@ AppendEntriesAlreadyDone(i, j, index, m) ==
               msource         |-> i,
               mdest           |-> j],
               m)
-    /\ UNCHANGED <<serverVars, logVars>>
+    /\ UNCHANGED <<serverVars, log>>
 
 \* @type: (Int, Int, AEREQT) => Bool;
 ConflictAppendEntriesRequest(i, index, m) ==
