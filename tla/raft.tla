@@ -14,11 +14,12 @@ CONSTANTS
     Server
 
 \* Constraints
-MaxLogLength == 5
+MaxLogLength == 4
 MaxRestarts == 2
 MaxTimeouts == 3
-MaxTerms == 5
-MaxInFlightMessages == LET card == 2 * Cardinality(Server) IN card * card
+MaxClientRequests == 3
+MaxTerms == 3
+MaxInFlightMessages == LET card == Cardinality(Server) IN 2 * card * card
 
 \* The set of requests that can go into the log
 CONSTANTS 
@@ -611,24 +612,34 @@ DropMessage(m) ==
     /\ UNCHANGED <<serverVars, candidateVars, leaderVars, logVars, history>>
 
 ----
+
 \* Defines how the variables may transition.
-Next == \/ \E i \in Server : Restart(i)
-        \/ \E i \in Server : Timeout(i)
-        \/ \E i,j \in Server : RequestVote(i, j)
-        \/ \E i \in Server : BecomeLeader(i)
-        \/ \E i \in Server, v \in Value : ClientRequest(i, v)
-        \/ \E i \in Server : AdvanceCommitIndex(i)
-        \/ \E i,j \in Server : AppendEntries(i, j)
-        \/ \E m \in DOMAIN messages :
-            Receive(m)
-        \* Only duplicate once
-        \/ \E m \in DOMAIN messages : 
-            /\ messages[m] = 1
-            /\ DuplicateMessage(m)
-        \* Only drop if it makes a difference
-        \/ \E m \in DOMAIN messages : 
-            /\ messages[m] = 1
-            /\ DropMessage(m)
+NextAsync == 
+    \/ \E i,j \in Server : RequestVote(i, j)
+    \/ \E i \in Server : BecomeLeader(i)
+    \/ \E i \in Server, v \in Value : ClientRequest(i, v)
+    \/ \E i \in Server : AdvanceCommitIndex(i)
+    \/ \E i,j \in Server : AppendEntries(i, j)
+    \/ \E m \in DOMAIN messages : Receive(m)
+    \/ \E i \in Server : Timeout(i)
+        
+NextCrash == \E i \in Server : Restart(i)
+
+NextUnreliable ==    
+    \* Only duplicate once
+    \/ \E m \in DOMAIN messages : 
+        /\ messages[m] = 1
+        /\ DuplicateMessage(m)
+    \* Only drop if it makes a difference            
+    \/ \E m \in DOMAIN messages : 
+        /\ messages[m] = 1
+        /\ DropMessage(m)
+
+\* Most pessimistic network model
+Next == \/ NextAsync
+        \/ NextCrash
+        \/ NextUnreliable
+         
 
 \* The specification must start with the initial state and transition according
 \* to Next.
@@ -771,6 +782,8 @@ BoundedTimeouts == \A i \in Server: history["server"][i]["timeout"] <= MaxTimeou
 
 BoundedTerms == \A i \in Server: currentTerm[i] <= MaxTerms
 
+BoundedClientRequests == history["hadNumClientRequests"] <= MaxClientRequests
+
 ElectionsUncontested == Cardinality({c \in DOMAIN state : state[c] = Candidate}) <= 1
 
 CleanStartUntilFirstRequest ==
@@ -781,8 +794,8 @@ CleanStartUntilFirstRequest ==
 
 CleanStartUntilTwoLeaders ==
     (history["hadNumLeaders"] < 2) =>
-    /\ \A i \in Server: history["server"][i]["restarted"] = 0
-    /\ \A i \in Server: history["server"][i]["timeout"] <= 2
+    /\ \A i \in Server: history["server"][i]["restarted"] <= 1
+    /\ \A i \in Server: history["server"][i]["timeout"] <= 1
 
 -----
 
@@ -798,6 +811,8 @@ FirstBecomeLeader == ~ \E i, j \in DOMAIN history["global"] :
         /\ y.action = "Receive" /\ y.msg.mtype = RequestVoteResponse
         /\ x.msg.msource /= y.msg.msource
         /\ state[x.msg.mdest] = Leader
+
+FirstCommit == ~ \E i \in Server : commitIndex[i] > 0
 
 MultipleLeaders == ~ \E i, j \in Server :
     /\ i /= j

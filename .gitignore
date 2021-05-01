@@ -20,3 +20,4 @@ tla/thirdparty/states/
 tla/x/
 tla/*.smt
 tla/profile-rules.txt
+*.toolbox
