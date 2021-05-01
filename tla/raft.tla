@@ -871,7 +871,9 @@ ConcurrentLeaders == ~ \E i, j \in Server :
     /\ state[i] = Leader
     /\ state[j] = Leader
 
+\* Optimisations for TLC
 perms == Permutations(Server)
+\* vars is used as a view (we ignore history)
 
 ===============================================================================
 
