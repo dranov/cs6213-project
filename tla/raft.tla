@@ -7,11 +7,15 @@
 
 EXTENDS Naturals, Integers, TypedBags, FiniteSets, Sequences, SequencesExt, TLC
 
+\* The initial and global set of server IDs.
+CONSTANTS InitServer, Server
 
-\* The set of server IDs
-CONSTANTS 
-    \* @type: Set(Int);
-    Server
+\* The number of rounds to catch new servers up for.
+\* Must be >= 1.
+CONSTANT NumRounds
+
+\* Log metadata to distinguish values from configuration changes.
+CONSTANT ValueEntry, ConfigEntry
 
 \* Constraints
 MaxLogLength == 4
@@ -49,7 +53,12 @@ CONSTANTS
     \* @type: Str;
     AppendEntriesRequest,
     \* @type: Str;
-    AppendEntriesResponse
+    AppendEntriesResponse,
+
+    \* Membership changes
+    CatchupRequest,
+    CatchupResponse,
+    CheckOldConfig
 
 -----
 
@@ -184,7 +193,7 @@ vars == <<messages, serverVars, candidateVars, leaderVars, logVars>>
 
 \* The set of all quorums. This just calculates simple majorities, but the only
 \* important property is that every quorum overlaps with every other.
-Quorum == {i \in SUBSET(Server) : Cardinality(i) * 2 > Cardinality(Server)}
+Quorum(config) == {i \in SUBSET(config) : Cardinality(i) * 2 > Cardinality(config)}
 
 \* The term of the last entry in a log, or 0 if the log is empty.
 \* @type: LOGT => Int;
@@ -215,9 +224,22 @@ WrapMsg(m) ==
 
 \* Add a message to the bag of messages.
 SendDirect(m) == 
-    LET action == [action |-> "Send", executedOn |-> m.msource, msg |-> m] IN
+    LET msgAction == [action |-> "Send", executedOn |-> m.msource, msg |-> m]
+        membershipAction == 
+        IF m.mtype = CatchupRequest
+            THEN [action |-> "AddServer", executedOn |-> m.msource, added |-> m.mdest]
+        ELSE IF m.mtype = CheckOldConfig
+            THEN [action |-> "RemoveServer", executedOn |-> m.msource, removed |-> m.mserver]
+        ELSE << >>
+    IN
     /\ messages'    = WithMessage(m, messages)
-    /\ history'     = [history EXCEPT !["global"] = Append(history["global"], action)]
+    /\ history' =
+        IF membershipAction = << >>
+        THEN [history EXCEPT !["global"] = Append(history["global"], msgAction)]
+        ELSE 
+        [history EXCEPT 
+                        !["hadNumMembershipChanges"] = history["hadNumMembershipChanges"] + 1,
+                        !["global"] = Append(Append(history["global"], membershipAction), msgAction)]
 
 \* @type: [msource: Int] => Bool;
 SendWrapped(m) == 
@@ -289,6 +311,17 @@ Min(s) == CHOOSE x \in s : \A y \in s : x <= y
 \* @type: Set(Int) => Int;
 Max(s) == CHOOSE x \in s : \A y \in s : x >= y
 
+\* Return the index of the latest configuration in server i's log.
+GetMaxConfigIndex(i) ==
+    LET configIndexes == { index \in 1..Len(log[i]) : log[i][index].type = ConfigEntry }
+    IN IF configIndexes = {} THEN 0
+       ELSE Max(configIndexes)
+
+\* Return the latest configuration in server i's log.
+GetConfig(i) ==
+  IF GetMaxConfigIndex(i) = 0 THEN InitServer
+  ELSE log[i][GetMaxConfigIndex(i)].value
+
 ----
 \* Define initial values for all variables
 
@@ -308,7 +341,8 @@ InitHistory == [
     server |-> [i \in Server |-> [restarted |-> 0, timeout |-> 0]],
     global |-> << >>,
     hadNumLeaders |-> 0,
-    hadNumClientRequests |-> 0
+    hadNumClientRequests |-> 0,
+    hadNumMembershipChanges |-> 0
 ]
 
 Init == /\ messages = EmptyBag
@@ -325,6 +359,7 @@ Init == /\ messages = EmptyBag
 \* It loses everything but its currentTerm, votedFor, and log.
 \* @type: Int => Bool;
 Restart(i) ==
+    /\ i \in GetConfig(i)
     /\ state'          = [state EXCEPT ![i] = Follower]
     /\ votesResponded' = [votesResponded EXCEPT ![i] = {}]
     /\ votesGranted'   = [votesGranted EXCEPT ![i] = {}]
@@ -339,6 +374,7 @@ Restart(i) ==
 \* Server i times out and starts a new election.
 \* @type: Int => Bool;
 Timeout(i) == /\ state[i] \in {Follower, Candidate}
+              /\ i \in GetConfig(i)
               /\ state' = [state EXCEPT ![i] = Candidate]
               /\ currentTerm' = [currentTerm EXCEPT ![i] = currentTerm[i] + 1]
               \* Most implementations would probably just set the local vote
@@ -355,7 +391,7 @@ Timeout(i) == /\ state[i] \in {Follower, Candidate}
 \* @type: (Int, Int) => Bool;
 RequestVote(i, j) ==
     /\ state[i] = Candidate
-    /\ j \notin votesResponded[i]
+    /\ j \in (GetConfig(i) \ votesResponded[i])
     /\ Send([mtype         |-> RequestVoteRequest,
              mterm         |-> currentTerm[i],
              mlastLogTerm  |-> LastTerm(log[i]),
@@ -371,6 +407,7 @@ RequestVote(i, j) ==
 AppendEntries(i, j) ==
     /\ i /= j
     /\ state[i] = Leader
+    /\ j \in GetConfig(i)
     /\ LET prevLogIndex == nextIndex[i][j] - 1
            \* The following upper bound on prevLogIndex is unnecessary
            \* but makes verification substantially simpler.
@@ -395,7 +432,7 @@ AppendEntries(i, j) ==
 \* @type: Int => Bool;
 BecomeLeader(i) ==
     /\ state[i] = Candidate
-    /\ votesGranted[i] \in Quorum
+    /\ votesGranted[i] \in Quorum(GetConfig(i))
     /\ state'      = [state EXCEPT ![i] = Leader]
     /\ nextIndex'  = [nextIndex EXCEPT ![i] =
                          [j \in Server |-> Len(log[i]) + 1]]
@@ -411,6 +448,7 @@ BecomeLeader(i) ==
 ClientRequest(i, v) ==
     /\ state[i] = Leader
     /\ LET entry == [term  |-> currentTerm[i],
+                     type  |-> ValueEntry,
                      value |-> v]
            newLog == Append(log[i], entry)
        IN  log' = [log EXCEPT ![i] = newLog]
@@ -426,13 +464,13 @@ ClientRequest(i, v) ==
 AdvanceCommitIndex(i) ==
     /\ state[i] = Leader
     /\ LET \* The set of servers that agree up through index.
-           Agree(index) == {i} \cup {k \in Server :
+           Agree(index) == {i} \cup {k \in GetConfig(i) :
                                          matchIndex[i][k] >= index}
-           \*  logSize == Len(log[i])
-           logSize == MaxLogLength
+           logSize == Len(log[i])
+           \* logSize == MaxLogLength
            \* The maximum indexes for which a quorum agrees
-           agreeIndexes == {index \in 1..MaxLogLength :
-                                Agree(index) \in Quorum}
+           agreeIndexes == {index \in 1..logSize :
+                                Agree(index) \in Quorum(GetConfig(i))}
            \* New value for commitIndex'[i]
            newCommitIndex ==
               IF /\ agreeIndexes /= {}
@@ -443,6 +481,36 @@ AdvanceCommitIndex(i) ==
                   commitIndex[i]
        IN commitIndex' = [commitIndex EXCEPT ![i] = newCommitIndex]
     /\ UNCHANGED <<messages, serverVars, candidateVars, leaderVars, log, history>>
+
+\* Leader i adds a new server j to the cluster.
+AddNewServer(i, j) ==
+    /\ state[i] = Leader
+    /\ j \notin GetConfig(i)
+    /\ currentTerm' = [currentTerm EXCEPT ![j] = 1]
+    /\ votedFor' = [votedFor EXCEPT ![j] = Nil]
+    /\ Send([mtype |-> CatchupRequest,
+            mterm |-> currentTerm[i],
+            mlogLen |-> matchIndex[i][j],
+            mentries |-> SubSeq(log[i], nextIndex[i][j], commitIndex[i]),
+            mcommitIndex |-> commitIndex[i],
+            msource |-> i,
+            mdest |-> j,
+            mrounds |-> NumRounds])
+    /\ UNCHANGED <<state, leaderVars, logVars, candidateVars>>
+
+\* Leader i removes a server j (possibly itself) from the cluster.
+DeleteServer(i, j) ==
+    /\ state[i] = Leader
+    /\ state[j] \in {Follower, Candidate}
+    /\ j \in GetConfig(i)
+    /\ j /= i \* TODO: A leader cannot remove itself.
+    /\ Send([mtype |-> CheckOldConfig,
+            mterm |-> currentTerm[i],
+            madd |-> FALSE,
+            mserver |-> j,
+            msource |-> i,
+            mdest |-> i])
+    /\ UNCHANGED <<serverVars, candidateVars, leaderVars, logVars>>
 
 ----
 \* Message handlers
@@ -589,6 +657,106 @@ HandleAppendEntriesResponse(i, j, m) ==
     /\ Discard(m)
     /\ UNCHANGED <<serverVars, candidateVars, logVars>>
 
+\* Detached server i receives a CatchupRequest from leader j.
+HandleCatchupRequest(i, j, m) ==
+  \/ /\ m.mterm < currentTerm[i]
+     /\ Reply([mtype |-> CatchupResponse,
+               mterm |-> currentTerm[i],
+               msuccess |-> FALSE,
+               mmatchIndex |-> 0,
+               msource |-> i,
+               mdest |-> j,
+               mroundsLeft |-> 0],
+               m)
+     /\ UNCHANGED <<serverVars, candidateVars, leaderVars, logVars>>
+  \/ /\ m.mterm >= currentTerm[i]
+     /\ currentTerm' = [currentTerm EXCEPT ![i] = m.mterm]
+    \*  TODO: This stuff seems to have only been tested with numRounds = 1
+     /\ log' = [log EXCEPT ![i] =
+            IF log[i] = << >> THEN m.mentries
+            ELSE SubSeq(log[i], 1, m.mlogLen) \circ m.mentries]
+     /\ Reply([mtype |-> CatchupResponse,
+               mterm |-> currentTerm[i],
+               msuccess |-> TRUE,
+               mmatchIndex |-> Len(log[i]),
+               msource |-> i,
+               mdest |-> j,
+               mroundsLeft |-> m.mrounds - 1],
+              m)
+     /\ UNCHANGED <<state, votedFor, candidateVars, leaderVars, commitIndex>>
+
+\* Leader i receives a CatchupResponse from detached server j.
+HandleCatchupResponse(i, j, m) ==
+  \* A real system checks for progress every timeout interval.
+  \* Assume that if this response is called, the new server
+  \* has made progress.
+  /\ \/ /\ m.msuccess
+        /\ \/ /\ m.mmatchIndex /= commitIndex[i]
+              /\ m.mmatchIndex /= matchIndex[i][j]
+           \/ m.mmatchIndex = commitIndex[i]
+        /\ state[i] = Leader
+        /\ m.mterm = currentTerm[i]
+        /\ j \notin GetConfig(i)
+        /\ nextIndex' = [nextIndex EXCEPT ![i][j] = m.mmatchIndex + 1]
+        /\ matchIndex' = [matchIndex EXCEPT ![i][j] = m.mmatchIndex]
+        /\ \/ /\ m.mroundsLeft /= 0
+              /\ Reply([mtype |-> CatchupRequest,
+                        mterm |-> currentTerm[i],
+                        mentries |-> SubSeq(log[i],
+                                            nextIndex[i][j],
+                                            commitIndex[i]),
+                        mlogLen |-> nextIndex[i][j] - 1,
+                        msource |-> i,
+                        mdest |-> j,
+                        mrounds |-> m.mroundsLeft],
+                        m)
+           \/ /\ m.mroundsLeft = 0
+              \* A real system makes sure the final call to this handler is
+              \* received after a timeout interval.
+              \* We assume that if a timeout happened, the message
+              \* has already been dropped.
+              /\ Reply([mtype |-> CheckOldConfig,
+                       mterm |-> currentTerm[i],
+                       madd |-> TRUE,
+                       mserver |-> j,
+                       msource |-> i,
+                       mdest |-> i], m)
+     \/ /\ \/ \lnot m.msuccess
+           \/ /\ \/ m.mmatchIndex = commitIndex[i]
+                 \/ m.mmatchIndex = matchIndex[i][j]
+              /\ m.mmatchIndex /= commitIndex[i]
+           \/ state[i] /= Leader
+           \/ m.mterm /= currentTerm[i]
+           \/ j \in GetConfig(i)
+        /\ Discard(m)
+        /\ UNCHANGED <<leaderVars>>
+  /\ UNCHANGED <<serverVars, candidateVars, logVars>>
+
+\* Leader i receives a CheckOldConfig message.
+HandleCheckOldConfig(i, m) ==
+  \/ /\ state[i] /= Leader \/ m.mterm = currentTerm[i]
+     /\ Discard(m)
+     /\ UNCHANGED <<serverVars, candidateVars, leaderVars, logVars>>
+  \/ /\ state[i] = Leader /\ m.mterm = currentTerm[i]
+     /\ \/ /\ GetMaxConfigIndex(i) <= commitIndex[i]
+           /\ LET newConfig == IF m.madd THEN UNION { GetConfig(i), {m.mserver} }
+                               ELSE GetConfig(i) \ {m.mserver}
+                  newEntry == [term |-> currentTerm[i], type |-> ConfigEntry, value |-> newConfig]
+                  newLog == Append(log[i], newEntry)
+              IN log' = [log EXCEPT ![i] = newLog]
+           /\ Discard(m)
+           /\ UNCHANGED <<commitIndex>>
+        \/ /\ GetMaxConfigIndex(i) > commitIndex[i]
+           /\ Reply([mtype |-> CheckOldConfig,
+                     mterm |-> currentTerm[i],
+                     madd |-> m.madd,
+                     mserver |-> m.mserver,
+                     msource |-> i,
+                     mdest |-> i],
+                     m)
+           /\ UNCHANGED <<logVars>>
+     /\ UNCHANGED <<serverVars, candidateVars, leaderVars>>
+    
 \* Any RPC with a newer term causes the recipient to advance its term first.
 \* @type: (Int, Int, MSG) => Bool;
 UpdateTerm(i, j, m) ==
@@ -623,6 +791,12 @@ ReceiveDirect(m) ==
     \/  /\ m.mtype = AppendEntriesResponse
         /\  \/ DropStaleResponse(i, j, m)
             \/ HandleAppendEntriesResponse(i, j, m)
+    \/  /\ m.mtype = CatchupRequest
+        /\ HandleCatchupRequest(i, j, m)
+    \/  /\ m.mtype = CatchupResponse
+        /\ HandleCatchupResponse(i, j, m)
+    \/  /\ m.mtype = CheckOldConfig
+        /\ HandleCheckOldConfig(i, m)
 
 \* @type: MSG => Bool;
 ReceiveWrapped(m) ==
@@ -689,7 +863,12 @@ NextUnreliable ==
 Next == \/ NextAsync
         \/ NextCrash
         \/ NextUnreliable
-         
+
+\* Membership changes
+NextDynamic ==
+    \/ Next
+    \/ \E i, j \in Server : AddNewServer(i, j)
+    \/ \E i, j \in Server : DeleteServer(i, j)
 
 \* The specification must start with the initial state and transition according
 \* to Next.
@@ -737,14 +916,14 @@ LeaderVotesQuorum ==
     \A i \in Server :
         state[i] = Leader =>
         {j \in Server : currentTerm[j] > currentTerm[i] \/
-                        (currentTerm[j] = currentTerm[i] /\ votedFor[j] = i)} \in Quorum
+                        (currentTerm[j] = currentTerm[i] /\ votedFor[j] = i)} \in Quorum(GetConfig(i))
 
 \* If a candidate has a chance of being elected, there
 \* are no log entries with that candidate's term
 CandidateTermNotInLog ==
     \A i \in Server :
         (/\ state[i] = Candidate
-         /\ {j \in Server : currentTerm[j] = currentTerm[i] /\ votedFor[j] \in {i, Nil}} \in Quorum) =>
+         /\ {j \in Server : currentTerm[j] = currentTerm[i] /\ votedFor[j] \in {i, Nil}} \in Quorum(GetConfig(i))) =>
         \A j \in Server :
         \A n \in DOMAIN log[j] :
              log[j][n].term /= currentTerm[i]
@@ -790,7 +969,7 @@ VotesGrantedInv ==
 \* of at least one server in every quorum
 QuorumLogInv ==
     \A i \in Server :
-    \A S \in Quorum :
+    \A S \in Quorum(GetConfig(i)) :
         \E j \in S :
             IsPrefix(Committed(i), log[j])
 
@@ -865,6 +1044,8 @@ FirstBecomeLeader == ~ \E i, j \in DOMAIN history["global"] :
 FirstCommit == ~ \E i \in Server : commitIndex[i] > 0
 
 LeadershipChange == history["hadNumLeaders"] < 2
+
+MembershipChange == history["hadNumMembershipChanges"] < 3
 
 ConcurrentLeaders == ~ \E i, j \in Server :
     /\ i /= j
