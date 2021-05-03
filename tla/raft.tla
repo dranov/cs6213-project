@@ -187,6 +187,23 @@ leaderVars == <<nextIndex, matchIndex>>
 
 \* All variables; used for stuttering (asserting state hasn't changed).
 vars == <<messages, serverVars, candidateVars, leaderVars, logVars>>
+systemState == [
+    messages |-> messages,
+    \* serverVars
+    currentTerm |-> currentTerm,
+    state |-> state,
+    votedFor |-> votedFor,
+    \* candidateVars
+    votesResponded |-> votesResponded,
+    votesGranted |-> votesGranted,
+    \* leaderVars
+    nextIndex |-> nextIndex,
+    matchIndex |-> matchIndex,
+    \* logVars
+    log |-> log,
+    commitIndex |-> commitIndex
+]
+
 
 ----
 \* Helpers
@@ -227,7 +244,7 @@ SendDirect(m) ==
     LET msgAction == [action |-> "Send", executedOn |-> m.msource, msg |-> m]
         membershipAction == 
         IF m.mtype = CatchupRequest
-            THEN [action |-> "AddServer", executedOn |-> m.msource, added |-> m.mdest]
+            THEN [action |-> "TryAddServer", executedOn |-> m.msource, added |-> m.mdest]
         ELSE IF m.mtype = CheckOldConfig
             THEN [action |-> "RemoveServer", executedOn |-> m.msource, removed |-> m.mserver]
         ELSE << >>
@@ -312,15 +329,21 @@ Min(s) == CHOOSE x \in s : \A y \in s : x <= y
 Max(s) == CHOOSE x \in s : \A y \in s : x >= y
 
 \* Return the index of the latest configuration in server i's log.
-GetMaxConfigIndex(i) ==
-    LET configIndexes == { index \in 1..Len(log[i]) : log[i][index].type = ConfigEntry }
+GetHistoricalMaxConfigIndex(i, s) ==
+    LET configIndexes == { index \in 1..Len(s.log[i]) : s.log[i][index].type = ConfigEntry }
     IN IF configIndexes = {} THEN 0
        ELSE Max(configIndexes)
 
+GetMaxConfigIndex(i) == GetHistoricalMaxConfigIndex(i, systemState)
+
 \* Return the latest configuration in server i's log.
-GetConfig(i) ==
-  IF GetMaxConfigIndex(i) = 0 THEN InitServer
-  ELSE log[i][GetMaxConfigIndex(i)].value
+GetHistoricalConfig(i, s) ==
+  LET maxConfigIndex == GetHistoricalMaxConfigIndex(i, s) IN
+  IF maxConfigIndex = 0 THEN InitServer
+  ELSE s.log[i][maxConfigIndex].value
+
+
+GetConfig(i) == GetHistoricalConfig(i, systemState)
 
 ----
 \* Define initial values for all variables
@@ -440,7 +463,8 @@ BecomeLeader(i) ==
                          [j \in Server |-> 0]]
     /\ history'    = [history EXCEPT 
                             !["hadNumLeaders"] = history["hadNumLeaders"] + 1,
-                            !["global"] = Append(history["global"], [action |-> "BecomeLeader", executedOn |-> i])]
+                            !["global"] = Append(history["global"], 
+                                [action |-> "BecomeLeader", executedOn |-> i, systemState |-> systemState])]
     /\ UNCHANGED <<messages, currentTerm, votedFor, candidateVars, logVars>>
     
 \* Leader i receives a client request to add v to the log.
@@ -910,9 +934,24 @@ MessageTermsLtCurrentTerm(m) ==
 \* we state two properties which will allow us to conclude election
 \* safety
 
+GetLastBecameLeader(i) ==
+    LET becameIndexes == { index \in 1..Len(history["global"]) :
+         /\ history["global"][index].action = "BecomeLeader"
+         /\ history["global"][index].executedOn = i }
+    IN IF becameIndexes = {} THEN 0
+       ELSE Max(becameIndexes)
+
+\* This returns the state of the system (vars) when server i most recently became leader
+StateWhenMostRecentlyBecameLeader(i) ==
+    LET idx == GetLastBecameLeader(i) IN
+    IF idx = 0 THEN systemState
+    ELSE history["global"][idx].systemState
+    
+\* NOTE: this only makes sense if there are no configuration changes
 \* All leaders have a quorum of servers who either voted
 \* for the leader or have a higher term
 LeaderVotesQuorum ==
+    history["hadNumMembershipChanges"] = 0 =>
     \A i \in Server :
         state[i] = Leader =>
         {j \in Server : currentTerm[j] > currentTerm[i] \/
@@ -921,6 +960,7 @@ LeaderVotesQuorum ==
 \* If a candidate has a chance of being elected, there
 \* are no log entries with that candidate's term
 CandidateTermNotInLog ==
+    history["hadNumMembershipChanges"] = 0 =>
     \A i \in Server :
         (/\ state[i] = Candidate
          /\ {j \in Server : currentTerm[j] = currentTerm[i] /\ votedFor[j] \in {i, Nil}} \in Quorum(GetConfig(i))) =>
