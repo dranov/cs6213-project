@@ -536,7 +536,7 @@ ConflictAppendEntriesRequest(i, index, m) ==
     /\ Len(log[i]) >= index
     /\ log[i][index].term /= m.mentries[1].term
     \* /\ LET new == [index2 \in 1..(Len(log[i]) - 1) |-> log[i][index2]]
-    /\ LET new == SubSeq(log[i], 1, index - 1)
+    /\ LET new == SubSeq(log[i], 1, Len(log[i]) - 1)
        IN log' = [log EXCEPT ![i] = new]
     /\ UNCHANGED <<serverVars, commitIndex, messages, history>>
 
