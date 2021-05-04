@@ -24,6 +24,7 @@ MaxTimeouts == 3
 MaxClientRequests == 3
 MaxTerms == MaxTimeouts + 1
 MaxMembershipChanges == 3
+MaxTriedMembershipChanges == MaxMembershipChanges + 1
 MaxInFlightMessages == LET card == Cardinality(Server) IN 2 * card * card
 
 \* The set of requests that can go into the log
@@ -255,7 +256,9 @@ SendDirect(m) ==
         IF membershipAction = << >>
         THEN [history EXCEPT !["global"] = Append(history["global"], msgAction)]
         ELSE 
-        [history EXCEPT  !["global"] = Append(Append(history["global"], membershipAction), msgAction)]
+        [history EXCEPT 
+            !["hadNumTriedMembershipChanges"] = history["hadNumTriedMembershipChanges"] + 1,
+            !["global"] = Append(Append(history["global"], membershipAction), msgAction)]
 
 \* @type: [msource: Int] => Bool;
 SendWrapped(m) == 
@@ -277,10 +280,12 @@ DiscardDirect(m) ==
     /\ messages'    = WithoutMessage(m, messages)
     /\ history'     = [history EXCEPT !["global"] = Append(history["global"], action)]
 
-DiscardDirectWithAction(m, extraAction) ==
+DiscardDirectWithMembershipChange(m, extraAction) ==
     LET action == [action |-> "Receive", executedOn |-> m.mdest, msg |-> m] IN
     /\ messages'    = WithoutMessage(m, messages)
-    /\ history'     = [history EXCEPT !["global"] = Append(Append(history["global"], action), extraAction)]
+    /\ history'     = [history EXCEPT
+            !["hadNumMembershipChanges"] = history["hadNumMembershipChanges"] + 1,
+            !["global"] = Append(Append(history["global"], action), extraAction)]
 
 \* processing a message.
 \* @type: [mdest: Int] => Bool;
@@ -316,7 +321,7 @@ ReplyWrapped(response, request) ==
  Send(m) == SendDirect(m)
  Reply(response, request) == ReplyDirect(response, request)
  Discard(m) == DiscardDirect(m)
- DiscardWithAction(m, extraAction) == DiscardDirectWithAction(m, extraAction)
+ DiscardWithMembershipChange(m, extraAction) == DiscardDirectWithMembershipChange(m, extraAction)
  SendWithoutHistory(m) == SendWithoutHistoryDirect(m)
  DiscardWithoutHistory(m) == DiscardWithoutHistoryDirect(m) 
 
@@ -372,6 +377,7 @@ InitHistory == [
     global |-> << >>,
     hadNumLeaders |-> 0,
     hadNumClientRequests |-> 0,
+    hadNumTriedMembershipChanges |-> 0,
     hadNumMembershipChanges |-> 0
 ]
 
@@ -515,20 +521,13 @@ AdvanceCommitIndex(i) ==
                 \* The newly commited entry actually changes the configuration, i.e. is not the same config commited again
                 /\ log[i][newCommitIndex].value /= 
                     GetHistoricalConfig(i, [log |-> [log EXCEPT ![i] = SubSeq(log[i], 1, newCommitIndex - 1)]])
-                \* /\ Print(<<"New: ", log[i][newCommitIndex].value, "Old: ", GetHistoricalConfig(i, [log |-> [log EXCEPT ![i] = SubSeq(log[i], 1, newCommitIndex - 1)]])>>, TRUE)
-                \* /\ Cardinality(log[i][newCommitIndex].value) >= Cardinality(GetHistoricalConfig(i, [log |-> [log EXCEPT ![i] = SubSeq(log[i], 1, newCommitIndex - 1)]]))
        IN
-        /\ IF (newCommitIndex /= 0 /\ log[i][newCommitIndex].type = ConfigEntry /\ Cardinality(log[i][newCommitIndex].value) = 3)
-         THEN
-            Print(<<"Leader: ", i, "Logs:", log, "Agree indexes:", agreeIndexes>>, TRUE)
-            ELSE TRUE
         /\ commitIndex' = [commitIndex EXCEPT ![i] = newCommitIndex]
         /\ IF committedMembershipChange THEN 
             history' = [history EXCEPT
-                !["hadNumMembershipChanges"] = history["hadNumMembershipChanges"] + 1,
                 !["global"] = Append(history["global"],
                     [action |-> "CommitMembershipChange", executedOn |-> i, config |-> log[i][newCommitIndex].value])]
-            ELSE UNCHANGED<<history>>
+            ELSE UNCHANGED <<history>>
     /\ UNCHANGED <<messages, serverVars, candidateVars, leaderVars, log>>
 
 \* Leader i adds a new server j to the cluster.
@@ -662,8 +661,6 @@ NoConflictAppendEntriesRequest(i, m) ==
     /\ m.mentries /= << >>
     /\ Len(log[i]) = m.mprevLogIndex
     /\ log' = [log EXCEPT ![i] = Append(log[i], m.mentries[1])]
-    \* /\ IF m.mentries /= <<>> /\ (m.mentries)[1].type = ConfigEntry THEN 
-    \*             Print(<<"NoConflictAppendEntriesRequest: ", m, "newLog:", log'>>, TRUE) ELSE TRUE
     /\ UNCHANGED <<serverVars, commitIndex, messages, history>>
 
 \* @type: (Int, Int, Bool, AEREQT) => Bool;
@@ -672,8 +669,6 @@ AcceptAppendEntriesRequest(i, j, logOk, m) ==
              /\ m.mterm = currentTerm[i]
              /\ state[i] = Follower
              /\ logOk
-            \*  /\ IF m.mentries /= <<>> /\ (m.mentries)[1].type = ConfigEntry THEN 
-            \*     Print(<<"AcceptAppendEntriesRequest: ", m>>, TRUE) ELSE TRUE
              /\ LET index == m.mprevLogIndex + 1
                 IN \/ AppendEntriesAlreadyDone(i, j, index, m)
                    \/ ConflictAppendEntriesRequest(i, index, m)
@@ -690,15 +685,10 @@ HandleAppendEntriesRequest(i, j, m) ==
                     /\ m.mprevLogIndex <= Len(log[i])
                     /\ m.mprevLogTerm = log[i][m.mprevLogIndex].term
     IN 
-    \*    /\ IF m.mentries /= <<>> /\ (m.mentries)[1].type = ConfigEntry THEN 
-    \*       Print(<<"HandleAppendEntries: ", m, "currentTerm[i]", currentTerm[i]>>, TRUE) ELSE TRUE
        /\ m.mterm <= currentTerm[i]
        /\ \/ RejectAppendEntriesRequest(i, j, m, logOk)
-        \*   \/ IF m.mentries /= <<>> /\ (m.mentries)[1].type = ConfigEntry THEN  Print("Not RejectAppendEntriesRequest", FALSE) ELSE FALSE
           \/ ReturnToFollowerState(i, m)
-        \*   \/ IF m.mentries /= <<>> /\ (m.mentries)[1].type = ConfigEntry THEN  Print("Not ReturnToFollowerState", FALSE) ELSE FALSE
           \/ AcceptAppendEntriesRequest(i, j, logOk, m)
-        \*   \/ IF m.mentries /= <<>> /\ (m.mentries)[1].type = ConfigEntry THEN  Print("Not AcceptAppendEntriesRequest", FALSE) ELSE FALSE
        /\ UNCHANGED <<candidateVars, leaderVars>>
 
 \* Server i receives an AppendEntries response from server j with
@@ -730,10 +720,12 @@ HandleCatchupRequest(i, j, m) ==
      /\ UNCHANGED <<serverVars, candidateVars, leaderVars, logVars>>
   \/ /\ m.mterm >= currentTerm[i]
      /\ currentTerm' = [currentTerm EXCEPT ![i] = m.mterm]
-    \*  TODO: This stuff seems to have only been tested with numRounds = 1
+    \* This was previously the following, but that's buggy
+    \* (shows how this spec wasn't tested very extensively)
+    \* /\ log' = [log EXCEPT ![i] = SubSeq(log[i], 1, m.mlogLen) \circ m.mentries]
      /\ log' = [log EXCEPT ![i] =
             IF log[i] = << >> THEN m.mentries
-            ELSE SubSeq(log[i], 1, m.mlogLen) \circ m.mentries]
+            ELSE SubSeq(log[i], 1, Min({m.mlogLen, Len(log[i])})) \circ m.mentries]
      /\ Reply([mtype |-> CatchupResponse,
                mterm |-> m.mterm,
                msuccess |-> TRUE,
@@ -753,13 +745,9 @@ HandleCatchupResponse(i, j, m) ==
         /\ \/ /\ m.mmatchIndex /= commitIndex[i]
               /\ m.mmatchIndex /= matchIndex[i][j]
            \/ m.mmatchIndex = commitIndex[i]
-        \* /\ Print(<<"HandleCatchup ", m, m.mmatchIndex = commitIndex[i]>>, TRUE)
         /\ state[i] = Leader
-        \* /\ Print("Checkpoint 1", TRUE)
         /\ m.mterm = currentTerm[i]
-        \* /\ Print("Checkpoint 2", TRUE)
         /\ j \notin GetConfig(i)
-        \* /\ Print("Checkpoint 3", TRUE)
         /\ nextIndex' = [nextIndex EXCEPT ![i][j] = m.mmatchIndex + 1]
         /\ matchIndex' = [matchIndex EXCEPT ![i][j] = m.mmatchIndex]
         /\ \/ /\ m.mroundsLeft /= 0
@@ -774,7 +762,6 @@ HandleCatchupResponse(i, j, m) ==
                         mrounds |-> m.mroundsLeft],
                         m)
            \/ /\ m.mroundsLeft = 0
-            \*   /\ Print("Send CheckOldConfig on catchup", TRUE)
               \* A real system makes sure the final call to this handler is
               \* received after a timeout interval.
               \* We assume that if a timeout happened, the message
@@ -802,24 +789,20 @@ HandleCheckOldConfig(i, m) ==
      /\ Discard(m)
      /\ UNCHANGED <<serverVars, candidateVars, leaderVars, logVars>>
   \/ /\ state[i] = Leader /\ m.mterm = currentTerm[i]
-    \*  /\ Print("Handle CheckOldConfig", TRUE)
      /\ \/ /\ GetMaxConfigIndex(i) <= commitIndex[i]
-        \*    /\ Print("No other configuration changes in progress => adding to log.", TRUE)
+            \* We only modify the log if the config actually changed
            /\ LET action == IF m.madd THEN [action |-> "AddServer", executedOn |->i, added |-> m.mserver]
                             ELSE [action |-> "RemoveServer", executedOn |-> i, removed |-> m.mserver]
                   newConfig == IF m.madd THEN UNION { GetConfig(i), {m.mserver} }
                                ELSE GetConfig(i) \ {m.mserver}
+                  configChanged == GetConfig(i) /= newConfig
                   newEntry == [term |-> currentTerm[i], type |-> ConfigEntry, value |-> newConfig]
-                  newLog == Append(log[i], newEntry)
+                  newLog == IF configChanged THEN Append(log[i], newEntry) ELSE log[i]
               IN 
               /\ log' = [log EXCEPT ![i] = newLog]
-              /\ DiscardWithAction(m, action)
-            \*   /\ IF Cardinality(newEntry.value) = 3 THEN 
-            \*     Print(<<"Added ", newEntry, "Logs: ", log'>>, TRUE)
-            \*     ELSE TRUE
+              /\ IF configChanged THEN DiscardWithMembershipChange(m, action) ELSE Discard(m)
             /\ UNCHANGED <<commitIndex>>
         \/ /\ GetMaxConfigIndex(i) > commitIndex[i]
-        \*    /\ Print("There are conf changes that have not committed, resending.", TRUE)
            /\ Reply([mtype |-> CheckOldConfig,
                      mterm |-> currentTerm[i],
                      madd |-> m.madd,
@@ -1103,6 +1086,8 @@ BoundedTerms == \A i \in Server: currentTerm[i] <= MaxTerms
 
 BoundedClientRequests == history["hadNumClientRequests"] <= MaxClientRequests
 
+BoundedTriedMembershipChanges == history["hadNumTriedMembershipChanges"] <= MaxTriedMembershipChanges
+
 BoundedMembershipChanges == history["hadNumMembershipChanges"] <= MaxMembershipChanges
 
 ElectionsUncontested == Cardinality({c \in DOMAIN state : state[c] = Candidate}) <= 1
@@ -1146,39 +1131,34 @@ ConcurrentLeaders == ~ \E i, j \in Server :
     /\ state[i] = Leader
     /\ state[j] = Leader
 
-AddHappens == ~ \E i \in DOMAIN history["global"] :
-    LET x == history["global"][i] IN
-    x.action = "AddServer"
+AddSucessful == ~ \E i \in DOMAIN history["global"] :
+    history["global"][i].action = "AddServer"
 
-AddSucessful == ~ \E i, j \in DOMAIN history["global"] :
-    LET x == history["global"][i]
-        y == history["global"][j]
-    IN
-    /\ x.action = "TryAddServer"
-    /\ y.action = "AddServer"
-    /\ x.added = y.added
+MembershipChangeCommits == ~ \E i \in DOMAIN history["global"] :
+    history["global"][i].action = "CommitMembershipChange"
 
-AddCommits == ~ \E i, j, k \in DOMAIN history["global"] :
+MultipleMembershipChangesCommit == ~ \E i, j \in DOMAIN history["global"] :
     /\ i < j
-    /\ j < k
+    /\ history["global"][i].action = "CommitMembershipChange"
+    /\ history["global"][j].action = "CommitMembershipChange"
+
+AddCommits == ~ \E i, j \in DOMAIN history["global"] :
+    /\ i < j
     /\ LET  x == history["global"][i]
             y == history["global"][j]
-            z == history["global"][k]
         IN
-        /\ x.action = "TryAddServer"
-        /\ y.action = "AddServer"
-        /\ z.action = "CommitMembershipChange"
-        /\ x.added = y.added
-        /\ x.added \in z.config
-
+        /\ x.action = "AddServer"
+        /\ y.action = "CommitMembershipChange"
+        /\ x.added \in y.config
 
 NewlyJoinedBecomeLeader == ~ \E i, j \in DOMAIN history["global"] :
-    LET x == history["global"][i]
-        y == history["global"][j]
-    IN
-    /\ x.action = "TryAddServer"
-    /\ y.action = "BecomeLeader"
-    /\ x.added = y.executedOn
+    /\ i < j
+    /\ LET  x == history["global"][i]
+            y == history["global"][j]
+        IN
+        /\ x.action = "AddServer"
+        /\ y.action = "BecomeLeader"
+        /\ x.added = y.executedOn
 
 \* Optimisations for TLC
 perms == Permutations(Server)
