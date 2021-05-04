@@ -23,6 +23,7 @@ MaxRestarts == 2
 MaxTimeouts == 3
 MaxClientRequests == 3
 MaxTerms == 3
+MaxMembershipChanges == 3
 MaxInFlightMessages == LET card == Cardinality(Server) IN 2 * card * card
 
 \* The set of requests that can go into the log
@@ -328,6 +329,8 @@ Min(s) == CHOOSE x \in s : \A y \in s : x <= y
 \* @type: Set(Int) => Int;
 Max(s) == CHOOSE x \in s : \A y \in s : x >= y
 
+MaxOrZero(s) == IF s = {} THEN 0 ELSE Max(s)
+
 \* Return the index of the latest configuration in server i's log.
 GetHistoricalMaxConfigIndex(i, s) ==
     LET configIndexes == { index \in 1..Len(s.log[i]) : s.log[i][index].type = ConfigEntry }
@@ -382,7 +385,6 @@ Init == /\ messages = EmptyBag
 \* It loses everything but its currentTerm, votedFor, and log.
 \* @type: Int => Bool;
 Restart(i) ==
-    /\ i \in GetConfig(i)
     /\ state'          = [state EXCEPT ![i] = Follower]
     /\ votesResponded' = [votesResponded EXCEPT ![i] = {}]
     /\ votesGranted'   = [votesGranted EXCEPT ![i] = {}]
@@ -975,11 +977,8 @@ ElectionSafety ==
     \A i \in Server :
         state[i] = Leader =>
         \A j \in Server :
-            \* Max does not work on empty sets
-            (/\ DOMAIN log[i] /= {}
-             /\ DOMAIN log[j] /= {}) =>
-            Max({n \in DOMAIN log[i] : log[i][n].term = currentTerm[i]}) >=
-            Max({n \in DOMAIN log[j] : log[j][n].term = currentTerm[i]})
+            MaxOrZero({n \in DOMAIN log[i] : log[i][n].term = currentTerm[i]}) >=
+            MaxOrZero({n \in DOMAIN log[j] : log[j][n].term = currentTerm[i]})
 ----
 \* Every (index, term) pair determines a log prefix
 LogMatching ==
@@ -1053,6 +1052,8 @@ BoundedTerms == \A i \in Server: currentTerm[i] <= MaxTerms
 
 BoundedClientRequests == history["hadNumClientRequests"] <= MaxClientRequests
 
+BoundedMembershipChanges == history["hadNumMembershipChanges"] <= MaxMembershipChanges
+
 ElectionsUncontested == Cardinality({c \in DOMAIN state : state[c] = Candidate}) <= 1
 
 CleanStartUntilFirstRequest ==
@@ -1063,7 +1064,7 @@ CleanStartUntilFirstRequest ==
 
 CleanStartUntilTwoLeaders ==
     (history["hadNumLeaders"] < 2) =>
-    /\ Sum([i \in Server |-> history["server"][i]["restarted"]]) = 0      
+    /\ Sum([i \in Server |-> history["server"][i]["restarted"]]) <= 1      
     /\ Sum([i \in Server |-> history["server"][i]["timeout"]]) <= 2        
 
 -----
