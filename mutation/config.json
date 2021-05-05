@@ -1,0 +1,15 @@
+{
+    "actionsToMutate": [
+        "HandleRequestVoteRequest",
+        "HandleRequestVoteResponse",
+
+        "HandleAppendEntriesRequest",
+        "RejectAppendEntriesRequest",
+        "AppendEntriesAlreadyDone",
+        "ConflictAppendEntriesRequest",
+        "NoConflictAppendEntriesRequest",
+        "AcceptAppendEntriesRequest",
+
+        "HandleAppendEntriesResponse"
+    ]
+}
