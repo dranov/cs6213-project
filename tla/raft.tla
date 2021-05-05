@@ -1140,7 +1140,7 @@ MajorityOfClusterRestarts == ~
         /\ Len(log[i]) >= 2
         /\ Len(log[j]) >= 1
     /\ \E maj \in Quorum(Server) :
-        \A i \in maj: history["server"][i]["restarted"] = 1
+        \A i \in maj: history["server"][i]["restarted"] >= 1
     \* There is activity between the restarts
     /\ \A i, k \in DOMAIN history["global"] :
         (
