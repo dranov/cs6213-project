@@ -18,7 +18,7 @@ CONSTANT NumRounds
 CONSTANT ValueEntry, ConfigEntry
 
 \* Constraints
-MaxLogLength == 4
+MaxLogLength == 5
 MaxRestarts == 2
 MaxTimeouts == 3
 MaxClientRequests == 3
@@ -357,6 +357,8 @@ GetHistoricalConfig(i, s) ==
 
 GetConfig(i) == GetHistoricalConfig(i, systemState)
 
+CurrentLeaders == {i \in Server : state[i] = Leader}
+
 ----
 \* Define initial values for all variables
 
@@ -476,7 +478,7 @@ BecomeLeader(i) ==
     /\ history'    = [history EXCEPT 
                             !["hadNumLeaders"] = history["hadNumLeaders"] + 1,
                             !["global"] = Append(history["global"], 
-                                [action |-> "BecomeLeader", executedOn |-> i, systemState |-> systemState])]
+                                [action |-> "BecomeLeader", executedOn |-> i, leaders |-> (CurrentLeaders \cup {i})])]
     /\ UNCHANGED <<messages, currentTerm, votedFor, candidateVars, logVars>>
     
 \* Leader i receives a client request to add v to the log.
@@ -515,8 +517,9 @@ AdvanceCommitIndex(i) ==
                   Max(agreeIndexes)
               ELSE
                   commitIndex[i]
+            committed == newCommitIndex > commitIndex[i]
             committedMembershipChange ==
-                /\ newCommitIndex > commitIndex[i]
+                /\ committed
                 /\ log[i][newCommitIndex].type = ConfigEntry
                 \* The newly commited entry actually changes the configuration, i.e. is not the same config commited again
                 /\ log[i][newCommitIndex].value /= 
@@ -527,6 +530,9 @@ AdvanceCommitIndex(i) ==
             history' = [history EXCEPT
                 !["global"] = Append(history["global"],
                     [action |-> "CommitMembershipChange", executedOn |-> i, config |-> log[i][newCommitIndex].value])]
+            ELSE IF committed THEN
+             history' = [history EXCEPT
+                !["global"] = Append(history["global"], [action |-> "CommitEntry", executedOn |-> i, entry |-> log[i][newCommitIndex]])]
             ELSE UNCHANGED <<history>>
     /\ UNCHANGED <<messages, serverVars, candidateVars, leaderVars, log>>
 
@@ -909,6 +915,10 @@ NextAsync ==
         
 NextCrash == \E i \in Server : Restart(i)
 
+NextAsyncCrash ==
+    \/ NextAsync
+    \/ NextCrash
+
 NextUnreliable ==    
     \* Only duplicate once
     \/ \E m \in DOMAIN messages : 
@@ -969,19 +979,6 @@ MessageTermsLtCurrentTerm(m) ==
 \* is strong enough without requiring history variables. First,
 \* we state two properties which will allow us to conclude election
 \* safety
-
-GetLastBecameLeader(i) ==
-    LET becameIndexes == { index \in 1..Len(history["global"]) :
-         /\ history["global"][index].action = "BecomeLeader"
-         /\ history["global"][index].executedOn = i }
-    IN IF becameIndexes = {} THEN 0
-       ELSE Max(becameIndexes)
-
-\* This returns the state of the system (vars) when server i most recently became leader
-StateWhenMostRecentlyBecameLeader(i) ==
-    LET idx == GetLastBecameLeader(i) IN
-    IF idx = 0 THEN systemState
-    ELSE history["global"][idx].systemState
     
 \* NOTE: this only makes sense if there are no configuration changes
 \* All leaders have a quorum of servers who either voted
@@ -1109,14 +1106,8 @@ CleanStartUntilTwoLeaders ==
 
 BoundedTrace == Len(history["global"]) <= 24
 
-FirstBecomeLeader == ~ \E i, j \in DOMAIN history["global"] :
-    /\ i /= j
-    /\ LET x == history["global"][i]
-           y == history["global"][j] IN
-        x.action = "Receive" /\ x.msg.mtype = RequestVoteResponse
-        /\ y.action = "Receive" /\ y.msg.mtype = RequestVoteResponse
-        /\ x.msg.msource /= y.msg.msource
-        /\ state[x.msg.mdest] = Leader
+FirstBecomeLeader == ~ \E i \in DOMAIN history["global"] :
+    history["global"][i].action = "BecomeLeader"
 
 FirstCommit == ~ \E i \in Server : commitIndex[i] > 0
 
@@ -1126,10 +1117,37 @@ MembershipChange == history["hadNumMembershipChanges"] < 1
 
 MultipleMembershipChanges == history["hadNumMembershipChanges"] < 2
 
-ConcurrentLeaders == ~ \E i, j \in Server :
-    /\ i /= j
-    /\ state[i] = Leader
-    /\ state[j] = Leader
+ConcurrentLeaders == ~ (Cardinality(CurrentLeaders) >= 2)
+
+EntryCommitted == ~
+    \E i \in DOMAIN history["global"] :
+    /\ LET x == history["global"][i] IN
+        /\ x.action = "CommitEntry"
+
+CommitWhenConcurrentLeaders == ~
+    \E i, k \in DOMAIN history["global"] :
+    /\ i < k
+    /\ LET  x == history["global"][i]
+            y == history["global"][k]
+        IN
+        /\ x.action = "BecomeLeader" /\ Cardinality(x.leaders) >= 2
+        /\ y.action = "CommitEntry"
+
+MajorityOfClusterRestarts == ~
+    \* \* We want some non-trivial logs
+    /\ \E i, j \in Server :
+        /\ i /= j
+        /\ Len(log[i]) >= 2
+        /\ Len(log[j]) >= 1
+    /\ \E maj \in Quorum(Server) :
+        \A i \in maj: history["server"][i]["restarted"] = 1
+    \* There is activity between the restarts
+    /\ \A i, k \in DOMAIN history["global"] :
+        (
+        /\ (i < k)
+        /\ history["global"][i].action = "Restart"
+        /\ history["global"][k].action = "Restart"
+        ) => (i - k) >= 2
 
 AddSucessful == ~ \E i \in DOMAIN history["global"] :
     history["global"][i].action = "AddServer"
@@ -1137,12 +1155,14 @@ AddSucessful == ~ \E i \in DOMAIN history["global"] :
 MembershipChangeCommits == ~ \E i \in DOMAIN history["global"] :
     history["global"][i].action = "CommitMembershipChange"
 
-MultipleMembershipChangesCommit == ~ \E i, j \in DOMAIN history["global"] :
+MultipleMembershipChangesCommit == ~
+    \E i, j \in DOMAIN history["global"] :
     /\ i < j
     /\ history["global"][i].action = "CommitMembershipChange"
     /\ history["global"][j].action = "CommitMembershipChange"
 
-AddCommits == ~ \E i, j \in DOMAIN history["global"] :
+AddCommits == ~
+    \E i, j \in DOMAIN history["global"] :
     /\ i < j
     /\ LET  x == history["global"][i]
             y == history["global"][j]
@@ -1151,7 +1171,8 @@ AddCommits == ~ \E i, j \in DOMAIN history["global"] :
         /\ y.action = "CommitMembershipChange"
         /\ x.added \in y.config
 
-NewlyJoinedBecomeLeader == ~ \E i, j \in DOMAIN history["global"] :
+NewlyJoinedBecomeLeader == ~
+    \E i, j \in DOMAIN history["global"] :
     /\ i < j
     /\ LET  x == history["global"][i]
             y == history["global"][j]
@@ -1159,6 +1180,18 @@ NewlyJoinedBecomeLeader == ~ \E i, j \in DOMAIN history["global"] :
         /\ x.action = "AddServer"
         /\ y.action = "BecomeLeader"
         /\ x.added = y.executedOn
+
+LeaderChangesDuringConfChange == ~
+    \E i, k \in DOMAIN history["global"] :
+    /\ i < k
+    /\ LET  x == history["global"][i]
+            y == history["global"][k]
+        IN
+        /\ x.action = "AddServer"
+        /\ y.action = "BecomeLeader"
+    \* The membership change does not commit before the leader changes
+    /\ ~ \E j \in i..k :
+        /\ history["global"][j].action = "CommitMembershipChange"
 
 \* Optimisations for TLC
 perms == Permutations(Server)
