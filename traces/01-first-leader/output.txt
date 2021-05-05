@@ -1,0 +1,66 @@
+2021/05/05 23:40:17 replaying WAL of member 1
+2021/05/05 23:40:17 loading WAL at term 0 and index 0
+raft2021/05/05 23:40:17 INFO: 1 switched to configuration voters=()
+raft2021/05/05 23:40:17 INFO: 1 became follower at term 0
+raft2021/05/05 23:40:17 INFO: newRaft 1 [peers: [], term: 0, commit: 0, applied: 0, lastindex: 0, lastterm: 0]
+raft2021/05/05 23:40:17 INFO: 1 became follower at term 1
+2021/05/05 23:40:17 replaying WAL of member 2
+raft2021/05/05 23:40:17 INFO: 1 switched to configuration voters=(1)
+raft2021/05/05 23:40:17 INFO: 1 switched to configuration voters=(1 2)
+raft2021/05/05 23:40:17 INFO: 1 switched to configuration voters=(1 2 3)
+raft2021/05/05 23:40:17 INFO: 1 switched to configuration voters=(1 2 3)
+raft2021/05/05 23:40:17 INFO: 1 switched to configuration voters=(1 2 3)
+raft2021/05/05 23:40:17 INFO: 1 switched to configuration voters=(1 2 3)
+2021/05/05 23:40:17 loading WAL at term 0 and index 0
+raft2021/05/05 23:40:17 INFO: 2 switched to configuration voters=()
+raft2021/05/05 23:40:17 INFO: 2 became follower at term 0
+raft2021/05/05 23:40:17 INFO: newRaft 2 [peers: [], term: 0, commit: 0, applied: 0, lastindex: 0, lastterm: 0]
+raft2021/05/05 23:40:17 INFO: 2 became follower at term 1
+raft2021/05/05 23:40:17 INFO: 2 switched to configuration voters=(1)
+raft2021/05/05 23:40:17 INFO: 2 switched to configuration voters=(1 2)
+raft2021/05/05 23:40:17 INFO: 2 switched to configuration voters=(1 2 3)
+2021/05/05 23:40:17 replaying WAL of member 3
+raft2021/05/05 23:40:17 INFO: 2 switched to configuration voters=(1 2 3)
+raft2021/05/05 23:40:17 INFO: 2 switched to configuration voters=(1 2 3)
+raft2021/05/05 23:40:17 INFO: 2 switched to configuration voters=(1 2 3)
+2021/05/05 23:40:18 loading WAL at term 0 and index 0
+raft2021/05/05 23:40:18 INFO: 3 switched to configuration voters=()
+raft2021/05/05 23:40:18 INFO: 3 became follower at term 0
+raft2021/05/05 23:40:18 INFO: newRaft 3 [peers: [], term: 0, commit: 0, applied: 0, lastindex: 0, lastterm: 0]
+raft2021/05/05 23:40:18 INFO: 3 became follower at term 1
+raft2021/05/05 23:40:18 INFO: 3 switched to configuration voters=(1)
+raft2021/05/05 23:40:18 INFO: 3 switched to configuration voters=(1 2)
+raft2021/05/05 23:40:18 INFO: 3 switched to configuration voters=(1 2 3)
+Ignored event {Type:Send Message:{Type:RequestVoteReq Entry:{ term: 0, type: ConfigEntry, value: [] }} Sender:1 Recipient:1}
+Ignored event {Type:Receive Message:{Type:RequestVoteReq Entry:{ term: 0, type: ConfigEntry, value: [] }} Sender:1 Recipient:1}
+Ignored event {Type:Send Message:{Type:RequestVoteRes Entry:{ term: 0, type: ConfigEntry, value: [] }} Sender:1 Recipient:1}
+Ignored event {Type:Receive Message:{Type:RequestVoteRes Entry:{ term: 0, type: ConfigEntry, value: [] }} Sender:1 Recipient:1}
+----{Type:Timeout Message:{Type:RequestVoteReq Entry:{ term: 0, type: ConfigEntry, value: [] }} Sender:0 Recipient:1}
+raft2021/05/05 23:40:18 INFO: 1 is starting a new election at term 1
+raft2021/05/05 23:40:18 INFO: 1 became candidate at term 2
+raft2021/05/05 23:40:18 INFO: 1 received MsgVoteResp from 1 at term 2
+raft2021/05/05 23:40:18 INFO: 1 [logterm: 1, index: 3] sent MsgVote request to 2 at term 2
+raft2021/05/05 23:40:18 INFO: 1 [logterm: 1, index: 3] sent MsgVote request to 3 at term 2
+raft2021/05/05 23:40:18 INFO: 3 switched to configuration voters=(1 2 3)
+raft2021/05/05 23:40:18 INFO: 3 switched to configuration voters=(1 2 3)
+raft2021/05/05 23:40:18 INFO: 3 switched to configuration voters=(1 2 3)
+----{Type:Send Message:{Type:RequestVoteReq Entry:{ term: 0, type: ConfigEntry, value: [] }} Sender:1 Recipient:2}
+----{Type:Receive Message:{Type:RequestVoteReq Entry:{ term: 0, type: ConfigEntry, value: [] }} Sender:1 Recipient:2}
+----{Type:Send Message:{Type:RequestVoteRes Entry:{ term: 0, type: ConfigEntry, value: [] }} Sender:2 Recipient:1}
+raft2021/05/05 23:40:18 INFO: 2 [term: 1] received a MsgVote message with higher term from 1 [term: 2]
+raft2021/05/05 23:40:18 INFO: 2 became follower at term 2
+raft2021/05/05 23:40:18 INFO: 2 [logterm: 1, index: 3, vote: 0] cast MsgVote for 1 [logterm: 1, index: 3] at term 2
+----{Type:Receive Message:{Type:RequestVoteRes Entry:{ term: 0, type: ConfigEntry, value: [] }} Sender:2 Recipient:1}
+----{Type:BecomeLeader Message:{Type:RequestVoteReq Entry:{ term: 0, type: ConfigEntry, value: [] }} Sender:0 Recipient:1}
+raft2021/05/05 23:40:18 INFO: 1 received MsgVoteResp from 2 at term 2
+raft2021/05/05 23:40:18 INFO: 1 has received 2 MsgVoteResp votes and 0 vote rejections
+raft2021/05/05 23:40:18 INFO: 1 became leader at term 2
+raft2021/05/05 23:40:18 INFO: raft.node: 1 elected leader 1 at term 2
+raft2021/05/05 23:40:18 INFO: raft.node: 2 elected leader 1 at term 2
+raft2021/05/05 23:40:18 INFO: 3 [term: 1] received a MsgApp message with higher term from 1 [term: 2]
+raft2021/05/05 23:40:18 INFO: 3 became follower at term 2
+raft2021/05/05 23:40:18 INFO: raft.node: 3 elected leader 1 at term 2
+----Finished
+spec state: { atLeastOneLeader: true, logs: { 1: [], 2: [], 3: [] } }
+
+impl state: { atLeastOneLeader: true, logs: { 1: [{ term: 2, type: ValueEntry, value: 0 }], 2: [{ term: 2, type: ValueEntry, value: 0 }], 3: [{ term: 2, type: ValueEntry, value: 0 }] } }

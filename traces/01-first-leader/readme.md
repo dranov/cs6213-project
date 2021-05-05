@@ -1,0 +1,3 @@
+```
+INVARIANT FirstBecomeLeader
+```
