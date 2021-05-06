@@ -1134,17 +1134,34 @@ CommitWhenConcurrentLeaders == ~
         IN
         /\ x.action = "BecomeLeader" /\ Cardinality(x.leaders) >= 2
         /\ y.action = "CommitEntry"
+    \* Run for a few more steps
+    /\ Len(history["global"]) >= k + 2
+    \* Still have concurrent leaders
+    /\ Cardinality(CurrentLeaders) >= 2
 
 \* A constraint to ease finding a violation of CommitWhenConcurrentLeaders:
 \* the shortest trace (using NextAsync) where ConcurrentLeaders is vZiolated
 \* has length 20, so we constrain the search space given the fact that
-\* CommitWhenConcurrentLeaders implies ConcurrentLeaders held in the past
+\* CommitWhenConcurrentLeaders implies ConcurrentLeaders held in the past.
 CommitWhenConcurrentLeaders_constraint ==
     (Len(history["global"]) >= 20) =>
         \E i \in DOMAIN history["global"] :
             LET x == history["global"][i] IN
             x.action = "BecomeLeader" /\ Cardinality(x.leaders) >= 2
 
+\* BUT, in fact, this does not get us a tremendous boost. When the trace gets
+\* long enough, there are many ways to satisfy a particular constraint, so
+\* you still get hit by state space explosion. For example, there are over 1.2 million
+\*  traces of length 20 that satisfy CommitWhenConcurrentLeaders_constraint.
+\* But we can use the fact that:
+\*      CommitWhenConcurrentLeaders => ConcurrentLeaders on a prefix of the trace
+\* to great effect! Concretely:
+\* 
+\* For any trace property P of the form Q /\ R, where Q and R are properties of a
+\* (non-intersecting) trace prefix and suffix, respectively, we can run BFS to
+\* find a trace that satisfies Q (let F_Q be the final state in such a trace), and
+\* then run BFS again with F_Q as initial state to find a trace that satisfies R
+\* and thus implicitly satisfies P.
 CommitWhenConcurrentLeaders_unique ==
     \E s1, s2, s3 \in Server :
         /\ Cardinality({s1, s2, s3}) = 3
@@ -1153,14 +1170,11 @@ CommitWhenConcurrentLeaders_unique ==
                 prefix == SubSeq(ConcurrentLeaders_trace["global"], 1, maxLen)
             IN IsPrefix(prefix, history["global"])
 
-\* BUT, in fact, this does not get us a tremendous boost. When the trace gets
-\* long enough, the big issue is that you just have a lot of options ahead of
-\* you. So we also need to constrain the future via action constraints.
+\* We can also constrain the future via action constraints.
 CommitWhenConcurrentLeaders_action_constraint ==
     (Len(history["global"]) >= 20) =>
         \* No timeouts
         /\ \A i \in Server : state'[i] /= Candidate
-        
 
 MajorityOfClusterRestarts == ~
     \* We want some non-trivial logs
