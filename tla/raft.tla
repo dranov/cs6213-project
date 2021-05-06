@@ -1133,6 +1133,24 @@ CommitWhenConcurrentLeaders == ~
         /\ x.action = "BecomeLeader" /\ Cardinality(x.leaders) >= 2
         /\ y.action = "CommitEntry"
 
+\* A constraint to ease finding a violation of CommitWhenConcurrentLeaders:
+\* the shortest trace (using NextAsync) where ConcurrentLeaders is vZiolated
+\* has length 20, so we constrain the search space given the fact that
+\* CommitWhenConcurrentLeaders implies ConcurrentLeaders held in the past
+CommitWhenConcurrentLeaders_constraint ==
+    (Len(history["global"]) >= 20) =>
+        \E i \in DOMAIN history["global"] :
+            LET x == history["global"][i] IN
+            x.action = "BecomeLeader" /\ Cardinality(x.leaders) >= 2
+
+\* BUT, in fact, this does not get us a tremendous boost. When the trace gets
+\* long enough, the big issue is that you just have a lot of options ahead of
+\* you. So we also need to constrain the future via action constraints.
+CommitWhenConcurrentLeaders_action_constraint ==
+    (Len(history["global"]) >= 20) =>
+        \* No timeouts
+        /\ \A i \in Server : state'[i] /= Candidate
+
 MajorityOfClusterRestarts == ~
     \* \* We want some non-trivial logs
     /\ \E i, j \in Server :
