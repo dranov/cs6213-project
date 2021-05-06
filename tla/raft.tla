@@ -1143,6 +1143,14 @@ CommitWhenConcurrentLeaders_constraint ==
             LET x == history["global"][i] IN
             x.action = "BecomeLeader" /\ Cardinality(x.leaders) >= 2
 
+CommitWhenConcurrentLeaders_unique ==
+    \E s1, s2, s3 \in Server :
+        /\ Cardinality({s1, s2, s3}) = 3
+        /\ LET  ConcurrentLeaders_trace == [global |-> <<[action |-> "Timeout", executedOn |-> s1], [action |-> "Send", executedOn |-> s1, msg |-> [mdest |-> s2, mlastLogIndex |-> 0, mlastLogTerm |-> 0, msource |-> s1, mterm |-> 2, mtype |-> "RequestVoteRequest"]], [action |-> "Send", executedOn |-> s1, msg |-> [mdest |-> s1, mlastLogIndex |-> 0, mlastLogTerm |-> 0, msource |-> s1, mterm |-> 2, mtype |-> "RequestVoteRequest"]], [action |-> "Receive", executedOn |-> s1, msg |-> [mdest |-> s1, mlastLogIndex |-> 0, mlastLogTerm |-> 0, msource |-> s1, mterm |-> 2, mtype |-> "RequestVoteRequest"]], [action |-> "Send", executedOn |-> s1, msg |-> [mdest |-> s1, mlog |-> <<>>, msource |-> s1, mterm |-> 2, mtype |-> "RequestVoteResponse", mvoteGranted |-> TRUE]], [action |-> "Receive", executedOn |-> s2, msg |-> [mdest |-> s2, mlastLogIndex |-> 0, mlastLogTerm |-> 0, msource |-> s1, mterm |-> 2, mtype |-> "RequestVoteRequest"]], [action |-> "Send", executedOn |-> s2, msg |-> [mdest |-> s1, mlog |-> <<>>, msource |-> s2, mterm |-> 2, mtype |-> "RequestVoteResponse", mvoteGranted |-> TRUE]], [action |-> "Receive", executedOn |-> s1, msg |-> [mdest |-> s1, mlog |-> <<>>, msource |-> s2, mterm |-> 2, mtype |-> "RequestVoteResponse", mvoteGranted |-> TRUE]], [action |-> "Receive", executedOn |-> s1, msg |-> [mdest |-> s1, mlog |-> <<>>, msource |-> s1, mterm |-> 2, mtype |-> "RequestVoteResponse", mvoteGranted |-> TRUE]], [action |-> "BecomeLeader", executedOn |-> s1, leaders |-> {s1}], [action |-> "Timeout", executedOn |-> s2], [action |-> "Send", executedOn |-> s2, msg |-> [mdest |-> s2, mlastLogIndex |-> 0, mlastLogTerm |-> 0, msource |-> s2, mterm |-> 3, mtype |-> "RequestVoteRequest"]], [action |-> "Send", executedOn |-> s2, msg |-> [mdest |-> s3, mlastLogIndex |-> 0, mlastLogTerm |-> 0, msource |-> s2, mterm |-> 3, mtype |-> "RequestVoteRequest"]], [action |-> "Receive", executedOn |-> s2, msg |-> [mdest |-> s2, mlastLogIndex |-> 0, mlastLogTerm |-> 0, msource |-> s2, mterm |-> 3, mtype |-> "RequestVoteRequest"]], [action |-> "Send", executedOn |-> s2, msg |-> [mdest |-> s2, mlog |-> <<>>, msource |-> s2, mterm |-> 3, mtype |-> "RequestVoteResponse", mvoteGranted |-> TRUE]], [action |-> "Receive", executedOn |-> s3, msg |-> [mdest |-> s3, mlastLogIndex |-> 0, mlastLogTerm |-> 0, msource |-> s2, mterm |-> 3, mtype |-> "RequestVoteRequest"]], [action |-> "Send", executedOn |-> s3, msg |-> [mdest |-> s2, mlog |-> <<>>, msource |-> s3, mterm |-> 3, mtype |-> "RequestVoteResponse", mvoteGranted |-> TRUE]], [action |-> "Receive", executedOn |-> s2, msg |-> [mdest |-> s2, mlog |-> <<>>, msource |-> s3, mterm |-> 3, mtype |-> "RequestVoteResponse", mvoteGranted |-> TRUE]], [action |-> "Receive", executedOn |-> s2, msg |-> [mdest |-> s2, mlog |-> <<>>, msource |-> s2, mterm |-> 3, mtype |-> "RequestVoteResponse", mvoteGranted |-> TRUE]], [action |-> "BecomeLeader", executedOn |-> s2, leaders |-> {s1, s2}]>>, hadNumClientRequests |-> 0, hadNumLeaders |-> 2, hadNumMembershipChanges |-> 0, hadNumTriedMembershipChanges |-> 0, server |-> (s1 :> [restarted |-> 0, timeout |-> 1] @@ s2 :> [restarted |-> 0, timeout |-> 1] @@ s3 :> [restarted |-> 0, timeout |-> 0])]
+                maxLen == Min({Len(ConcurrentLeaders_trace["global"]), Len(history["global"])})
+                prefix == SubSeq(ConcurrentLeaders_trace["global"], 1, maxLen)
+            IN IsPrefix(prefix, history["global"])
+
 \* BUT, in fact, this does not get us a tremendous boost. When the trace gets
 \* long enough, the big issue is that you just have a lot of options ahead of
 \* you. So we also need to constrain the future via action constraints.
@@ -1150,6 +1158,7 @@ CommitWhenConcurrentLeaders_action_constraint ==
     (Len(history["global"]) >= 20) =>
         \* No timeouts
         /\ \A i \in Server : state'[i] /= Candidate
+        
 
 MajorityOfClusterRestarts == ~
     \* \* We want some non-trivial logs
