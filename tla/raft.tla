@@ -1111,6 +1111,8 @@ FirstBecomeLeader == ~ \E i \in DOMAIN history["global"] :
 
 FirstCommit == ~ \E i \in Server : commitIndex[i] > 0
 
+FirstRestart == ~ \E i \in Server : history["server"][i]["restarted"] >= 2
+
 LeadershipChange == history["hadNumLeaders"] < 2
 
 MembershipChange == history["hadNumMembershipChanges"] < 1
@@ -1152,7 +1154,7 @@ CommitWhenConcurrentLeaders_action_constraint ==
         /\ \A i \in Server : state'[i] /= Candidate
 
 MajorityOfClusterRestarts == ~
-    \* \* We want some non-trivial logs
+    \* We want some non-trivial logs
     /\ \E i, j \in Server :
         /\ i /= j
         /\ Len(log[i]) >= 2
