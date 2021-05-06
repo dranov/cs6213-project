@@ -19,4 +19,4 @@ clean() {
 clean
 tlc $SPEC
 tla2json tlc.txt > full.json
-$INTERPRETER/raftexample -nodes 3 -file full.json > output.txt 2>&1
+$INTERPRETER/raftexample -nodes 3 -file full.json -debug > output.txt 2>&1
