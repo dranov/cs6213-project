@@ -1,0 +1,4161 @@
+TLC2 Version 2.16 of 31 December 2020 (rev: cdddf55)
+Running breadth-first search Model-Checking with fp 61 and seed -4534072093387872014 with 8 workers on 8 cores with 3641MB heap and 64MB offheap memory [pid: 24021] (Mac OS X 10.16 x86_64, N/A 14.0.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file /Users/darius/Downloads/cs6213-project/tla/raft.tla
+Parsing file /private/var/folders/l6/290h50ys7t995mrks71zd9zc0000gn/T/Naturals.tla
+Parsing file /private/var/folders/l6/290h50ys7t995mrks71zd9zc0000gn/T/Integers.tla
+Parsing file /Users/darius/Downloads/cs6213-project/tla/TypedBags.tla
+Parsing file /private/var/folders/l6/290h50ys7t995mrks71zd9zc0000gn/T/FiniteSets.tla
+Parsing file /private/var/folders/l6/290h50ys7t995mrks71zd9zc0000gn/T/Sequences.tla
+Parsing file /Users/darius/Downloads/cs6213-project/tla/SequencesExt.tla
+Parsing file /private/var/folders/l6/290h50ys7t995mrks71zd9zc0000gn/T/TLC.tla
+Parsing file /Users/darius/Downloads/cs6213-project/tla/FiniteSetsExt.tla
+Parsing file /Users/darius/Downloads/cs6213-project/tla/Functions.tla
+Semantic processing of module Naturals
+Semantic processing of module Integers
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module TLC
+Semantic processing of module TypedBags
+Semantic processing of module Functions
+Semantic processing of module FiniteSetsExt
+Semantic processing of module SequencesExt
+Semantic processing of module raft
+Starting... (2021-05-06 20:28:03)
+Computing initial states...
+Finished computing initial states: 1 distinct state generated at 2021-05-06 20:28:03.
+Error: Invariant CommitWhenConcurrentLeaders is violated.
+Error: The behavior up to this point is:
+State 1: <Initial predicate>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 0] @@
+        s2 :> [restarted |-> 0, timeout |-> 0] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |-> <<>>,
+  hadNumLeaders |-> 0,
+  hadNumClientRequests |-> 0,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1)
+/\ votedFor = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Follower" @@ s2 :> "Follower" @@ s3 :> "Follower")
+/\ messages = << >>
+/\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
+/\ votesGranted = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
+
+State 2: <Timeout line 413, col 15 to line 425, col 60 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 0] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |-> <<[action |-> "Timeout", executedOn |-> s1]>>,
+  hadNumLeaders |-> 0,
+  hadNumClientRequests |-> 0,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 1 @@ s3 :> 1)
+/\ votedFor = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Candidate" @@ s2 :> "Follower" @@ s3 :> "Follower")
+/\ messages = << >>
+/\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
+/\ votesGranted = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
+
+State 3: <RequestVote line 430, col 5 to line 438, col 67 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 0] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ] >>,
+  hadNumLeaders |-> 0,
+  hadNumClientRequests |-> 0,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 1 @@ s3 :> 1)
+/\ votedFor = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Candidate" @@ s2 :> "Follower" @@ s3 :> "Follower")
+/\ messages = ( [ mtype |-> "RequestVoteRequest",
+    mterm |-> 2,
+    mlastLogTerm |-> 0,
+    mlastLogIndex |-> 0,
+    msource |-> s1,
+    mdest |-> s2 ] :>
+      1 )
+/\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
+/\ votesGranted = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
+
+State 4: <RequestVote line 430, col 5 to line 438, col 67 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 0] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ] >>,
+  hadNumLeaders |-> 0,
+  hadNumClientRequests |-> 0,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 1 @@ s3 :> 1)
+/\ votedFor = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Candidate" @@ s2 :> "Follower" @@ s3 :> "Follower")
+/\ messages = ( [ mtype |-> "RequestVoteRequest",
+    mterm |-> 2,
+    mlastLogTerm |-> 0,
+    mlastLogIndex |-> 0,
+    msource |-> s1,
+    mdest |-> s1 ] :>
+      1 @@
+  [ mtype |-> "RequestVoteRequest",
+    mterm |-> 2,
+    mlastLogTerm |-> 0,
+    mlastLogIndex |-> 0,
+    msource |-> s1,
+    mdest |-> s2 ] :>
+      1 )
+/\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
+/\ votesGranted = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
+
+State 5: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 0] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ] >>,
+  hadNumLeaders |-> 0,
+  hadNumClientRequests |-> 0,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 1 @@ s3 :> 1)
+/\ votedFor = (s1 :> s1 @@ s2 :> 0 @@ s3 :> 0)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Candidate" @@ s2 :> "Follower" @@ s3 :> "Follower")
+/\ messages = ( [ mtype |-> "RequestVoteRequest",
+    mterm |-> 2,
+    mlastLogTerm |-> 0,
+    mlastLogIndex |-> 0,
+    msource |-> s1,
+    mdest |-> s2 ] :>
+      1 @@
+  [ mtype |-> "RequestVoteResponse",
+    mterm |-> 2,
+    msource |-> s1,
+    mdest |-> s1,
+    mvoteGranted |-> TRUE,
+    mlog |-> <<>> ] :>
+      1 )
+/\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
+/\ votesGranted = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
+
+State 6: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 0] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ] >>,
+  hadNumLeaders |-> 0,
+  hadNumClientRequests |-> 0,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 1)
+/\ votedFor = (s1 :> s1 @@ s2 :> 0 @@ s3 :> 0)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Candidate" @@ s2 :> "Follower" @@ s3 :> "Follower")
+/\ messages = ( [ mtype |-> "RequestVoteRequest",
+    mterm |-> 2,
+    mlastLogTerm |-> 0,
+    mlastLogIndex |-> 0,
+    msource |-> s1,
+    mdest |-> s2 ] :>
+      1 @@
+  [ mtype |-> "RequestVoteResponse",
+    mterm |-> 2,
+    msource |-> s1,
+    mdest |-> s1,
+    mvoteGranted |-> TRUE,
+    mlog |-> <<>> ] :>
+      1 )
+/\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
+/\ votesGranted = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
+
+State 7: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 0] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ] >>,
+  hadNumLeaders |-> 0,
+  hadNumClientRequests |-> 0,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 1)
+/\ votedFor = (s1 :> s1 @@ s2 :> s1 @@ s3 :> 0)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Candidate" @@ s2 :> "Follower" @@ s3 :> "Follower")
+/\ messages = ( [ mtype |-> "RequestVoteResponse",
+    mterm |-> 2,
+    msource |-> s1,
+    mdest |-> s1,
+    mvoteGranted |-> TRUE,
+    mlog |-> <<>> ] :>
+      1 @@
+  [ mtype |-> "RequestVoteResponse",
+    mterm |-> 2,
+    msource |-> s2,
+    mdest |-> s1,
+    mvoteGranted |-> TRUE,
+    mlog |-> <<>> ] :>
+      1 )
+/\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
+/\ votesGranted = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
+
+State 8: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 0] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ] >>,
+  hadNumLeaders |-> 0,
+  hadNumClientRequests |-> 0,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {s2} @@ s2 :> {} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 1)
+/\ votedFor = (s1 :> s1 @@ s2 :> s1 @@ s3 :> 0)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Candidate" @@ s2 :> "Follower" @@ s3 :> "Follower")
+/\ messages = ( [ mtype |-> "RequestVoteResponse",
+    mterm |-> 2,
+    msource |-> s1,
+    mdest |-> s1,
+    mvoteGranted |-> TRUE,
+    mlog |-> <<>> ] :>
+      1 )
+/\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
+/\ votesGranted = (s1 :> {s2} @@ s2 :> {} @@ s3 :> {})
+
+State 9: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 0] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ] >>,
+  hadNumLeaders |-> 0,
+  hadNumClientRequests |-> 0,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 1)
+/\ votedFor = (s1 :> s1 @@ s2 :> s1 @@ s3 :> 0)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Candidate" @@ s2 :> "Follower" @@ s3 :> "Follower")
+/\ messages = << >>
+/\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
+/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
+
+State 10: <BecomeLeader line 471, col 5 to line 482, col 76 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 0] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s1, leaders |-> {s1}] >>,
+  hadNumLeaders |-> 1,
+  hadNumClientRequests |-> 0,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 1)
+/\ votedFor = (s1 :> s1 @@ s2 :> s1 @@ s3 :> 0)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Leader" @@ s2 :> "Follower" @@ s3 :> "Follower")
+/\ messages = << >>
+/\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
+/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
+
+State 11: <ClientRequest line 487, col 5 to line 495, col 44 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 0] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s1, leaders |-> {s1}] >>,
+  hadNumLeaders |-> 1,
+  hadNumClientRequests |-> 1,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 1)
+/\ votedFor = (s1 :> s1 @@ s2 :> s1 @@ s3 :> 0)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Leader" @@ s2 :> "Follower" @@ s3 :> "Follower")
+/\ messages = << >>
+/\ log = ( s1 :> <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>> @@
+  s2 :> <<>> @@
+  s3 :> <<>> )
+/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
+
+State 12: <Timeout line 413, col 15 to line 425, col 60 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 1] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s1, leaders |-> {s1}],
+         [action |-> "Timeout", executedOn |-> s2] >>,
+  hadNumLeaders |-> 1,
+  hadNumClientRequests |-> 1,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 3 @@ s3 :> 1)
+/\ votedFor = (s1 :> s1 @@ s2 :> 0 @@ s3 :> 0)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Leader" @@ s2 :> "Candidate" @@ s3 :> "Follower")
+/\ messages = << >>
+/\ log = ( s1 :> <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>> @@
+  s2 :> <<>> @@
+  s3 :> <<>> )
+/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
+
+State 13: <RequestVote line 430, col 5 to line 438, col 67 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 1] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s1, leaders |-> {s1}],
+         [action |-> "Timeout", executedOn |-> s2],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ] >>,
+  hadNumLeaders |-> 1,
+  hadNumClientRequests |-> 1,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 3 @@ s3 :> 1)
+/\ votedFor = (s1 :> s1 @@ s2 :> 0 @@ s3 :> 0)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Leader" @@ s2 :> "Candidate" @@ s3 :> "Follower")
+/\ messages = ( [ mtype |-> "RequestVoteRequest",
+    mterm |-> 3,
+    mlastLogTerm |-> 0,
+    mlastLogIndex |-> 0,
+    msource |-> s2,
+    mdest |-> s2 ] :>
+      1 )
+/\ log = ( s1 :> <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>> @@
+  s2 :> <<>> @@
+  s3 :> <<>> )
+/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
+
+State 14: <RequestVote line 430, col 5 to line 438, col 67 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 1] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s1, leaders |-> {s1}],
+         [action |-> "Timeout", executedOn |-> s2],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ] >>,
+  hadNumLeaders |-> 1,
+  hadNumClientRequests |-> 1,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 3 @@ s3 :> 1)
+/\ votedFor = (s1 :> s1 @@ s2 :> 0 @@ s3 :> 0)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Leader" @@ s2 :> "Candidate" @@ s3 :> "Follower")
+/\ messages = ( [ mtype |-> "RequestVoteRequest",
+    mterm |-> 3,
+    mlastLogTerm |-> 0,
+    mlastLogIndex |-> 0,
+    msource |-> s2,
+    mdest |-> s2 ] :>
+      1 @@
+  [ mtype |-> "RequestVoteRequest",
+    mterm |-> 3,
+    mlastLogTerm |-> 0,
+    mlastLogIndex |-> 0,
+    msource |-> s2,
+    mdest |-> s3 ] :>
+      1 )
+/\ log = ( s1 :> <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>> @@
+  s2 :> <<>> @@
+  s3 :> <<>> )
+/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
+
+State 15: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 1] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s1, leaders |-> {s1}],
+         [action |-> "Timeout", executedOn |-> s2],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ] >>,
+  hadNumLeaders |-> 1,
+  hadNumClientRequests |-> 1,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 3 @@ s3 :> 1)
+/\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> 0)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Leader" @@ s2 :> "Candidate" @@ s3 :> "Follower")
+/\ messages = ( [ mtype |-> "RequestVoteRequest",
+    mterm |-> 3,
+    mlastLogTerm |-> 0,
+    mlastLogIndex |-> 0,
+    msource |-> s2,
+    mdest |-> s3 ] :>
+      1 @@
+  [ mtype |-> "RequestVoteResponse",
+    mterm |-> 3,
+    msource |-> s2,
+    mdest |-> s2,
+    mvoteGranted |-> TRUE,
+    mlog |-> <<>> ] :>
+      1 )
+/\ log = ( s1 :> <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>> @@
+  s2 :> <<>> @@
+  s3 :> <<>> )
+/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
+
+State 16: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 1] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s1, leaders |-> {s1}],
+         [action |-> "Timeout", executedOn |-> s2],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ] >>,
+  hadNumLeaders |-> 1,
+  hadNumClientRequests |-> 1,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 3 @@ s3 :> 3)
+/\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> 0)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Leader" @@ s2 :> "Candidate" @@ s3 :> "Follower")
+/\ messages = ( [ mtype |-> "RequestVoteRequest",
+    mterm |-> 3,
+    mlastLogTerm |-> 0,
+    mlastLogIndex |-> 0,
+    msource |-> s2,
+    mdest |-> s3 ] :>
+      1 @@
+  [ mtype |-> "RequestVoteResponse",
+    mterm |-> 3,
+    msource |-> s2,
+    mdest |-> s2,
+    mvoteGranted |-> TRUE,
+    mlog |-> <<>> ] :>
+      1 )
+/\ log = ( s1 :> <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>> @@
+  s2 :> <<>> @@
+  s3 :> <<>> )
+/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
+
+State 17: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 1] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s1, leaders |-> {s1}],
+         [action |-> "Timeout", executedOn |-> s2],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Send",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ] >>,
+  hadNumLeaders |-> 1,
+  hadNumClientRequests |-> 1,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 3 @@ s3 :> 3)
+/\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Leader" @@ s2 :> "Candidate" @@ s3 :> "Follower")
+/\ messages = ( [ mtype |-> "RequestVoteResponse",
+    mterm |-> 3,
+    msource |-> s2,
+    mdest |-> s2,
+    mvoteGranted |-> TRUE,
+    mlog |-> <<>> ] :>
+      1 @@
+  [ mtype |-> "RequestVoteResponse",
+    mterm |-> 3,
+    msource |-> s3,
+    mdest |-> s2,
+    mvoteGranted |-> TRUE,
+    mlog |-> <<>> ] :>
+      1 )
+/\ log = ( s1 :> <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>> @@
+  s2 :> <<>> @@
+  s3 :> <<>> )
+/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
+
+State 18: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 1] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s1, leaders |-> {s1}],
+         [action |-> "Timeout", executedOn |-> s2],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Send",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ] >>,
+  hadNumLeaders |-> 1,
+  hadNumClientRequests |-> 1,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {s3} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 3 @@ s3 :> 3)
+/\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Leader" @@ s2 :> "Candidate" @@ s3 :> "Follower")
+/\ messages = ( [ mtype |-> "RequestVoteResponse",
+    mterm |-> 3,
+    msource |-> s2,
+    mdest |-> s2,
+    mvoteGranted |-> TRUE,
+    mlog |-> <<>> ] :>
+      1 )
+/\ log = ( s1 :> <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>> @@
+  s2 :> <<>> @@
+  s3 :> <<>> )
+/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {s3} @@ s3 :> {})
+
+State 19: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 1] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s1, leaders |-> {s1}],
+         [action |-> "Timeout", executedOn |-> s2],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Send",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ] >>,
+  hadNumLeaders |-> 1,
+  hadNumClientRequests |-> 1,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {s2, s3} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 3 @@ s3 :> 3)
+/\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Leader" @@ s2 :> "Candidate" @@ s3 :> "Follower")
+/\ messages = << >>
+/\ log = ( s1 :> <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>> @@
+  s2 :> <<>> @@
+  s3 :> <<>> )
+/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {s2, s3} @@ s3 :> {})
+
+State 20: <BecomeLeader line 471, col 5 to line 482, col 76 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 1] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s1, leaders |-> {s1}],
+         [action |-> "Timeout", executedOn |-> s2],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Send",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "BecomeLeader",
+           executedOn |-> s2,
+           leaders |-> {s1, s2} ] >>,
+  hadNumLeaders |-> 2,
+  hadNumClientRequests |-> 1,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {s2, s3} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 3 @@ s3 :> 3)
+/\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Leader" @@ s2 :> "Leader" @@ s3 :> "Follower")
+/\ messages = << >>
+/\ log = ( s1 :> <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>> @@
+  s2 :> <<>> @@
+  s3 :> <<>> )
+/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {s2, s3} @@ s3 :> {})
+
+State 21: <ClientRequest line 487, col 5 to line 495, col 44 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 1] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s1, leaders |-> {s1}],
+         [action |-> "Timeout", executedOn |-> s2],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Send",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "BecomeLeader",
+           executedOn |-> s2,
+           leaders |-> {s1, s2} ] >>,
+  hadNumLeaders |-> 2,
+  hadNumClientRequests |-> 2,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {s2, s3} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 3 @@ s3 :> 3)
+/\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Leader" @@ s2 :> "Leader" @@ s3 :> "Follower")
+/\ messages = << >>
+/\ log = ( s1 :> <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>> @@
+  s2 :> <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>> @@
+  s3 :> <<>> )
+/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {s2, s3} @@ s3 :> {})
+
+State 22: <AppendEntries line 445, col 5 to line 466, col 67 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 1] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s1, leaders |-> {s1}],
+         [action |-> "Timeout", executedOn |-> s2],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Send",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s2, leaders |-> {s1, s2}],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "AppendEntriesRequest",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s2,
+                 mprevLogIndex |-> 0,
+                 mprevLogTerm |-> 0,
+                 mentries |->
+                     <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>>,
+                 mcommitIndex |-> 0 ] ] >>,
+  hadNumLeaders |-> 2,
+  hadNumClientRequests |-> 2,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {s2, s3} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 3 @@ s3 :> 3)
+/\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Leader" @@ s2 :> "Leader" @@ s3 :> "Follower")
+/\ messages = ( [ mtype |-> "AppendEntriesRequest",
+    mterm |-> 2,
+    msource |-> s1,
+    mdest |-> s2,
+    mprevLogIndex |-> 0,
+    mprevLogTerm |-> 0,
+    mentries |-> <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>>,
+    mcommitIndex |-> 0 ] :>
+      1 )
+/\ log = ( s1 :> <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>> @@
+  s2 :> <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>> @@
+  s3 :> <<>> )
+/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {s2, s3} @@ s3 :> {})
+
+State 23: <AppendEntries line 445, col 5 to line 466, col 67 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 1] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s1, leaders |-> {s1}],
+         [action |-> "Timeout", executedOn |-> s2],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Send",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s2, leaders |-> {s1, s2}],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "AppendEntriesRequest",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s2,
+                 mprevLogIndex |-> 0,
+                 mprevLogTerm |-> 0,
+                 mentries |->
+                     <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>>,
+                 mcommitIndex |-> 0 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "AppendEntriesRequest",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s3,
+                 mprevLogIndex |-> 0,
+                 mprevLogTerm |-> 0,
+                 mentries |->
+                     <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>>,
+                 mcommitIndex |-> 0 ] ] >>,
+  hadNumLeaders |-> 2,
+  hadNumClientRequests |-> 2,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {s2, s3} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 3 @@ s3 :> 3)
+/\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Leader" @@ s2 :> "Leader" @@ s3 :> "Follower")
+/\ messages = ( [ mtype |-> "AppendEntriesRequest",
+    mterm |-> 2,
+    msource |-> s1,
+    mdest |-> s2,
+    mprevLogIndex |-> 0,
+    mprevLogTerm |-> 0,
+    mentries |-> <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>>,
+    mcommitIndex |-> 0 ] :>
+      1 @@
+  [ mtype |-> "AppendEntriesRequest",
+    mterm |-> 3,
+    msource |-> s2,
+    mdest |-> s3,
+    mprevLogIndex |-> 0,
+    mprevLogTerm |-> 0,
+    mentries |-> <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>>,
+    mcommitIndex |-> 0 ] :>
+      1 )
+/\ log = ( s1 :> <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>> @@
+  s2 :> <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>> @@
+  s3 :> <<>> )
+/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {s2, s3} @@ s3 :> {})
+
+State 24: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 1] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s1, leaders |-> {s1}],
+         [action |-> "Timeout", executedOn |-> s2],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Send",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s2, leaders |-> {s1, s2}],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "AppendEntriesRequest",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s2,
+                 mprevLogIndex |-> 0,
+                 mprevLogTerm |-> 0,
+                 mentries |->
+                     <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>>,
+                 mcommitIndex |-> 0 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "AppendEntriesRequest",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s3,
+                 mprevLogIndex |-> 0,
+                 mprevLogTerm |-> 0,
+                 mentries |->
+                     <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>>,
+                 mcommitIndex |-> 0 ] ] >>,
+  hadNumLeaders |-> 2,
+  hadNumClientRequests |-> 2,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {s2, s3} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 3 @@ s3 :> 3)
+/\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Leader" @@ s2 :> "Leader" @@ s3 :> "Follower")
+/\ messages = ( [ mtype |-> "AppendEntriesRequest",
+    mterm |-> 2,
+    msource |-> s1,
+    mdest |-> s2,
+    mprevLogIndex |-> 0,
+    mprevLogTerm |-> 0,
+    mentries |-> <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>>,
+    mcommitIndex |-> 0 ] :>
+      1 @@
+  [ mtype |-> "AppendEntriesRequest",
+    mterm |-> 3,
+    msource |-> s2,
+    mdest |-> s3,
+    mprevLogIndex |-> 0,
+    mprevLogTerm |-> 0,
+    mentries |-> <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>>,
+    mcommitIndex |-> 0 ] :>
+      1 )
+/\ log = ( s1 :> <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>> @@
+  s2 :> <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>> @@
+  s3 :> <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>> )
+/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {s2, s3} @@ s3 :> {})
+
+State 25: <ClientRequest line 487, col 5 to line 495, col 44 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 1] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s1, leaders |-> {s1}],
+         [action |-> "Timeout", executedOn |-> s2],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Send",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s2, leaders |-> {s1, s2}],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "AppendEntriesRequest",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s2,
+                 mprevLogIndex |-> 0,
+                 mprevLogTerm |-> 0,
+                 mentries |->
+                     <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>>,
+                 mcommitIndex |-> 0 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "AppendEntriesRequest",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s3,
+                 mprevLogIndex |-> 0,
+                 mprevLogTerm |-> 0,
+                 mentries |->
+                     <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>>,
+                 mcommitIndex |-> 0 ] ] >>,
+  hadNumLeaders |-> 2,
+  hadNumClientRequests |-> 3,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {s2, s3} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 3 @@ s3 :> 3)
+/\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Leader" @@ s2 :> "Leader" @@ s3 :> "Follower")
+/\ messages = ( [ mtype |-> "AppendEntriesRequest",
+    mterm |-> 2,
+    msource |-> s1,
+    mdest |-> s2,
+    mprevLogIndex |-> 0,
+    mprevLogTerm |-> 0,
+    mentries |-> <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>>,
+    mcommitIndex |-> 0 ] :>
+      1 @@
+  [ mtype |-> "AppendEntriesRequest",
+    mterm |-> 3,
+    msource |-> s2,
+    mdest |-> s3,
+    mprevLogIndex |-> 0,
+    mprevLogTerm |-> 0,
+    mentries |-> <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>>,
+    mcommitIndex |-> 0 ] :>
+      1 )
+/\ log = ( s1 :>
+      << [term |-> 2, type |-> "ValueEntry", value |-> 1],
+         [term |-> 2, type |-> "ValueEntry", value |-> 1] >> @@
+  s2 :> <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>> @@
+  s3 :> <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>> )
+/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {s2, s3} @@ s3 :> {})
+
+State 26: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 1] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s1, leaders |-> {s1}],
+         [action |-> "Timeout", executedOn |-> s2],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Send",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s2, leaders |-> {s1, s2}],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "AppendEntriesRequest",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s2,
+                 mprevLogIndex |-> 0,
+                 mprevLogTerm |-> 0,
+                 mentries |->
+                     <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>>,
+                 mcommitIndex |-> 0 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "AppendEntriesRequest",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s3,
+                 mprevLogIndex |-> 0,
+                 mprevLogTerm |-> 0,
+                 mentries |->
+                     <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>>,
+                 mcommitIndex |-> 0 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "AppendEntriesRequest",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s3,
+                 mprevLogIndex |-> 0,
+                 mprevLogTerm |-> 0,
+                 mentries |->
+                     <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>>,
+                 mcommitIndex |-> 0 ] ],
+         [ action |-> "Send",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "AppendEntriesResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 msuccess |-> TRUE,
+                 mmatchIndex |-> 1 ] ] >>,
+  hadNumLeaders |-> 2,
+  hadNumClientRequests |-> 3,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {s2, s3} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 3 @@ s3 :> 3)
+/\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Leader" @@ s2 :> "Leader" @@ s3 :> "Follower")
+/\ messages = ( [ mtype |-> "AppendEntriesResponse",
+    mterm |-> 3,
+    msource |-> s3,
+    mdest |-> s2,
+    msuccess |-> TRUE,
+    mmatchIndex |-> 1 ] :>
+      1 @@
+  [ mtype |-> "AppendEntriesRequest",
+    mterm |-> 2,
+    msource |-> s1,
+    mdest |-> s2,
+    mprevLogIndex |-> 0,
+    mprevLogTerm |-> 0,
+    mentries |-> <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>>,
+    mcommitIndex |-> 0 ] :>
+      1 )
+/\ log = ( s1 :>
+      << [term |-> 2, type |-> "ValueEntry", value |-> 1],
+         [term |-> 2, type |-> "ValueEntry", value |-> 1] >> @@
+  s2 :> <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>> @@
+  s3 :> <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>> )
+/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {s2, s3} @@ s3 :> {})
+
+State 27: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 1] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s1, leaders |-> {s1}],
+         [action |-> "Timeout", executedOn |-> s2],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Send",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s2, leaders |-> {s1, s2}],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "AppendEntriesRequest",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s2,
+                 mprevLogIndex |-> 0,
+                 mprevLogTerm |-> 0,
+                 mentries |->
+                     <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>>,
+                 mcommitIndex |-> 0 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "AppendEntriesRequest",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s3,
+                 mprevLogIndex |-> 0,
+                 mprevLogTerm |-> 0,
+                 mentries |->
+                     <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>>,
+                 mcommitIndex |-> 0 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "AppendEntriesRequest",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s3,
+                 mprevLogIndex |-> 0,
+                 mprevLogTerm |-> 0,
+                 mentries |->
+                     <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>>,
+                 mcommitIndex |-> 0 ] ],
+         [ action |-> "Send",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "AppendEntriesResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 msuccess |-> TRUE,
+                 mmatchIndex |-> 1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "AppendEntriesResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 msuccess |-> TRUE,
+                 mmatchIndex |-> 1 ] ] >>,
+  hadNumLeaders |-> 2,
+  hadNumClientRequests |-> 3,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {s2, s3} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 2) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 3 @@ s3 :> 3)
+/\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Leader" @@ s2 :> "Leader" @@ s3 :> "Follower")
+/\ messages = ( [ mtype |-> "AppendEntriesRequest",
+    mterm |-> 2,
+    msource |-> s1,
+    mdest |-> s2,
+    mprevLogIndex |-> 0,
+    mprevLogTerm |-> 0,
+    mentries |-> <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>>,
+    mcommitIndex |-> 0 ] :>
+      1 )
+/\ log = ( s1 :>
+      << [term |-> 2, type |-> "ValueEntry", value |-> 1],
+         [term |-> 2, type |-> "ValueEntry", value |-> 1] >> @@
+  s2 :> <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>> @@
+  s3 :> <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>> )
+/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {s2, s3} @@ s3 :> {})
+
+State 28: <AdvanceCommitIndex line 503, col 5 to line 537, col 73 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 1] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s1, leaders |-> {s1}],
+         [action |-> "Timeout", executedOn |-> s2],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Send",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s2, leaders |-> {s1, s2}],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "AppendEntriesRequest",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s2,
+                 mprevLogIndex |-> 0,
+                 mprevLogTerm |-> 0,
+                 mentries |->
+                     <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>>,
+                 mcommitIndex |-> 0 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "AppendEntriesRequest",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s3,
+                 mprevLogIndex |-> 0,
+                 mprevLogTerm |-> 0,
+                 mentries |->
+                     <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>>,
+                 mcommitIndex |-> 0 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "AppendEntriesRequest",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s3,
+                 mprevLogIndex |-> 0,
+                 mprevLogTerm |-> 0,
+                 mentries |->
+                     <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>>,
+                 mcommitIndex |-> 0 ] ],
+         [ action |-> "Send",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "AppendEntriesResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 msuccess |-> TRUE,
+                 mmatchIndex |-> 1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "AppendEntriesResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 msuccess |-> TRUE,
+                 mmatchIndex |-> 1 ] ],
+         [ action |-> "CommitEntry",
+           executedOn |-> s2,
+           entry |-> [term |-> 3, type |-> "ValueEntry", value |-> 2] ] >>,
+  hadNumLeaders |-> 2,
+  hadNumClientRequests |-> 3,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {s2, s3} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 2) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 3 @@ s3 :> 3)
+/\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 1 @@ s3 :> 0)
+/\ state = (s1 :> "Leader" @@ s2 :> "Leader" @@ s3 :> "Follower")
+/\ messages = ( [ mtype |-> "AppendEntriesRequest",
+    mterm |-> 2,
+    msource |-> s1,
+    mdest |-> s2,
+    mprevLogIndex |-> 0,
+    mprevLogTerm |-> 0,
+    mentries |-> <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>>,
+    mcommitIndex |-> 0 ] :>
+      1 )
+/\ log = ( s1 :>
+      << [term |-> 2, type |-> "ValueEntry", value |-> 1],
+         [term |-> 2, type |-> "ValueEntry", value |-> 1] >> @@
+  s2 :> <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>> @@
+  s3 :> <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>> )
+/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {s2, s3} @@ s3 :> {})
+
+State 29: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 1] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s1, leaders |-> {s1}],
+         [action |-> "Timeout", executedOn |-> s2],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Send",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s2, leaders |-> {s1, s2}],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "AppendEntriesRequest",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s2,
+                 mprevLogIndex |-> 0,
+                 mprevLogTerm |-> 0,
+                 mentries |->
+                     <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>>,
+                 mcommitIndex |-> 0 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "AppendEntriesRequest",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s3,
+                 mprevLogIndex |-> 0,
+                 mprevLogTerm |-> 0,
+                 mentries |->
+                     <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>>,
+                 mcommitIndex |-> 0 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "AppendEntriesRequest",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s3,
+                 mprevLogIndex |-> 0,
+                 mprevLogTerm |-> 0,
+                 mentries |->
+                     <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>>,
+                 mcommitIndex |-> 0 ] ],
+         [ action |-> "Send",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "AppendEntriesResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 msuccess |-> TRUE,
+                 mmatchIndex |-> 1 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "AppendEntriesResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 msuccess |-> TRUE,
+                 mmatchIndex |-> 1 ] ],
+         [ action |-> "CommitEntry",
+           executedOn |-> s2,
+           entry |-> [term |-> 3, type |-> "ValueEntry", value |-> 2] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "AppendEntriesRequest",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s2,
+                 mprevLogIndex |-> 0,
+                 mprevLogTerm |-> 0,
+                 mentries |->
+                     <<[term |-> 2, type |-> "ValueEntry", value |-> 1]>>,
+                 mcommitIndex |-> 0 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "AppendEntriesResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 msuccess |-> FALSE,
+                 mmatchIndex |-> 0 ] ] >>,
+  hadNumLeaders |-> 2,
+  hadNumClientRequests |-> 3,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {s2, s3} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 2) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 3 @@ s3 :> 3)
+/\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 1 @@ s3 :> 0)
+/\ state = (s1 :> "Leader" @@ s2 :> "Leader" @@ s3 :> "Follower")
+/\ messages = ( [ mtype |-> "AppendEntriesResponse",
+    mterm |-> 3,
+    msource |-> s2,
+    mdest |-> s1,
+    msuccess |-> FALSE,
+    mmatchIndex |-> 0 ] :>
+      1 )
+/\ log = ( s1 :>
+      << [term |-> 2, type |-> "ValueEntry", value |-> 1],
+         [term |-> 2, type |-> "ValueEntry", value |-> 1] >> @@
+  s2 :> <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>> @@
+  s3 :> <<[term |-> 3, type |-> "ValueEntry", value |-> 2]>> )
+/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {s2, s3} @@ s3 :> {})
+
+3474 states generated, 257 distinct states found, 0 states left on queue.
+The depth of the complete state graph search is 29.
+The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 5 and the 95th percentile is 3).
+Finished in 02s at (2021-05-06 20:28:05)
