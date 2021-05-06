@@ -1,0 +1,117 @@
+2021/05/06 23:56:44 replaying WAL of member 1
+2021/05/06 23:56:44 loading WAL at term 0 and index 0
+2021/05/06 23:56:44 raftexample: wal loaded
+raft2021/05/06 23:56:44 INFO: 1 switched to configuration voters=()
+raft2021/05/06 23:56:44 INFO: 1 became follower at term 0
+raft2021/05/06 23:56:44 INFO: newRaft 1 [peers: [], term: 0, commit: 0, applied: 0, lastindex: 0, lastterm: 0]
+raft2021/05/06 23:56:44 INFO: 1 became follower at term 1
+raft2021/05/06 23:56:44 INFO: 1 switched to configuration voters=(1)
+raft2021/05/06 23:56:44 INFO: 1 switched to configuration voters=(1 2)
+raft2021/05/06 23:56:44 INFO: 1 switched to configuration voters=(1 2 3)
+2021/05/06 23:56:44 replaying WAL of member 2
+raft2021/05/06 23:56:44 INFO: 1 switched to configuration voters=(1 2 3)
+raft2021/05/06 23:56:44 INFO: 1 switched to configuration voters=(1 2 3)
+raft2021/05/06 23:56:44 INFO: 1 switched to configuration voters=(1 2 3)
+2021/05/06 23:56:44 loading WAL at term 0 and index 0
+2021/05/06 23:56:44 raftexample: wal loaded
+raft2021/05/06 23:56:44 INFO: 2 switched to configuration voters=()
+raft2021/05/06 23:56:44 INFO: 2 became follower at term 0
+raft2021/05/06 23:56:44 INFO: newRaft 2 [peers: [], term: 0, commit: 0, applied: 0, lastindex: 0, lastterm: 0]
+raft2021/05/06 23:56:44 INFO: 2 became follower at term 1
+raft2021/05/06 23:56:44 INFO: 2 switched to configuration voters=(1)
+raft2021/05/06 23:56:44 INFO: 2 switched to configuration voters=(1 2)
+raft2021/05/06 23:56:44 INFO: 2 switched to configuration voters=(1 2 3)
+2021/05/06 23:56:44 replaying WAL of member 3
+raft2021/05/06 23:56:44 INFO: 2 switched to configuration voters=(1 2 3)
+raft2021/05/06 23:56:44 INFO: 2 switched to configuration voters=(1 2 3)
+raft2021/05/06 23:56:44 INFO: 2 switched to configuration voters=(1 2 3)
+2021/05/06 23:56:44 loading WAL at term 0 and index 0
+2021/05/06 23:56:44 raftexample: wal loaded
+raft2021/05/06 23:56:44 INFO: 3 switched to configuration voters=()
+raft2021/05/06 23:56:44 INFO: 3 became follower at term 0
+raft2021/05/06 23:56:44 INFO: newRaft 3 [peers: [], term: 0, commit: 0, applied: 0, lastindex: 0, lastterm: 0]
+raft2021/05/06 23:56:44 INFO: 3 became follower at term 1
+raft2021/05/06 23:56:44 INFO: 3 switched to configuration voters=(1)
+raft2021/05/06 23:56:44 INFO: 3 switched to configuration voters=(1 2)
+raft2021/05/06 23:56:44 INFO: 3 switched to configuration voters=(1 2 3)
+Ignored event {Type:Send Message:{Type:RequestVoteReq Entry:{ term: 0, type: ConfigEntry, value: [] }} Sender:1 Recipient:1}
+Ignored event {Type:Receive Message:{Type:RequestVoteReq Entry:{ term: 0, type: ConfigEntry, value: [] }} Sender:1 Recipient:1}
+Ignored event {Type:Send Message:{Type:RequestVoteRes Entry:{ term: 0, type: ConfigEntry, value: [] }} Sender:1 Recipient:1}
+Ignored event {Type:Receive Message:{Type:RequestVoteRes Entry:{ term: 0, type: ConfigEntry, value: [] }} Sender:1 Recipient:1}
+----{Type:Timeout Message:{Type:RequestVoteReq Entry:{ term: 0, type: ConfigEntry, value: [] }} Sender:0 Recipient:1}
+debug state: node 1: committed=3, applied=3, unstable.offset=4, len(unstable.Entries)=0 | [{Term:1 Index:1 Type:EntryConfChange Data:[8 0 16 0 24 1]} {Term:1 Index:2 Type:EntryConfChange Data:[8 0 16 0 24 2]} {Term:1 Index:3 Type:EntryConfChange Data:[8 0 16 0 24 3]}]
+debug state: node 2: committed=3, applied=3, unstable.offset=4, len(unstable.Entries)=0 | [{Term:1 Index:1 Type:EntryConfChange Data:[8 0 16 0 24 1]} {Term:1 Index:2 Type:EntryConfChange Data:[8 0 16 0 24 2]} {Term:1 Index:3 Type:EntryConfChange Data:[8 0 16 0 24 3]}]
+debug state: node 3: committed=3, applied=0, unstable.offset=1, len(unstable.Entries)=3 | [{Term:1 Index:1 Type:EntryConfChange Data:[8 0 16 0 24 1]} {Term:1 Index:2 Type:EntryConfChange Data:[8 0 16 0 24 2]} {Term:1 Index:3 Type:EntryConfChange Data:[8 0 16 0 24 3]}]
+raft2021/05/06 23:56:44 INFO: 1 is starting a new election at term 1
+raft2021/05/06 23:56:44 INFO: 1 became candidate at term 2
+raft2021/05/06 23:56:44 INFO: 1 received MsgVoteResp from 1 at term 2
+raft2021/05/06 23:56:44 INFO: 1 [logterm: 1, index: 3] sent MsgVote request to 2 at term 2
+raft2021/05/06 23:56:44 INFO: 1 [logterm: 1, index: 3] sent MsgVote request to 3 at term 2
+debug soup: 1 -> soup (to 2): MsgVote
+debug soup: 1 -> soup (to 3): MsgVote
+raft2021/05/06 23:56:44 INFO: 3 switched to configuration voters=(1 2 3)
+raft2021/05/06 23:56:44 INFO: 3 switched to configuration voters=(1 2 3)
+raft2021/05/06 23:56:44 INFO: 3 switched to configuration voters=(1 2 3)
+----{Type:Send Message:{Type:RequestVoteReq Entry:{ term: 0, type: ConfigEntry, value: [] }} Sender:1 Recipient:2}
+debug state: node 1: committed=3, applied=3, unstable.offset=4, len(unstable.Entries)=0 | [{Term:1 Index:1 Type:EntryConfChange Data:[8 0 16 0 24 1]} {Term:1 Index:2 Type:EntryConfChange Data:[8 0 16 0 24 2]} {Term:1 Index:3 Type:EntryConfChange Data:[8 0 16 0 24 3]}]
+debug state: node 2: committed=3, applied=3, unstable.offset=4, len(unstable.Entries)=0 | [{Term:1 Index:1 Type:EntryConfChange Data:[8 0 16 0 24 1]} {Term:1 Index:2 Type:EntryConfChange Data:[8 0 16 0 24 2]} {Term:1 Index:3 Type:EntryConfChange Data:[8 0 16 0 24 3]}]
+debug state: node 3: committed=3, applied=3, unstable.offset=4, len(unstable.Entries)=0 | [{Term:1 Index:1 Type:EntryConfChange Data:[8 0 16 0 24 1]} {Term:1 Index:2 Type:EntryConfChange Data:[8 0 16 0 24 2]} {Term:1 Index:3 Type:EntryConfChange Data:[8 0 16 0 24 3]}]
+----{Type:Receive Message:{Type:RequestVoteReq Entry:{ term: 0, type: ConfigEntry, value: [] }} Sender:1 Recipient:2}
+debug state: node 1: committed=3, applied=3, unstable.offset=4, len(unstable.Entries)=0 | [{Term:1 Index:1 Type:EntryConfChange Data:[8 0 16 0 24 1]} {Term:1 Index:2 Type:EntryConfChange Data:[8 0 16 0 24 2]} {Term:1 Index:3 Type:EntryConfChange Data:[8 0 16 0 24 3]}]
+debug state: node 2: committed=3, applied=3, unstable.offset=4, len(unstable.Entries)=0 | [{Term:1 Index:1 Type:EntryConfChange Data:[8 0 16 0 24 1]} {Term:1 Index:2 Type:EntryConfChange Data:[8 0 16 0 24 2]} {Term:1 Index:3 Type:EntryConfChange Data:[8 0 16 0 24 3]}]
+debug state: node 3: committed=3, applied=3, unstable.offset=4, len(unstable.Entries)=0 | [{Term:1 Index:1 Type:EntryConfChange Data:[8 0 16 0 24 1]} {Term:1 Index:2 Type:EntryConfChange Data:[8 0 16 0 24 2]} {Term:1 Index:3 Type:EntryConfChange Data:[8 0 16 0 24 3]}]
+debug soup: soup (from 1) -> 2: MsgVote
+----{Type:Send Message:{Type:RequestVoteRes Entry:{ term: 0, type: ConfigEntry, value: [] }} Sender:2 Recipient:1}
+debug state: node 1: committed=3, applied=3, unstable.offset=4, len(unstable.Entries)=0 | [{Term:1 Index:1 Type:EntryConfChange Data:[8 0 16 0 24 1]} {Term:1 Index:2 Type:EntryConfChange Data:[8 0 16 0 24 2]} {Term:1 Index:3 Type:EntryConfChange Data:[8 0 16 0 24 3]}]
+debug state: node 2: committed=3, applied=3, unstable.offset=4, len(unstable.Entries)=0 | [{Term:1 Index:1 Type:EntryConfChange Data:[8 0 16 0 24 1]} {Term:1 Index:2 Type:EntryConfChange Data:[8 0 16 0 24 2]} {Term:1 Index:3 Type:EntryConfChange Data:[8 0 16 0 24 3]}]
+debug state: node 3: committed=3, applied=3, unstable.offset=4, len(unstable.Entries)=0 | [{Term:1 Index:1 Type:EntryConfChange Data:[8 0 16 0 24 1]} {Term:1 Index:2 Type:EntryConfChange Data:[8 0 16 0 24 2]} {Term:1 Index:3 Type:EntryConfChange Data:[8 0 16 0 24 3]}]
+raft2021/05/06 23:56:44 INFO: 2 [term: 1] received a MsgVote message with higher term from 1 [term: 2]
+raft2021/05/06 23:56:44 INFO: 2 became follower at term 2
+raft2021/05/06 23:56:44 INFO: 2 [logterm: 1, index: 3, vote: 0] cast MsgVote for 1 [logterm: 1, index: 3] at term 2
+debug soup: 2 -> soup (to 1): MsgVoteResp
+----{Type:Receive Message:{Type:RequestVoteRes Entry:{ term: 0, type: ConfigEntry, value: [] }} Sender:2 Recipient:1}
+debug state: node 1: committed=3, applied=3, unstable.offset=4, len(unstable.Entries)=0 | [{Term:1 Index:1 Type:EntryConfChange Data:[8 0 16 0 24 1]} {Term:1 Index:2 Type:EntryConfChange Data:[8 0 16 0 24 2]} {Term:1 Index:3 Type:EntryConfChange Data:[8 0 16 0 24 3]}]
+debug state: node 2: committed=3, applied=3, unstable.offset=4, len(unstable.Entries)=0 | [{Term:1 Index:1 Type:EntryConfChange Data:[8 0 16 0 24 1]} {Term:1 Index:2 Type:EntryConfChange Data:[8 0 16 0 24 2]} {Term:1 Index:3 Type:EntryConfChange Data:[8 0 16 0 24 3]}]
+debug state: node 3: committed=3, applied=3, unstable.offset=4, len(unstable.Entries)=0 | [{Term:1 Index:1 Type:EntryConfChange Data:[8 0 16 0 24 1]} {Term:1 Index:2 Type:EntryConfChange Data:[8 0 16 0 24 2]} {Term:1 Index:3 Type:EntryConfChange Data:[8 0 16 0 24 3]}]
+debug soup: soup (from 2) -> 1: MsgVoteResp
+----{Type:BecomeLeader Message:{Type:RequestVoteReq Entry:{ term: 0, type: ConfigEntry, value: [] }} Sender:0 Recipient:1}
+debug state: node 1: committed=3, applied=3, unstable.offset=4, len(unstable.Entries)=0 | [{Term:1 Index:1 Type:EntryConfChange Data:[8 0 16 0 24 1]} {Term:1 Index:2 Type:EntryConfChange Data:[8 0 16 0 24 2]} {Term:1 Index:3 Type:EntryConfChange Data:[8 0 16 0 24 3]}]
+debug state: node 2: committed=3, applied=3, unstable.offset=4, len(unstable.Entries)=0 | [{Term:1 Index:1 Type:EntryConfChange Data:[8 0 16 0 24 1]} {Term:1 Index:2 Type:EntryConfChange Data:[8 0 16 0 24 2]} {Term:1 Index:3 Type:EntryConfChange Data:[8 0 16 0 24 3]}]
+debug state: node 3: committed=3, applied=3, unstable.offset=4, len(unstable.Entries)=0 | [{Term:1 Index:1 Type:EntryConfChange Data:[8 0 16 0 24 1]} {Term:1 Index:2 Type:EntryConfChange Data:[8 0 16 0 24 2]} {Term:1 Index:3 Type:EntryConfChange Data:[8 0 16 0 24 3]}]
+raft2021/05/06 23:56:45 INFO: 1 received MsgVoteResp from 2 at term 2
+raft2021/05/06 23:56:45 INFO: 1 has received 2 MsgVoteResp votes and 0 vote rejections
+raft2021/05/06 23:56:45 INFO: 1 became leader at term 2
+raft2021/05/06 23:56:45 INFO: raft.node: 1 elected leader 1 at term 2
+debug soup: 1 -> soup (to 2): MsgApp
+debug soup: 1 -> soup (to 3): MsgApp
+debug soup: soup (from 1) -> 2: MsgApp
+debug soup: soup (from 1) -> 3: MsgApp
+raft2021/05/06 23:56:45 INFO: raft.node: 2 elected leader 1 at term 2
+raft2021/05/06 23:56:45 INFO: 3 [term: 1] received a MsgApp message with higher term from 1 [term: 2]
+raft2021/05/06 23:56:45 INFO: 3 became follower at term 2
+raft2021/05/06 23:56:45 INFO: raft.node: 3 elected leader 1 at term 2
+debug soup: 2 -> soup (to 1): MsgAppResp
+debug soup: 3 -> soup (to 1): MsgAppResp
+debug soup: soup (from 2) -> 1: MsgAppResp
+debug soup: soup (from 3) -> 1: MsgAppResp
+debug soup: 1 -> soup (to 2): MsgApp
+debug soup: 1 -> soup (to 3): MsgApp
+debug soup: soup (from 1) -> 2: MsgApp
+debug soup: soup (from 1) -> 3: MsgApp
+debug soup: 2 -> soup (to 1): MsgAppResp
+debug soup: 3 -> soup (to 1): MsgAppResp
+debug soup: soup (from 2) -> 1: MsgAppResp
+debug soup: soup (from 3) -> 1: MsgAppResp
+----{Type:TryRemoveServer Message:{Type:RequestVoteReq Entry:{ term: 0, type: ConfigEntry, value: [] }} Sender:2 Recipient:1}
+debug state: node 1: committed=4, applied=4, unstable.offset=5, len(unstable.Entries)=0 | [{Term:1 Index:1 Type:EntryConfChange Data:[8 0 16 0 24 1]} {Term:1 Index:2 Type:EntryConfChange Data:[8 0 16 0 24 2]} {Term:1 Index:3 Type:EntryConfChange Data:[8 0 16 0 24 3]} {Term:2 Index:4 Type:EntryNormal Data:[]}]
+debug state: node 2: committed=4, applied=4, unstable.offset=5, len(unstable.Entries)=0 | [{Term:1 Index:1 Type:EntryConfChange Data:[8 0 16 0 24 1]} {Term:1 Index:2 Type:EntryConfChange Data:[8 0 16 0 24 2]} {Term:1 Index:3 Type:EntryConfChange Data:[8 0 16 0 24 3]} {Term:2 Index:4 Type:EntryNormal Data:[]}]
+debug state: node 3: committed=4, applied=4, unstable.offset=5, len(unstable.Entries)=0 | [{Term:1 Index:1 Type:EntryConfChange Data:[8 0 16 0 24 1]} {Term:1 Index:2 Type:EntryConfChange Data:[8 0 16 0 24 2]} {Term:1 Index:3 Type:EntryConfChange Data:[8 0 16 0 24 3]} {Term:2 Index:4 Type:EntryNormal Data:[]}]
+----{Type:RemoveServer Message:{Type:RequestVoteReq Entry:{ term: 0, type: ConfigEntry, value: [] }} Sender:0 Recipient:2}
+debug state: node 1: committed=4, applied=4, unstable.offset=5, len(unstable.Entries)=0 | [{Term:1 Index:1 Type:EntryConfChange Data:[8 0 16 0 24 1]} {Term:1 Index:2 Type:EntryConfChange Data:[8 0 16 0 24 2]} {Term:1 Index:3 Type:EntryConfChange Data:[8 0 16 0 24 3]} {Term:2 Index:4 Type:EntryNormal Data:[]}]
+debug state: node 2: committed=4, applied=4, unstable.offset=5, len(unstable.Entries)=0 | [{Term:1 Index:1 Type:EntryConfChange Data:[8 0 16 0 24 1]} {Term:1 Index:2 Type:EntryConfChange Data:[8 0 16 0 24 2]} {Term:1 Index:3 Type:EntryConfChange Data:[8 0 16 0 24 3]} {Term:2 Index:4 Type:EntryNormal Data:[]}]
+debug state: node 3: committed=4, applied=4, unstable.offset=5, len(unstable.Entries)=0 | [{Term:1 Index:1 Type:EntryConfChange Data:[8 0 16 0 24 1]} {Term:1 Index:2 Type:EntryConfChange Data:[8 0 16 0 24 2]} {Term:1 Index:3 Type:EntryConfChange Data:[8 0 16 0 24 3]} {Term:2 Index:4 Type:EntryNormal Data:[]}]
+raft2021/05/06 23:56:45 INFO: 2 switched to configuration voters=(1 3)
+----Finished
+spec state: { atLeastOneLeader: true, logs: { 1: [{ term: 2, type: ConfigEntry, value: [0 0] }], 2: [], 3: [] } }
+
+impl state: { atLeastOneLeader: true, logs: { 1: [{ term: 2, type: ValueEntry, value: 0 } { term: 2, type: ConfigEntry, value: [1 3] }], 2: [{ term: 2, type: ValueEntry, value: 0 }], 3: [{ term: 2, type: ValueEntry, value: 0 }] } }

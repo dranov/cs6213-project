@@ -1,0 +1,4 @@
+```
+NEXT NextDynamic
+INVARIANTS MembershipChange
+```
