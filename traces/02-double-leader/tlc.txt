@@ -1,5 +1,5 @@
 TLC2 Version 2.16 of 31 December 2020 (rev: cdddf55)
-Running breadth-first search Model-Checking with fp 59 and seed 3148700605300592595 with 8 workers on 8 cores with 3641MB heap and 64MB offheap memory [pid: 56203] (Mac OS X 10.16 x86_64, N/A 14.0.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 37 and seed -9219304766366422702 with 8 workers on 8 cores with 3641MB heap and 64MB offheap memory [pid: 42632] (Mac OS X 10.16 x86_64, N/A 14.0.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file /Users/darius/Downloads/cs6213-project/tla/raft.tla
 Parsing file /private/var/folders/l6/290h50ys7t995mrks71zd9zc0000gn/T/Naturals.tla
 Parsing file /private/var/folders/l6/290h50ys7t995mrks71zd9zc0000gn/T/Integers.tla
@@ -20,11 +20,10 @@ Semantic processing of module Functions
 Semantic processing of module FiniteSetsExt
 Semantic processing of module SequencesExt
 Semantic processing of module raft
-Starting... (2021-05-05 23:36:27)
+Starting... (2021-05-07 15:45:28)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2021-05-05 23:36:27.
-Progress(17) at 2021-05-05 23:36:30: 105,041 states generated (105,041 s/min), 31,827 distinct states found (31,827 ds/min), 23,352 states left on queue.
-Progress(20) at 2021-05-05 23:37:30: 7,067,481 states generated (6,962,440 s/min), 1,640,200 distinct states found (1,608,373 ds/min), 1,133,441 states left on queue.
+Finished computing initial states: 1 distinct state generated at 2021-05-07 15:45:28.
+Progress(16) at 2021-05-07 15:45:31: 81,530 states generated (81,530 s/min), 22,213 distinct states found (22,213 ds/min), 15,614 states left on queue.
 Error: Invariant LeadershipChange is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -52,7 +51,7 @@ State 1: <Initial predicate>
 /\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
 /\ votesGranted = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
 
-State 2: <Timeout line 413, col 15 to line 425, col 60 of module raft>
+State 2: <Timeout line 426, col 15 to line 438, col 60 of module raft>
 /\ history = [ server |->
       ( s1 :> [restarted |-> 0, timeout |-> 1] @@
         s2 :> [restarted |-> 0, timeout |-> 0] @@
@@ -77,7 +76,7 @@ State 2: <Timeout line 413, col 15 to line 425, col 60 of module raft>
 /\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
 /\ votesGranted = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
 
-State 3: <RequestVote line 430, col 5 to line 438, col 67 of module raft>
+State 3: <RequestVote line 443, col 5 to line 451, col 67 of module raft>
 /\ history = [ server |->
       ( s1 :> [restarted |-> 0, timeout |-> 1] @@
         s2 :> [restarted |-> 0, timeout |-> 0] @@
@@ -118,7 +117,7 @@ State 3: <RequestVote line 430, col 5 to line 438, col 67 of module raft>
 /\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
 /\ votesGranted = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
 
-State 4: <RequestVote line 430, col 5 to line 438, col 67 of module raft>
+State 4: <RequestVote line 443, col 5 to line 451, col 67 of module raft>
 /\ history = [ server |->
       ( s1 :> [restarted |-> 0, timeout |-> 1] @@
         s2 :> [restarted |-> 0, timeout |-> 0] @@
@@ -175,7 +174,7 @@ State 4: <RequestVote line 430, col 5 to line 438, col 67 of module raft>
 /\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
 /\ votesGranted = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
 
-State 5: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
+State 5: <NextAsync line 944, col 8 to line 944, col 44 of module raft>
 /\ history = [ server |->
       ( s1 :> [restarted |-> 0, timeout |-> 1] @@
         s2 :> [restarted |-> 0, timeout |-> 0] @@
@@ -199,25 +198,7 @@ State 5: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
                  mlastLogTerm |-> 0,
                  mlastLogIndex |-> 0,
                  msource |-> s1,
-                 mdest |-> s2 ] ],
-         [ action |-> "Receive",
-           executedOn |-> s1,
-           msg |->
-               [ mtype |-> "RequestVoteRequest",
-                 mterm |-> 2,
-                 mlastLogTerm |-> 0,
-                 mlastLogIndex |-> 0,
-                 msource |-> s1,
-                 mdest |-> s1 ] ],
-         [ action |-> "Send",
-           executedOn |-> s1,
-           msg |->
-               [ mtype |-> "RequestVoteResponse",
-                 mterm |-> 2,
-                 msource |-> s1,
-                 mdest |-> s1,
-                 mvoteGranted |-> TRUE,
-                 mlog |-> <<>> ] ] >>,
+                 mdest |-> s2 ] ] >>,
   hadNumLeaders |-> 0,
   hadNumClientRequests |-> 0,
   hadNumTriedMembershipChanges |-> 0,
@@ -226,8 +207,8 @@ State 5: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
-/\ currentTerm = (s1 :> 2 @@ s2 :> 1 @@ s3 :> 1)
-/\ votedFor = (s1 :> s1 @@ s2 :> 0 @@ s3 :> 0)
+/\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 1)
+/\ votedFor = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -238,19 +219,19 @@ State 5: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
     mlastLogTerm |-> 0,
     mlastLogIndex |-> 0,
     msource |-> s1,
-    mdest |-> s2 ] :>
+    mdest |-> s1 ] :>
       1 @@
-  [ mtype |-> "RequestVoteResponse",
+  [ mtype |-> "RequestVoteRequest",
     mterm |-> 2,
+    mlastLogTerm |-> 0,
+    mlastLogIndex |-> 0,
     msource |-> s1,
-    mdest |-> s1,
-    mvoteGranted |-> TRUE,
-    mlog |-> <<>> ] :>
+    mdest |-> s2 ] :>
       1 )
 /\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
 /\ votesGranted = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
 
-State 6: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
+State 6: <NextAsync line 944, col 8 to line 944, col 44 of module raft>
 /\ history = [ server |->
       ( s1 :> [restarted |-> 0, timeout |-> 1] @@
         s2 :> [restarted |-> 0, timeout |-> 0] @@
@@ -325,7 +306,7 @@ State 6: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
 /\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
 /\ votesGranted = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
 
-State 7: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
+State 7: <NextAsync line 944, col 8 to line 944, col 44 of module raft>
 /\ history = [ server |->
       ( s1 :> [restarted |-> 0, timeout |-> 1] @@
         s2 :> [restarted |-> 0, timeout |-> 0] @@
@@ -418,7 +399,7 @@ State 7: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
 /\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
 /\ votesGranted = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
 
-State 8: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
+State 8: <NextAsync line 944, col 8 to line 944, col 44 of module raft>
 /\ history = [ server |->
       ( s1 :> [restarted |-> 0, timeout |-> 1] @@
         s2 :> [restarted |-> 0, timeout |-> 0] @@
@@ -513,7 +494,7 @@ State 8: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
 /\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
 /\ votesGranted = (s1 :> {s1} @@ s2 :> {} @@ s3 :> {})
 
-State 9: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
+State 9: <NextAsync line 944, col 8 to line 944, col 44 of module raft>
 /\ history = [ server |->
       ( s1 :> [restarted |-> 0, timeout |-> 1] @@
         s2 :> [restarted |-> 0, timeout |-> 0] @@
@@ -611,7 +592,7 @@ State 9: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
 /\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
 /\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
 
-State 10: <BecomeLeader line 471, col 5 to line 482, col 76 of module raft>
+State 10: <BecomeLeader line 488, col 5 to line 506, col 80 of module raft>
 /\ history = [ server |->
       ( s1 :> [restarted |-> 0, timeout |-> 1] @@
         s2 :> [restarted |-> 0, timeout |-> 0] @@
@@ -707,10 +688,12 @@ State 10: <BecomeLeader line 471, col 5 to line 482, col 76 of module raft>
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
 /\ state = (s1 :> "Leader" @@ s2 :> "Follower" @@ s3 :> "Follower")
 /\ messages = << >>
-/\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
+/\ log = ( s1 :> <<[term |-> 2, type |-> "ValueEntry", value |-> 0]>> @@
+  s2 :> <<>> @@
+  s3 :> <<>> )
 /\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
 
-State 11: <Timeout line 413, col 15 to line 425, col 60 of module raft>
+State 11: <Timeout line 426, col 15 to line 438, col 60 of module raft>
 /\ history = [ server |->
       ( s1 :> [restarted |-> 0, timeout |-> 1] @@
         s2 :> [restarted |-> 0, timeout |-> 1] @@
@@ -807,10 +790,12 @@ State 11: <Timeout line 413, col 15 to line 425, col 60 of module raft>
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
 /\ state = (s1 :> "Leader" @@ s2 :> "Candidate" @@ s3 :> "Follower")
 /\ messages = << >>
-/\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
+/\ log = ( s1 :> <<[term |-> 2, type |-> "ValueEntry", value |-> 0]>> @@
+  s2 :> <<>> @@
+  s3 :> <<>> )
 /\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
 
-State 12: <RequestVote line 430, col 5 to line 438, col 67 of module raft>
+State 12: <RequestVote line 443, col 5 to line 451, col 67 of module raft>
 /\ history = [ server |->
       ( s1 :> [restarted |-> 0, timeout |-> 1] @@
         s2 :> [restarted |-> 0, timeout |-> 1] @@
@@ -891,130 +876,6 @@ State 12: <RequestVote line 430, col 5 to line 438, col 67 of module raft>
                  mlog |-> <<>> ] ],
          [action |-> "BecomeLeader", executedOn |-> s1, leaders |-> {s1}],
          [action |-> "Timeout", executedOn |-> s2],
-         [ action |-> "Send",
-           executedOn |-> s2,
-           msg |->
-               [ mtype |-> "RequestVoteRequest",
-                 mterm |-> 3,
-                 mlastLogTerm |-> 0,
-                 mlastLogIndex |-> 0,
-                 msource |-> s2,
-                 mdest |-> s1 ] ] >>,
-  hadNumLeaders |-> 1,
-  hadNumClientRequests |-> 0,
-  hadNumTriedMembershipChanges |-> 0,
-  hadNumMembershipChanges |-> 0 ]
-/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
-/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
-  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
-  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
-/\ currentTerm = (s1 :> 2 @@ s2 :> 3 @@ s3 :> 1)
-/\ votedFor = (s1 :> s1 @@ s2 :> 0 @@ s3 :> 0)
-/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
-  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
-  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
-/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
-/\ state = (s1 :> "Leader" @@ s2 :> "Candidate" @@ s3 :> "Follower")
-/\ messages = ( [ mtype |-> "RequestVoteRequest",
-    mterm |-> 3,
-    mlastLogTerm |-> 0,
-    mlastLogIndex |-> 0,
-    msource |-> s2,
-    mdest |-> s1 ] :>
-      1 )
-/\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
-/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
-
-State 13: <RequestVote line 430, col 5 to line 438, col 67 of module raft>
-/\ history = [ server |->
-      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
-        s2 :> [restarted |-> 0, timeout |-> 1] @@
-        s3 :> [restarted |-> 0, timeout |-> 0] ),
-  global |->
-      << [action |-> "Timeout", executedOn |-> s1],
-         [ action |-> "Send",
-           executedOn |-> s1,
-           msg |->
-               [ mtype |-> "RequestVoteRequest",
-                 mterm |-> 2,
-                 mlastLogTerm |-> 0,
-                 mlastLogIndex |-> 0,
-                 msource |-> s1,
-                 mdest |-> s1 ] ],
-         [ action |-> "Send",
-           executedOn |-> s1,
-           msg |->
-               [ mtype |-> "RequestVoteRequest",
-                 mterm |-> 2,
-                 mlastLogTerm |-> 0,
-                 mlastLogIndex |-> 0,
-                 msource |-> s1,
-                 mdest |-> s2 ] ],
-         [ action |-> "Receive",
-           executedOn |-> s1,
-           msg |->
-               [ mtype |-> "RequestVoteRequest",
-                 mterm |-> 2,
-                 mlastLogTerm |-> 0,
-                 mlastLogIndex |-> 0,
-                 msource |-> s1,
-                 mdest |-> s1 ] ],
-         [ action |-> "Send",
-           executedOn |-> s1,
-           msg |->
-               [ mtype |-> "RequestVoteResponse",
-                 mterm |-> 2,
-                 msource |-> s1,
-                 mdest |-> s1,
-                 mvoteGranted |-> TRUE,
-                 mlog |-> <<>> ] ],
-         [ action |-> "Receive",
-           executedOn |-> s2,
-           msg |->
-               [ mtype |-> "RequestVoteRequest",
-                 mterm |-> 2,
-                 mlastLogTerm |-> 0,
-                 mlastLogIndex |-> 0,
-                 msource |-> s1,
-                 mdest |-> s2 ] ],
-         [ action |-> "Send",
-           executedOn |-> s2,
-           msg |->
-               [ mtype |-> "RequestVoteResponse",
-                 mterm |-> 2,
-                 msource |-> s2,
-                 mdest |-> s1,
-                 mvoteGranted |-> TRUE,
-                 mlog |-> <<>> ] ],
-         [ action |-> "Receive",
-           executedOn |-> s1,
-           msg |->
-               [ mtype |-> "RequestVoteResponse",
-                 mterm |-> 2,
-                 msource |-> s1,
-                 mdest |-> s1,
-                 mvoteGranted |-> TRUE,
-                 mlog |-> <<>> ] ],
-         [ action |-> "Receive",
-           executedOn |-> s1,
-           msg |->
-               [ mtype |-> "RequestVoteResponse",
-                 mterm |-> 2,
-                 msource |-> s2,
-                 mdest |-> s1,
-                 mvoteGranted |-> TRUE,
-                 mlog |-> <<>> ] ],
-         [action |-> "BecomeLeader", executedOn |-> s1, leaders |-> {s1}],
-         [action |-> "Timeout", executedOn |-> s2],
-         [ action |-> "Send",
-           executedOn |-> s2,
-           msg |->
-               [ mtype |-> "RequestVoteRequest",
-                 mterm |-> 3,
-                 mlastLogTerm |-> 0,
-                 mlastLogIndex |-> 0,
-                 msource |-> s2,
-                 mdest |-> s1 ] ],
          [ action |-> "Send",
            executedOn |-> s2,
            msg |->
@@ -1044,19 +905,14 @@ State 13: <RequestVote line 430, col 5 to line 438, col 67 of module raft>
     mlastLogTerm |-> 0,
     mlastLogIndex |-> 0,
     msource |-> s2,
-    mdest |-> s1 ] :>
-      1 @@
-  [ mtype |-> "RequestVoteRequest",
-    mterm |-> 3,
-    mlastLogTerm |-> 0,
-    mlastLogIndex |-> 0,
-    msource |-> s2,
     mdest |-> s2 ] :>
       1 )
-/\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
+/\ log = ( s1 :> <<[term |-> 2, type |-> "ValueEntry", value |-> 0]>> @@
+  s2 :> <<>> @@
+  s3 :> <<>> )
 /\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
 
-State 14: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
+State 13: <RequestVote line 443, col 5 to line 451, col 67 of module raft>
 /\ history = [ server |->
       ( s1 :> [restarted |-> 0, timeout |-> 1] @@
         s2 :> [restarted |-> 0, timeout |-> 1] @@
@@ -1145,7 +1001,7 @@ State 14: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
                  mlastLogTerm |-> 0,
                  mlastLogIndex |-> 0,
                  msource |-> s2,
-                 mdest |-> s1 ] ],
+                 mdest |-> s2 ] ],
          [ action |-> "Send",
            executedOn |-> s2,
            msg |->
@@ -1154,7 +1010,7 @@ State 14: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
                  mlastLogTerm |-> 0,
                  mlastLogIndex |-> 0,
                  msource |-> s2,
-                 mdest |-> s2 ] ] >>,
+                 mdest |-> s3 ] ] >>,
   hadNumLeaders |-> 1,
   hadNumClientRequests |-> 0,
   hadNumTriedMembershipChanges |-> 0,
@@ -1163,31 +1019,33 @@ State 14: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
-/\ currentTerm = (s1 :> 3 @@ s2 :> 3 @@ s3 :> 1)
-/\ votedFor = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ currentTerm = (s1 :> 2 @@ s2 :> 3 @@ s3 :> 1)
+/\ votedFor = (s1 :> s1 @@ s2 :> 0 @@ s3 :> 0)
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
-/\ state = (s1 :> "Follower" @@ s2 :> "Candidate" @@ s3 :> "Follower")
+/\ state = (s1 :> "Leader" @@ s2 :> "Candidate" @@ s3 :> "Follower")
 /\ messages = ( [ mtype |-> "RequestVoteRequest",
     mterm |-> 3,
     mlastLogTerm |-> 0,
     mlastLogIndex |-> 0,
     msource |-> s2,
-    mdest |-> s1 ] :>
+    mdest |-> s2 ] :>
       1 @@
   [ mtype |-> "RequestVoteRequest",
     mterm |-> 3,
     mlastLogTerm |-> 0,
     mlastLogIndex |-> 0,
     msource |-> s2,
-    mdest |-> s2 ] :>
+    mdest |-> s3 ] :>
       1 )
-/\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
+/\ log = ( s1 :> <<[term |-> 2, type |-> "ValueEntry", value |-> 0]>> @@
+  s2 :> <<>> @@
+  s3 :> <<>> )
 /\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
 
-State 15: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
+State 14: <NextAsync line 944, col 8 to line 944, col 44 of module raft>
 /\ history = [ server |->
       ( s1 :> [restarted |-> 0, timeout |-> 1] @@
         s2 :> [restarted |-> 0, timeout |-> 1] @@
@@ -1276,7 +1134,7 @@ State 15: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
                  mlastLogTerm |-> 0,
                  mlastLogIndex |-> 0,
                  msource |-> s2,
-                 mdest |-> s1 ] ],
+                 mdest |-> s2 ] ],
          [ action |-> "Send",
            executedOn |-> s2,
            msg |->
@@ -1285,22 +1143,22 @@ State 15: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
                  mlastLogTerm |-> 0,
                  mlastLogIndex |-> 0,
                  msource |-> s2,
-                 mdest |-> s2 ] ],
+                 mdest |-> s3 ] ],
          [ action |-> "Receive",
-           executedOn |-> s1,
+           executedOn |-> s2,
            msg |->
                [ mtype |-> "RequestVoteRequest",
                  mterm |-> 3,
                  mlastLogTerm |-> 0,
                  mlastLogIndex |-> 0,
                  msource |-> s2,
-                 mdest |-> s1 ] ],
+                 mdest |-> s2 ] ],
          [ action |-> "Send",
-           executedOn |-> s1,
+           executedOn |-> s2,
            msg |->
                [ mtype |-> "RequestVoteResponse",
                  mterm |-> 3,
-                 msource |-> s1,
+                 msource |-> s2,
                  mdest |-> s2,
                  mvoteGranted |-> TRUE,
                  mlog |-> <<>> ] ] >>,
@@ -1312,31 +1170,33 @@ State 15: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
-/\ currentTerm = (s1 :> 3 @@ s2 :> 3 @@ s3 :> 1)
-/\ votedFor = (s1 :> s2 @@ s2 :> 0 @@ s3 :> 0)
+/\ currentTerm = (s1 :> 2 @@ s2 :> 3 @@ s3 :> 1)
+/\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> 0)
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
-/\ state = (s1 :> "Follower" @@ s2 :> "Candidate" @@ s3 :> "Follower")
+/\ state = (s1 :> "Leader" @@ s2 :> "Candidate" @@ s3 :> "Follower")
 /\ messages = ( [ mtype |-> "RequestVoteRequest",
     mterm |-> 3,
     mlastLogTerm |-> 0,
     mlastLogIndex |-> 0,
     msource |-> s2,
-    mdest |-> s2 ] :>
+    mdest |-> s3 ] :>
       1 @@
   [ mtype |-> "RequestVoteResponse",
     mterm |-> 3,
-    msource |-> s1,
+    msource |-> s2,
     mdest |-> s2,
     mvoteGranted |-> TRUE,
     mlog |-> <<>> ] :>
       1 )
-/\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
+/\ log = ( s1 :> <<[term |-> 2, type |-> "ValueEntry", value |-> 0]>> @@
+  s2 :> <<>> @@
+  s3 :> <<>> )
 /\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
 
-State 16: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
+State 15: <NextAsync line 944, col 8 to line 944, col 44 of module raft>
 /\ history = [ server |->
       ( s1 :> [restarted |-> 0, timeout |-> 1] @@
         s2 :> [restarted |-> 0, timeout |-> 1] @@
@@ -1425,8 +1285,17 @@ State 16: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
                  mlastLogTerm |-> 0,
                  mlastLogIndex |-> 0,
                  msource |-> s2,
-                 mdest |-> s1 ] ],
+                 mdest |-> s2 ] ],
          [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Receive",
            executedOn |-> s2,
            msg |->
                [ mtype |-> "RequestVoteRequest",
@@ -1435,30 +1304,12 @@ State 16: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
                  mlastLogIndex |-> 0,
                  msource |-> s2,
                  mdest |-> s2 ] ],
-         [ action |-> "Receive",
-           executedOn |-> s1,
-           msg |->
-               [ mtype |-> "RequestVoteRequest",
-                 mterm |-> 3,
-                 mlastLogTerm |-> 0,
-                 mlastLogIndex |-> 0,
-                 msource |-> s2,
-                 mdest |-> s1 ] ],
          [ action |-> "Send",
-           executedOn |-> s1,
-           msg |->
-               [ mtype |-> "RequestVoteResponse",
-                 mterm |-> 3,
-                 msource |-> s1,
-                 mdest |-> s2,
-                 mvoteGranted |-> TRUE,
-                 mlog |-> <<>> ] ],
-         [ action |-> "Receive",
            executedOn |-> s2,
            msg |->
                [ mtype |-> "RequestVoteResponse",
                  mterm |-> 3,
-                 msource |-> s1,
+                 msource |-> s2,
                  mdest |-> s2,
                  mvoteGranted |-> TRUE,
                  mlog |-> <<>> ] ] >>,
@@ -1466,28 +1317,37 @@ State 16: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
   hadNumClientRequests |-> 0,
   hadNumTriedMembershipChanges |-> 0,
   hadNumMembershipChanges |-> 0 ]
-/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {s1} @@ s3 :> {})
+/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
-/\ currentTerm = (s1 :> 3 @@ s2 :> 3 @@ s3 :> 1)
-/\ votedFor = (s1 :> s2 @@ s2 :> 0 @@ s3 :> 0)
+/\ currentTerm = (s1 :> 2 @@ s2 :> 3 @@ s3 :> 3)
+/\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> 0)
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
-/\ state = (s1 :> "Follower" @@ s2 :> "Candidate" @@ s3 :> "Follower")
+/\ state = (s1 :> "Leader" @@ s2 :> "Candidate" @@ s3 :> "Follower")
 /\ messages = ( [ mtype |-> "RequestVoteRequest",
     mterm |-> 3,
     mlastLogTerm |-> 0,
     mlastLogIndex |-> 0,
     msource |-> s2,
-    mdest |-> s2 ] :>
+    mdest |-> s3 ] :>
+      1 @@
+  [ mtype |-> "RequestVoteResponse",
+    mterm |-> 3,
+    msource |-> s2,
+    mdest |-> s2,
+    mvoteGranted |-> TRUE,
+    mlog |-> <<>> ] :>
       1 )
-/\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
-/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {s1} @@ s3 :> {})
+/\ log = ( s1 :> <<[term |-> 2, type |-> "ValueEntry", value |-> 0]>> @@
+  s2 :> <<>> @@
+  s3 :> <<>> )
+/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
 
-State 17: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
+State 16: <NextAsync line 944, col 8 to line 944, col 44 of module raft>
 /\ history = [ server |->
       ( s1 :> [restarted |-> 0, timeout |-> 1] @@
         s2 :> [restarted |-> 0, timeout |-> 1] @@
@@ -1576,43 +1436,16 @@ State 17: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
                  mlastLogTerm |-> 0,
                  mlastLogIndex |-> 0,
                  msource |-> s2,
-                 mdest |-> s1 ] ],
-         [ action |-> "Send",
-           executedOn |-> s2,
-           msg |->
-               [ mtype |-> "RequestVoteRequest",
-                 mterm |-> 3,
-                 mlastLogTerm |-> 0,
-                 mlastLogIndex |-> 0,
-                 msource |-> s2,
                  mdest |-> s2 ] ],
-         [ action |-> "Receive",
-           executedOn |-> s1,
+         [ action |-> "Send",
+           executedOn |-> s2,
            msg |->
                [ mtype |-> "RequestVoteRequest",
                  mterm |-> 3,
                  mlastLogTerm |-> 0,
                  mlastLogIndex |-> 0,
                  msource |-> s2,
-                 mdest |-> s1 ] ],
-         [ action |-> "Send",
-           executedOn |-> s1,
-           msg |->
-               [ mtype |-> "RequestVoteResponse",
-                 mterm |-> 3,
-                 msource |-> s1,
-                 mdest |-> s2,
-                 mvoteGranted |-> TRUE,
-                 mlog |-> <<>> ] ],
-         [ action |-> "Receive",
-           executedOn |-> s2,
-           msg |->
-               [ mtype |-> "RequestVoteResponse",
-                 mterm |-> 3,
-                 msource |-> s1,
-                 mdest |-> s2,
-                 mvoteGranted |-> TRUE,
-                 mlog |-> <<>> ] ],
+                 mdest |-> s3 ] ],
          [ action |-> "Receive",
            executedOn |-> s2,
            msg |->
@@ -1628,6 +1461,24 @@ State 17: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
                [ mtype |-> "RequestVoteResponse",
                  mterm |-> 3,
                  msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Send",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
                  mdest |-> s2,
                  mvoteGranted |-> TRUE,
                  mlog |-> <<>> ] ] >>,
@@ -1635,28 +1486,37 @@ State 17: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
   hadNumClientRequests |-> 0,
   hadNumTriedMembershipChanges |-> 0,
   hadNumMembershipChanges |-> 0 ]
-/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {s1} @@ s3 :> {})
+/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
-/\ currentTerm = (s1 :> 3 @@ s2 :> 3 @@ s3 :> 1)
-/\ votedFor = (s1 :> s2 @@ s2 :> s2 @@ s3 :> 0)
+/\ currentTerm = (s1 :> 2 @@ s2 :> 3 @@ s3 :> 3)
+/\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
-/\ state = (s1 :> "Follower" @@ s2 :> "Candidate" @@ s3 :> "Follower")
+/\ state = (s1 :> "Leader" @@ s2 :> "Candidate" @@ s3 :> "Follower")
 /\ messages = ( [ mtype |-> "RequestVoteResponse",
     mterm |-> 3,
     msource |-> s2,
     mdest |-> s2,
     mvoteGranted |-> TRUE,
     mlog |-> <<>> ] :>
+      1 @@
+  [ mtype |-> "RequestVoteResponse",
+    mterm |-> 3,
+    msource |-> s3,
+    mdest |-> s2,
+    mvoteGranted |-> TRUE,
+    mlog |-> <<>> ] :>
       1 )
-/\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
-/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {s1} @@ s3 :> {})
+/\ log = ( s1 :> <<[term |-> 2, type |-> "ValueEntry", value |-> 0]>> @@
+  s2 :> <<>> @@
+  s3 :> <<>> )
+/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})
 
-State 18: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
+State 17: <NextAsync line 944, col 8 to line 944, col 44 of module raft>
 /\ history = [ server |->
       ( s1 :> [restarted |-> 0, timeout |-> 1] @@
         s2 :> [restarted |-> 0, timeout |-> 1] @@
@@ -1745,43 +1605,16 @@ State 18: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
                  mlastLogTerm |-> 0,
                  mlastLogIndex |-> 0,
                  msource |-> s2,
-                 mdest |-> s1 ] ],
-         [ action |-> "Send",
-           executedOn |-> s2,
-           msg |->
-               [ mtype |-> "RequestVoteRequest",
-                 mterm |-> 3,
-                 mlastLogTerm |-> 0,
-                 mlastLogIndex |-> 0,
-                 msource |-> s2,
                  mdest |-> s2 ] ],
-         [ action |-> "Receive",
-           executedOn |-> s1,
+         [ action |-> "Send",
+           executedOn |-> s2,
            msg |->
                [ mtype |-> "RequestVoteRequest",
                  mterm |-> 3,
                  mlastLogTerm |-> 0,
                  mlastLogIndex |-> 0,
                  msource |-> s2,
-                 mdest |-> s1 ] ],
-         [ action |-> "Send",
-           executedOn |-> s1,
-           msg |->
-               [ mtype |-> "RequestVoteResponse",
-                 mterm |-> 3,
-                 msource |-> s1,
-                 mdest |-> s2,
-                 mvoteGranted |-> TRUE,
-                 mlog |-> <<>> ] ],
-         [ action |-> "Receive",
-           executedOn |-> s2,
-           msg |->
-               [ mtype |-> "RequestVoteResponse",
-                 mterm |-> 3,
-                 msource |-> s1,
-                 mdest |-> s2,
-                 mvoteGranted |-> TRUE,
-                 mlog |-> <<>> ] ],
+                 mdest |-> s3 ] ],
          [ action |-> "Receive",
            executedOn |-> s2,
            msg |->
@@ -1797,6 +1630,24 @@ State 18: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
                [ mtype |-> "RequestVoteResponse",
                  mterm |-> 3,
                  msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Send",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
                  mdest |-> s2,
                  mvoteGranted |-> TRUE,
                  mlog |-> <<>> ] ],
@@ -1813,22 +1664,30 @@ State 18: <NextAsync line 913, col 8 to line 913, col 44 of module raft>
   hadNumClientRequests |-> 0,
   hadNumTriedMembershipChanges |-> 0,
   hadNumMembershipChanges |-> 0 ]
-/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {s1, s2} @@ s3 :> {})
+/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {s2} @@ s3 :> {})
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
-/\ currentTerm = (s1 :> 3 @@ s2 :> 3 @@ s3 :> 1)
-/\ votedFor = (s1 :> s2 @@ s2 :> s2 @@ s3 :> 0)
+/\ currentTerm = (s1 :> 2 @@ s2 :> 3 @@ s3 :> 3)
+/\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
-/\ state = (s1 :> "Follower" @@ s2 :> "Candidate" @@ s3 :> "Follower")
-/\ messages = << >>
-/\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
-/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {s1, s2} @@ s3 :> {})
+/\ state = (s1 :> "Leader" @@ s2 :> "Candidate" @@ s3 :> "Follower")
+/\ messages = ( [ mtype |-> "RequestVoteResponse",
+    mterm |-> 3,
+    msource |-> s3,
+    mdest |-> s2,
+    mvoteGranted |-> TRUE,
+    mlog |-> <<>> ] :>
+      1 )
+/\ log = ( s1 :> <<[term |-> 2, type |-> "ValueEntry", value |-> 0]>> @@
+  s2 :> <<>> @@
+  s3 :> <<>> )
+/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {s2} @@ s3 :> {})
 
-State 19: <BecomeLeader line 471, col 5 to line 482, col 76 of module raft>
+State 18: <NextAsync line 944, col 8 to line 944, col 44 of module raft>
 /\ history = [ server |->
       ( s1 :> [restarted |-> 0, timeout |-> 1] @@
         s2 :> [restarted |-> 0, timeout |-> 1] @@
@@ -1917,43 +1776,16 @@ State 19: <BecomeLeader line 471, col 5 to line 482, col 76 of module raft>
                  mlastLogTerm |-> 0,
                  mlastLogIndex |-> 0,
                  msource |-> s2,
-                 mdest |-> s1 ] ],
-         [ action |-> "Send",
-           executedOn |-> s2,
-           msg |->
-               [ mtype |-> "RequestVoteRequest",
-                 mterm |-> 3,
-                 mlastLogTerm |-> 0,
-                 mlastLogIndex |-> 0,
-                 msource |-> s2,
                  mdest |-> s2 ] ],
-         [ action |-> "Receive",
-           executedOn |-> s1,
+         [ action |-> "Send",
+           executedOn |-> s2,
            msg |->
                [ mtype |-> "RequestVoteRequest",
                  mterm |-> 3,
                  mlastLogTerm |-> 0,
                  mlastLogIndex |-> 0,
                  msource |-> s2,
-                 mdest |-> s1 ] ],
-         [ action |-> "Send",
-           executedOn |-> s1,
-           msg |->
-               [ mtype |-> "RequestVoteResponse",
-                 mterm |-> 3,
-                 msource |-> s1,
-                 mdest |-> s2,
-                 mvoteGranted |-> TRUE,
-                 mlog |-> <<>> ] ],
-         [ action |-> "Receive",
-           executedOn |-> s2,
-           msg |->
-               [ mtype |-> "RequestVoteResponse",
-                 mterm |-> 3,
-                 msource |-> s1,
-                 mdest |-> s2,
-                 mvoteGranted |-> TRUE,
-                 mlog |-> <<>> ] ],
+                 mdest |-> s3 ] ],
          [ action |-> "Receive",
            executedOn |-> s2,
            msg |->
@@ -1973,6 +1805,24 @@ State 19: <BecomeLeader line 471, col 5 to line 482, col 76 of module raft>
                  mvoteGranted |-> TRUE,
                  mlog |-> <<>> ] ],
          [ action |-> "Receive",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Send",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
            executedOn |-> s2,
            msg |->
                [ mtype |-> "RequestVoteResponse",
@@ -1981,27 +1831,214 @@ State 19: <BecomeLeader line 471, col 5 to line 482, col 76 of module raft>
                  mdest |-> s2,
                  mvoteGranted |-> TRUE,
                  mlog |-> <<>> ] ],
-         [action |-> "BecomeLeader", executedOn |-> s2, leaders |-> {s2}] >>,
-  hadNumLeaders |-> 2,
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ] >>,
+  hadNumLeaders |-> 1,
   hadNumClientRequests |-> 0,
   hadNumTriedMembershipChanges |-> 0,
   hadNumMembershipChanges |-> 0 ]
-/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {s1, s2} @@ s3 :> {})
+/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {s2, s3} @@ s3 :> {})
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
-/\ currentTerm = (s1 :> 3 @@ s2 :> 3 @@ s3 :> 1)
-/\ votedFor = (s1 :> s2 @@ s2 :> s2 @@ s3 :> 0)
+/\ currentTerm = (s1 :> 2 @@ s2 :> 3 @@ s3 :> 3)
+/\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
-/\ state = (s1 :> "Follower" @@ s2 :> "Leader" @@ s3 :> "Follower")
+/\ state = (s1 :> "Leader" @@ s2 :> "Candidate" @@ s3 :> "Follower")
 /\ messages = << >>
-/\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
-/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {s1, s2} @@ s3 :> {})
+/\ log = ( s1 :> <<[term |-> 2, type |-> "ValueEntry", value |-> 0]>> @@
+  s2 :> <<>> @@
+  s3 :> <<>> )
+/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {s2, s3} @@ s3 :> {})
 
-10990404 states generated, 2445605 distinct states found, 1662407 states left on queue.
+State 19: <BecomeLeader line 488, col 5 to line 506, col 80 of module raft>
+/\ history = [ server |->
+      ( s1 :> [restarted |-> 0, timeout |-> 1] @@
+        s2 :> [restarted |-> 0, timeout |-> 1] @@
+        s3 :> [restarted |-> 0, timeout |-> 0] ),
+  global |->
+      << [action |-> "Timeout", executedOn |-> s1],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s1 ] ],
+         [ action |-> "Send",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 2,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s1,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s1,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s1,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 2,
+                 msource |-> s2,
+                 mdest |-> s1,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [action |-> "BecomeLeader", executedOn |-> s1, leaders |-> {s1}],
+         [action |-> "Timeout", executedOn |-> s2],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s2 ] ],
+         [ action |-> "Send",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteRequest",
+                 mterm |-> 3,
+                 mlastLogTerm |-> 0,
+                 mlastLogIndex |-> 0,
+                 msource |-> s2,
+                 mdest |-> s3 ] ],
+         [ action |-> "Send",
+           executedOn |-> s3,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s2,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "Receive",
+           executedOn |-> s2,
+           msg |->
+               [ mtype |-> "RequestVoteResponse",
+                 mterm |-> 3,
+                 msource |-> s3,
+                 mdest |-> s2,
+                 mvoteGranted |-> TRUE,
+                 mlog |-> <<>> ] ],
+         [ action |-> "BecomeLeader",
+           executedOn |-> s2,
+           leaders |-> {s1, s2} ] >>,
+  hadNumLeaders |-> 2,
+  hadNumClientRequests |-> 0,
+  hadNumTriedMembershipChanges |-> 0,
+  hadNumMembershipChanges |-> 0 ]
+/\ votesResponded = (s1 :> {s1, s2} @@ s2 :> {s2, s3} @@ s3 :> {})
+/\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
+  s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )
+/\ currentTerm = (s1 :> 2 @@ s2 :> 3 @@ s3 :> 3)
+/\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
+/\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
+  s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
+/\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ state = (s1 :> "Leader" @@ s2 :> "Leader" @@ s3 :> "Follower")
+/\ messages = << >>
+/\ log = ( s1 :> <<[term |-> 2, type |-> "ValueEntry", value |-> 0]>> @@
+  s2 :> <<[term |-> 3, type |-> "ValueEntry", value |-> 0]>> @@
+  s3 :> <<>> )
+/\ votesGranted = (s1 :> {s1, s2} @@ s2 :> {s2, s3} @@ s3 :> {})
+
+4471546 states generated, 928678 distinct states found, 602254 states left on queue.
 The depth of the complete state graph search is 20.
-The average outdegree of the complete state graph is 3 (minimum is 0, the maximum 14 and the 95th percentile is 8).
-Finished in 01min 41s at (2021-05-05 23:38:08)
+The average outdegree of the complete state graph is 3 (minimum is 0, the maximum 13 and the 95th percentile is 7).
+Finished in 47s at (2021-05-07 15:46:15)
