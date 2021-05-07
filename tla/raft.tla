@@ -1023,9 +1023,17 @@ LogMatching ==
 \* that property is the conjunction of LeaderCompleteness with the
 \* other three properties below.
 
+\* This property, written by Daniel Ricketts, is in fact
+\* violated. This suggests the spec was not model-checked
+\* extensively.
+
+\* The English description is correct, but the TLA
+\* does NOT match it due to a confusion about the meaning
+\* of the spec variables.
+
 \* Votes are only granted to servers with logs
 \* that are at least as up to date
-VotesGrantedInv ==
+VotesGrantedInv_false ==
     \A i \in Server :
     \A j \in votesGranted[i] :
         currentTerm[i] = currentTerm[j] =>
@@ -1034,6 +1042,12 @@ VotesGrantedInv ==
         \* a prefix of i's log, not the entire 
         \* log of j
         IsPrefix(Committed(j),log[i])
+
+VotesGrantedInv ==
+    \A i, j \in Server :
+        \* if i has voted for j
+        votedFor[i] = j =>
+            IsPrefix(Committed(i), log[j])
 
 \* All committed entries are contained in the log
 \* of at least one server in every quorum
