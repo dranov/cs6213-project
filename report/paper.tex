@@ -223,6 +223,23 @@ CommitWhenConcurrentLeaders == ~
     /\ Cardinality(CurrentLeaders) >= 2
 \end{verbatim}
 
+We spent a not insignificant amount of time adding further constraints in an attempt to prune
+the state space to let TLC find a trace that violates \texttt{CommitWhenConcurrentLeaders} (the property is a negation), and we also experimented with TLC's depth-first search and simulation modes, but to no avail.
+%
+The state space was just too large.
+
+However, we realised that in fact we are \emph{not} interested in exploring the state space. 
+%
+Since we are not doing model-checking, but rather counterexample finding, we can be very selective in terms of the states we explore.
+
+Concretely, looking at our property, we see that it is somehow composed of distinct parts:
+%
+first, there is a trace prefix that leads to two leaders existing at the same time (in different terms; this is allowed in Raft),
+%
+then, some entry commits,
+%
+then afterwards, some more steps are taken, and there are still two leaders.
+
 
 \section{Testing Approach}
 
