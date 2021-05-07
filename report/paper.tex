@@ -130,8 +130,8 @@ Nonetheless, our experience has been instructive and leads us to believe there i
 
 Our experience with TLA was somewhat frustrating.
 
-\subsubsection{Extending Specifications}
-
+\paragraph{Extending Specifications}
+%
 In our experience, it is fairly easy to specify complex behaviours when you are writing the specification from scratch, but it is a hassle to \emph{extend} an existing spec, \eg, to add history variables to Raft. 
 %
 TLA specifications are very non-compositional, and even small extensions can require non-local changes.
@@ -144,8 +144,8 @@ We had a similar experience when we tried to define a \texttt{Broadcast} operato
 %
 We gave up and defined it from scratch.
 
-\subsubsection{Runtime Errors}
-
+\paragraph{Runtime Errors}
+%
 On several ocassions, we encountered (trivial) runtime errors after considerable model-checking time (> 15 minutes).
 %
 We know this is an issue in practice, and not just for us, because the specification of one-at-a-time membership changes for Raft that we adapted had two such issues which, with the default TLC options, would have taken on the order of hours to manifest.
