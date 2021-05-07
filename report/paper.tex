@@ -94,6 +94,18 @@ Nonetheless, our experience has been instructive and leads us to believe there i
     Sadly, for our specification, Apalache symbolic model checking was orders of magnitude slower than TLC.
 
     \item Disappointed with Apalache's performance, we reverted to using TLC to generate Raft execution traces.
+    
+    \item We investigated approaches to constrain TLC's search space (state constraints, symmetry, action constraints, and views).
+    %
+    We also explored different search strategies (depth first search, simulation mode), but these were unhelpful.
+    %
+    Put together, the various approaches offered a 2-3 orders of magnitude performance improvement for our use-case of generating test traces.
+    % 
+    But even this was not enough to generate traces for all the scenarios we wanted to test, some of which required traces 30 steps long.
+
+    \item We discovered that, for trace generation (as opposed to model checking), certain properties allow for a specialised search strategy reminiscent of concolic execution: a burst of breadth-first search, followed by focusing on a single trace (and its final state), followed by another breadth-first search starting from \emph{that} state.
+    %
+    We used this strategy, which we ``implemented'' manually using TLC state constraints, to obtain very deep Raft traces, \eg, a period with two concurrent leaders during which an entry commits, followed by a majority of the cluster restarting.
 
     \item In the process, we discovered (low impact) errors in the
     specification of membership changes due to Amos and Zhang and in the
