@@ -159,7 +159,7 @@ The Apalache symbolic model checker~\cite{konnov_tla+_2019} does in fact add a t
 Sadly, this is experimental at this stage, and we encountered several bugs related to type checking and type inference in Apalache.
 %
 We spent multiple days adding types to the Raft TLA specification and interpreting Apalache's obscure error messages with Igor Konnov's help, but sadly were disappointed by the symbolic model checker's performance.
-%
+
 The bad performance matches what the authors report in the paper for model checking, but we had hoped that the SMT solvers Apalache uses are more suited for goal-directed search (for test case generation) than TLC's naive breadth-first search.
 %
 This turned out not to be the case.
