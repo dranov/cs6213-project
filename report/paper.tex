@@ -124,8 +124,30 @@ Nonetheless, our experience has been instructive and leads us to believe there i
 
 \end{itemize}
 
+\section{TLA Specification}
 
-\section{Approach}
+\subsection{Experience with Apalache}
+
+\subsection{Constraining TLC's Search Space}
+
+We found four ways to cut down the state space in TLC:
+
+\begin{itemize}
+    \item \textbf{State constraints.} If the predicate does not hold for a state, TLC does not explore any of its successors.
+
+    \item \textbf{Symmetry}. Two states are considered equal if they are permutations of another with reference to a symmetry set.
+
+    \item \textbf{Action constraints}. Similar to state constraints, but refer to primed variables.
+    %
+    They are used to eliminate possible actions.
+    
+    \item \textbf{Views}. Provide a way to change when TLC considers two states to be equal---two states are equal if their view evaluates to to the same value.
+    %
+    We use a view to instruct TLC to ignore history variables when comparing states, which leads to a 2 orders of magnitude reduction in the number of states explored.
+
+\end{itemize}
+
+\section{Testing Approach}
 
 \subsection{Model-based Test Case Generation (MBTCG)}
 \label{sec: interpreter}
@@ -312,7 +334,7 @@ they may compromise the integrity of the implementation.
 %
 We ensured that all of these were trivial (exposing private fields, returning derived state) to minimise the risk of compromising the implementation's integrity.
 
-\subsection{Takeaways}
+\section{Takeaways}
 
 We believe that our model-based test case generation approach is promising as it allows us to link specification to implementation, taking advantage of the redundancy to identify discrepancies \cite{fonseca2017empirical}.
 %
