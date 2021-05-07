@@ -1054,13 +1054,33 @@ MoreUpToDateCorrect ==
            /\ Len(log[i]) >= Len(log[j])) =>
        IsPrefix(Committed(j), log[i])
 
+\* This property, written by Daniel Rickett's, is in fact
+\* violated by the spec (when there are multiple concurrent leaders).
+\*  This suggests the spec was not model-checked extensively.
+
 \* The committed entries in every log are a prefix of the
 \* leader's log
-LeaderCompleteness ==
+LeaderCompleteness_false ==
     \A i \in Server :
         state[i] = Leader =>
         \A j \in Server :
             IsPrefix(Committed(j),log[i])
+
+\* If a log entry is committed in a given term, then that
+\* entry will be present in the logs of the leaders
+\* for all higher-numbered terms
+\* See: https://github.com/uwplse/verdi-raft/blob/master/raft/LeaderCompletenessInterface.v
+LeaderCompleteness == 
+    \A i \in Server :
+        LET committed == Committed(i) IN
+        \A idx \in 1..Len(committed) :
+            LET entry == log[i][idx] IN 
+            \* if the entry is committed 
+            \A l \in CurrentLeaders :
+                \* all leaders with higher-number terms
+                currentTerm[l] > entry.term =>
+                \* have the entry at the same log position
+                log[l][idx] = entry
 
 -----
 
