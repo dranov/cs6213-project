@@ -84,7 +84,7 @@ Nonetheless, our experience has been instructive and leads us to believe there i
     %
     Entries began to be committed only much later.
 
-    \item Hoping for a better model checking experience, we adapted our specification for use with the Apalache symbolic model checker.
+    \item Hoping for a better model checking experience~\cite{mcmillan_symbolic_1992}, we adapted our specification for use with the Apalache symbolic model checker.
     %
     This required adding type annotations to the TLA specification and slightly rewriting some operators to fit into the subset of TLA that can be automatically translated to SMT.
     %
@@ -148,11 +148,25 @@ We gave up and defined it from scratch.
 
 On several ocassions, we encountered (trivial) runtime errors after considerable model-checking time (> 15 minutes).
 %
-We know this is an issue in practice, and not just for us, because the specification of one-at-a-time membership changes for Raft that we adapted had two such issues which, with the default TLC options, would have taken on the order of hours to manifest at runtime.
+We know this is an issue in practice, and not just for us, because the specification of one-at-a-time membership changes for Raft that we adapted had two such issues which, with the default TLC options, would have taken on the order of hours to manifest.
 %
 This class of problem would be solved by the addition of a type system to TLA.
 
 \subsection{Experience with Apalache}
+
+The Apalache symbolic model checker~\cite{konnov_tla+_2019} does in fact add a type system to TLA.
+%
+Sadly, this is experimental at this stage, and we encountered several bugs related to type checking and type inference in Apalache.
+%
+We spent multiple days adding types to the Raft TLA specification and interpreting Apalache's obscure error messages with Igor Konnov's help, but sadly were disappointed by the symbolic model checker's performance.
+%
+The bad performance matches what the authors report in the paper for model checking, but we had hoped that the SMT solvers Apalache uses are more suited for goal-directed search (for test case generation) than TLC's naive breadth-first search.
+%
+This turned out not to be the case.
+
+Despite our experience, we are quite hopeful about Apalache's future prospects.
+%
+A more intelligent translation to SMT is likely to produce good results---SMT solvers have shown themselves very capable of tackling search problems in other domains.
 
 \subsection{Constraining TLC's Search Space}
 
