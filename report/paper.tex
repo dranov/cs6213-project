@@ -133,17 +133,27 @@ Nonetheless, our experience has been instructive and leads us to believe there i
 We found four ways to cut down the state space in TLC:
 
 \begin{itemize}
-    \item \textbf{State constraints.} If the predicate does not hold for a state, TLC does not explore any of its successors.
+    \item \textbf{State constraints} are user-defined predicates.
+    %
+    If the predicate does not hold for a state, TLC does not explore any of its successors.
 
-    \item \textbf{Symmetry}. Two states are considered equal if they are permutations of another with reference to a symmetry set.
+    \item \textbf{Symmetry sets} define equivalence classes between states.
+    %
+    Two states are considered equal if one can be transformed into the other by applying a permutation in the symmetry set.
 
-    \item \textbf{Action constraints}. Similar to state constraints, but refer to primed variables.
+    \item \textbf{Action constraints} are similar to state constraints, but refer to primed variables.
     %
     They are used to eliminate possible actions.
-    
-    \item \textbf{Views}. Provide a way to change when TLC considers two states to be equal---two states are equal if their view evaluates to to the same value.
     %
-    We use a view to instruct TLC to ignore history variables when comparing states, which leads to a 2 orders of magnitude reduction in the number of states explored.
+    They can be emulated with state contraints and history variables, which we prefered.
+    
+    \item \textbf{Views} provide a way to change when TLC considers two states to be equal.
+    %
+    Two states are equal if their view evaluates to to the same value.
+    %
+    We use a view to instruct TLC to ignore history variables when comparing states.
+    %
+    This leads to a hundredfold decrease in number of states explored.
 
 \end{itemize}
 
