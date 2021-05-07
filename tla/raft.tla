@@ -491,6 +491,9 @@ BecomeLeader(i) ==
     \* it ahead, causing it to stop elections of other candidates
     /\ LET entry == [term  |-> currentTerm[i],
                      type  |-> ValueEntry,
+                     \* The value 0 is chosen here as something that's
+                     \* distinct from other candidate values. The
+                     \* interpreter does depend on this.
                      value |-> 0]
            newLog == Append(log[i], entry)
        IN  log' = [log EXCEPT ![i] = newLog]
