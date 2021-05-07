@@ -18,6 +18,7 @@
 \usepackage[svgnames]{xcolor}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{enumitem}
 
 \makeatletter
 \renewcommand{\@evenfoot}{\hfil \thepage{} of \pageref*{LastPage}\hfil}
@@ -32,7 +33,7 @@
 
 \bibliography{references}
 
-\title{Project Report}
+\title{CS6213 Project Report}
 \author{George Pîrlea \and Darius Foo}
 \date{\today}
 
@@ -45,6 +46,18 @@
 Writing a formal specification of a system is useful in clarifying details of its design. As a system evolves, however, it is difficult to ensure that its implementation and specification have not diverged.
 
 In this work, we investigate lightweight but systematic methods to check that a system implementation conforms to its specification.
+
+\section{Project Scope}
+
+We set out to answer the following research questions:
+
+\begin{enumerate}[label={(Q\arabic*)}]
+    \item \textbf{Conformance testing.} Given a TLA model that satisfies some simple properties and a system implementation, what is the easiest way to check that the implementation satisfies the properties?
+
+    \item \textbf{Refinement mappings.} Given a model and an implementation, how can we best define the correspondence between the two, perhaps via a combination of manual/inferred annotations?
+
+    \item \textbf{Empirical evaluation of conformance.} For real-world distributed systems that come with both TLA models and implementations, empirically, is there a correspondence between the model and the implementation?
+\end{enumerate}
 
 \section{Approach}
 

@@ -12,6 +12,9 @@
 *.synctex*
 *.xdv
 
+# Microsoft Word temp files
+~*.docx
+
 # TLA stuff
 *.out
 tla/states/
