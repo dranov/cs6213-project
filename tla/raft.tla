@@ -470,6 +470,13 @@ AppendEntries(i, j) ==
 BecomeLeader(i) ==
     /\ state[i] = Candidate
     /\ votesGranted[i] \in Quorum(GetConfig(i))
+    \* Append an empty entry to the leader's log to artificially put
+    \* it ahead, causing it to stop elections of other candidates
+    /\ LET entry == [term  |-> currentTerm[i],
+                     type  |-> ValueEntry,
+                     value |-> 0]
+           newLog == Append(log[i], entry)
+       IN  log' = [log EXCEPT ![i] = newLog]
     /\ state'      = [state EXCEPT ![i] = Leader]
     /\ nextIndex'  = [nextIndex EXCEPT ![i] =
                          [j \in Server |-> Len(log[i]) + 1]]
