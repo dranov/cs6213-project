@@ -231,15 +231,24 @@ The state space was just too large.
 However, we realised that in fact we are \emph{not} interested in exploring the state space. 
 %
 Since we are not doing model-checking, but rather counterexample finding, we can be very selective in terms of the states we explore.
-
+%
 Concretely, looking at our property, we see that it is somehow composed of distinct parts:
 %
-first, there is a trace prefix that leads to two leaders existing at the same time (in different terms; this is allowed in Raft),
+(1) first, there is a trace prefix that leads to two leaders existing at the same time (in different terms; this is allowed in Raft),
 %
-then, some entry commits,
+(2) then some entry commits,
 %
-then afterwards, some more steps are taken, and there are still two leaders.
+(3) a few more steps are taken, and there are still two leaders.
 
+The insight is that we can explore the state space using TLC's default breadth-first search to find \emph{a} trace $T$ satisfying (1), restart the BFS taking $T$ as the initial state to find a state satisfying (2), and then repeat the process to find a state satisfying (3).
+
+As we noted previously, this approach is similar to concolic execution:
+%
+when the search space gets too large to handle, we concretise to a single state and resume search from that point.
+%
+We implemented this ``manually'' by running with (1) as a goal, copying the concrete state found by TLC and adding it as a constraint, and then restarting TLC with (2) as a goal, and so on.
+%
+But this seems like it would be easy to implement directly in TLC.
 
 \section{Testing Approach}
 
