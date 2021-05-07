@@ -204,7 +204,25 @@ Symmetry sets and action constraints can be implemented in terms of state constr
 %
 We used TLC's built-in support for symmetry sets, but found expressing state constraints on history variables to be more ergonomic than writing action constraints.
 
-\subsection{Concolic Trace Generation}
+\subsection{Search Strategy for Trace Generation}
+
+While the above techniques combined with TLC's standard breadth-first search were sufficient for traces of length around 22, two of the scenarios we were interested in (\texttt{CommitWhenConcurrentLeaders} and \texttt{MajorityOfClusterRestarts}) seemed not to have short traces, or in any case, traces that we could find our laptops before we gave up after 2 and a half hours of model checking time.
+
+\begin{verbatim}
+CommitWhenConcurrentLeaders == ~
+    \E i, k \in DOMAIN history["global"] :
+    /\ i < k
+    /\ LET  x == history["global"][i]
+            y == history["global"][k]
+        IN
+        /\ x.action = "BecomeLeader" /\ Cardinality(x.leaders) >= 2
+        /\ y.action = "CommitEntry"
+    \* Run for a few more steps
+    /\ Len(history["global"]) >= k + 2
+    \* Still have concurrent leaders
+    /\ Cardinality(CurrentLeaders) >= 2
+\end{verbatim}
+
 
 \section{Testing Approach}
 
