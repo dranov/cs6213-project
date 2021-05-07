@@ -5,7 +5,7 @@ set -x
 source ../env.sh
 
 tlc() {
-  java -cp $TLA_TOOLS -XX:+UseParallelGC tlc2.TLC -workers auto -userFile user.txt "$@" > tlc.txt
+  java -cp $TLA_TOOLS -XX:+UseParallelGC tlc2.TLC -workers auto -userFile user.txt "$@" | tee tlc.txt
 }
 
 tla2json() {

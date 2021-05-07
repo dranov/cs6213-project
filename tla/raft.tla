@@ -331,6 +331,19 @@ ReplyWrapped(response, request) ==
 \*SendWithoutHistory(m) == SendWithoutHistoryWrapped(m)
 \*DiscardWithoutHistory(m) == DiscardWithoutHistoryWrapped(m) 
 
+\* Leader i broadcasts message m(j) to all followers j in js
+Broadcast(i, js, m(_)) ==
+  LET msgs == SetToBag({ m(j) : j \in js })
+      \* Only regular message sends can be broadcast for now
+      hist == SetToSeq({
+        [
+          action |-> "Send",
+          executedOn |-> i,
+          msg |-> m(j)
+        ] : j \in js })
+  IN << msgs, hist >>
+  
+
 \* Return the minimum value from a set, or undefined if the set is empty.
 \* @type: Set(Int) => Int;
 Min(s) == CHOOSE x \in s : \A y \in s : x <= y
@@ -437,6 +450,27 @@ RequestVote(i, j) ==
              mdest         |-> j])
     /\ UNCHANGED <<serverVars, candidateVars, leaderVars, logVars>>
 
+AppendEntriesMessage(i, j) ==
+    LET prevLogIndex == nextIndex[i][j] - 1
+           \* The following upper bound on prevLogIndex is unnecessary
+           \* but makes verification substantially simpler.
+        prevLogTerm ==
+          IF prevLogIndex > 0 /\ prevLogIndex <= Len(log[i]) THEN
+            log[i][prevLogIndex].term
+          ELSE
+            0
+        \* Send up to 1 entry, constrained by the end of the log.
+        lastEntry == Min({Len(log[i]), nextIndex[i][j]})
+        entries == SubSeq(log[i], nextIndex[i][j], lastEntry)
+    IN [mtype          |-> AppendEntriesRequest,
+        mterm          |-> currentTerm[i],
+        mprevLogIndex  |-> prevLogIndex,
+        mprevLogTerm   |-> prevLogTerm,
+        mentries       |-> entries,
+        mcommitIndex   |-> Min({commitIndex[i], lastEntry}),
+        msource        |-> i,
+        mdest          |-> j]
+
 \* Leader i sends j an AppendEntries request containing up to 1 entry.
 \* While implementations may want to send more than 1 at a time, this spec uses
 \* just 1 because it minimizes atomic regions without loss of generality.
@@ -445,24 +479,7 @@ AppendEntries(i, j) ==
     /\ i /= j
     /\ state[i] = Leader
     /\ j \in GetConfig(i)
-    /\ LET prevLogIndex == nextIndex[i][j] - 1
-           \* The following upper bound on prevLogIndex is unnecessary
-           \* but makes verification substantially simpler.
-           prevLogTerm == IF prevLogIndex > 0 /\ prevLogIndex <= Len(log[i]) THEN
-                              log[i][prevLogIndex].term
-                          ELSE
-                              0
-           \* Send up to 1 entry, constrained by the end of the log.
-           lastEntry == Min({Len(log[i]), nextIndex[i][j]})
-           entries == SubSeq(log[i], nextIndex[i][j], lastEntry)
-       IN Send([mtype          |-> AppendEntriesRequest,
-                mterm          |-> currentTerm[i],
-                mprevLogIndex  |-> prevLogIndex,
-                mprevLogTerm   |-> prevLogTerm,
-                mentries       |-> entries,
-                mcommitIndex   |-> Min({commitIndex[i], lastEntry}),
-                msource        |-> i,
-                mdest          |-> j])
+    /\ Send(AppendEntriesMessage(i, j))
     /\ UNCHANGED <<serverVars, candidateVars, leaderVars, logVars>>
 
 \* Candidate i transitions to leader.
@@ -470,6 +487,16 @@ AppendEntries(i, j) ==
 BecomeLeader(i) ==
     /\ state[i] = Candidate
     /\ votesGranted[i] \in Quorum(GetConfig(i))
+    \* Append an empty entry to the leader's log to artificially put
+    \* it ahead, causing it to stop elections of other candidates
+    /\ LET entry == [term  |-> currentTerm[i],
+                     type  |-> ValueEntry,
+                     \* The value 0 is chosen here as something that's
+                     \* distinct from other candidate values. The
+                     \* interpreter does depend on this.
+                     value |-> 0]
+           newLog == Append(log[i], entry)
+       IN  log' = [log EXCEPT ![i] = newLog]
     /\ state'      = [state EXCEPT ![i] = Leader]
     /\ nextIndex'  = [nextIndex EXCEPT ![i] =
                          [j \in Server |-> Len(log[i]) + 1]]
@@ -479,7 +506,7 @@ BecomeLeader(i) ==
                             !["hadNumLeaders"] = history["hadNumLeaders"] + 1,
                             !["global"] = Append(history["global"], 
                                 [action |-> "BecomeLeader", executedOn |-> i, leaders |-> (CurrentLeaders \cup {i})])]
-    /\ UNCHANGED <<messages, currentTerm, votedFor, candidateVars, logVars>>
+    /\ UNCHANGED <<messages, currentTerm, votedFor, candidateVars, commitIndex>>
     
 \* Leader i receives a client request to add v to the log.
 \* @type: (Int, Int) => Bool;
@@ -527,14 +554,21 @@ AdvanceCommitIndex(i) ==
        IN
         /\ commitIndex' = [commitIndex EXCEPT ![i] = newCommitIndex]
         /\ IF committedMembershipChange THEN 
-            history' = [history EXCEPT
+            /\ history' = [history EXCEPT
                 !["global"] = Append(history["global"],
                     [action |-> "CommitMembershipChange", executedOn |-> i, config |-> log[i][newCommitIndex].value])]
-            ELSE IF committed THEN
-             history' = [history EXCEPT
-                !["global"] = Append(history["global"], [action |-> "CommitEntry", executedOn |-> i, entry |-> log[i][newCommitIndex]])]
-            ELSE UNCHANGED <<history>>
-    /\ UNCHANGED <<messages, serverVars, candidateVars, leaderVars, log>>
+            /\ UNCHANGED <<messages>>
+           ELSE IF committed THEN
+             LET broadcast == Broadcast(i, Server \ {i},
+                   LAMBDA j : AppendEntriesMessage(i, j))
+                 msgs == broadcast[1]
+                 hist == broadcast[2]
+                 commit == [action |-> "CommitEntry", executedOn |-> i, entry |-> log[i][newCommitIndex]]
+             IN
+             /\ history' = [history EXCEPT !["global"] = Append(history["global"], commit) \o hist]
+             /\ messages' = messages (+) msgs
+           ELSE UNCHANGED <<history, messages>>
+    /\ UNCHANGED <<serverVars, candidateVars, leaderVars, log>>
 
 \* Leader i adds a new server j to the cluster.
 AddNewServer(i, j) ==
@@ -1143,7 +1177,7 @@ BoundedTrace == Len(history["global"]) <= 24
 FirstBecomeLeader == ~ \E i \in DOMAIN history["global"] :
     history["global"][i].action = "BecomeLeader"
 
-FirstCommit == ~ \E i \in Server : commitIndex[i] > 0
+FirstCommit == ~ \E i \in Server : commitIndex[i] > 0 /\ \E e \in log[i]: e["value"] > 0
 
 FirstRestart == ~ \E i \in Server : history["server"][i]["restarted"] >= 2
 
