@@ -250,6 +250,18 @@ We implemented this ``manually'' by running with (1) as a goal, copying the conc
 %
 But this seems like it would be easy to implement directly in TLC.
 
+\paragraph{Empirical evidence.}
+%
+We have some evidence that this strategy is effective at exploring states that would otherwise not be reached by TLC within any reasonable amount of time.
+%
+Daniel Ricketts' specification (partly proven in TLAPS) has two properties that are in fact \emph{incorrect}, \ie they are not satisfied by Raft.
+%
+These properties, which we renamed \texttt{VotesGrantedInv\_false} and \texttt{LeaderCompleteness\_false} in our spec, are violated by traces that extend our ``two leaders at the same time'' scenario.
+%
+Since these properties were included in Ricketts' spec, which we assume he model checked, we conclude that he did not model-check his specification to the required diameter (trace length) of around 27.
+%
+In our estimation, even with heavy constraints, it would take several days to reach that diameter with TLC's normal mode of operation.
+
 \section{Testing Approach}
 
 \subsection{Model-based Test Case Generation (MBTCG)}
