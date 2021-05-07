@@ -124,7 +124,33 @@ Nonetheless, our experience has been instructive and leads us to believe there i
 
 \end{itemize}
 
-\section{TLA Specification}
+\section{TLA}
+
+\subsection{Pain Points}
+
+Our experience with TLA was somewhat frustrating.
+
+\subsubsection{Extending Specifications}
+
+In our experience, it is fairly easy to specify complex behaviours when you are writing the specification from scratch, but it is a hassle to \emph{extend} an existing spec, \eg, to add history variables to Raft. 
+%
+TLA specifications are very non-compositional, and even small extensions can require non-local changes.
+
+In our case, we had a variable called \texttt{history}, which already recorded some history information, and we wanted additionally to make this variable record when messages were sent.
+%
+Intuitively, you would expect that changing the definition of \texttt{Send} to assign \texttt{history'} would be enough, but in fact, in TLA, we had to also change every operator that directly or indirectly depended on \texttt{Send} to remove the \texttt{UNCHANGED <<history>>} clause.
+
+We had a similar experience when we tried to define a \texttt{Broadcast} operator in terms of \texttt{Send}.
+%
+We gave up and defined it from scratch.
+
+\subsubsection{Runtime Errors}
+
+On several ocassions, we encountered (trivial) runtime errors after considerable model-checking time (> 15 minutes).
+%
+We know this is an issue in practice, and not just for us, because the specification of one-at-a-time membership changes for Raft that we adapted had two such issues which, with the default TLC options, would have taken on the order of hours to manifest at runtime.
+%
+This class of problem would be solved by the addition of a type system to TLA.
 
 \subsection{Experience with Apalache}
 
@@ -154,8 +180,9 @@ We found four ways to cut down the state space in TLC:
     We use a view to instruct TLC to ignore history variables when comparing states.
     %
     This leads to a hundredfold decrease in number of states explored.
-
 \end{itemize}
+
+\subsection{Concolic Trace Generation}
 
 \section{Testing Approach}
 
