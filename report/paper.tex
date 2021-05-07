@@ -43,9 +43,11 @@
 
 \section{Motivation}
 
-Writing a formal specification of a system is useful in clarifying details of its design. As a system evolves, however, it is difficult to ensure that its implementation and specification have not diverged.
+Writing a formal specification of a system is useful in clarifying details of its design.
+%
+As the system evolves, however, it is difficult to ensure that its implementation and specification have not diverged.
 
-In this work, we investigate lightweight but systematic methods to check that a system implementation conforms to its specification.
+In this work, we investigate lightweight (an engineer can learn and produce something useful in 2-3 weeks~\cite{newcombe_how_2015}) but systematic methods to check that a system implementation conforms to its specification.
 
 \section{Project Scope}
 
@@ -65,28 +67,54 @@ We set out to answer the following research questions:
 
 The MBTCG approach uses a specification to guide the generation of test cases for the implementation.
 
-The specification is typically given in the form of a transition system (consisting of states and \emph{actions} which give rise to transitions between states) and its invariants. A model checker may then be used to output sequences of states which violate the invariants. Such sequences may equivalently be seen as sequences of actions, starting and ending at particular states.
+The specification is typically given in the form of a transition system (consisting of states and \emph{actions} which give rise to transitions between states) and its invariants.
+%
+A model checker may then be used to output sequences of states which violate the invariants.
+%
+Such sequences may equivalently be seen as sequences of actions, starting and ending at particular states.
 
-The idea is then to feed a sequence of actions into the implementation and check if the implementation also arrives at the final state. To do that, the implementation must be extended with
+The idea is then to feed a sequence of actions into the implementation and check if the implementation also arrives at the final state.
+%
+To do that, the implementation must be extended with
 
 \begin{enumerate}
-\item An abstraction function, mapping an implementation state to a specification state.
-\item An interpreter for actions. In some sense this may be seen as a concretization function, mapping a specification action to an implementation state change.
+    \item An abstraction function, mapping an implementation state to a specification state.
+
+    \item An interpreter for actions. In some sense this may be seen as a concretization function, mapping a specification action to an implementation state change.
 \end{enumerate}
 
 There are a number of challenges to doing this.
 
 \begin{itemize}
-\item \textbf{Concurrency.} The interpreter has to drive the implementation forward in such a way that each intermediate state corresponds to a linearization point. There is otherwise no guarantee that any observed implementation state matches some specification state. To ensure this, the interpreter is synchronised, e.g. waiting for a message to appear in the soup as confirmation that an action has been executed. At that point we know that the system is relatively quiescent and can observe its state.
+\item \textbf{Concurrency.} The interpreter has to drive the implementation forward in such a way that each intermediate state corresponds to a linearization point.
+%
+There is otherwise no guarantee that any observed implementation state matches some specification state.
+%
+To ensure this, the interpreter is synchronised, e.g. waiting for a message to appear in the soup as confirmation that an action has been executed.
+%
+At that point we know that the system is relatively quiescent and can observe its state.
 
-\item \textbf{Modifications.} Implementing the interpreter might require changes to the implementation which interfere with its integrity: to what extent is the modified implementation representative of the program we want to check the conformance of? This is of particular concern when the interpreter is retroactively added to an implementation, as we are doing; ideally, the implementation would natively support interpreting actions. We try to minimize our changes and limit them to events that may be externally controlled, e.g. timeouts and message sends and receives, and implement only what is necessary to expose external control of such events.
+\item \textbf{Modifications.} Implementing the interpreter might require changes to the implementation which interfere with its integrity: to what extent is the modified implementation representative of the program we want to check the conformance of?
+%
+This is of particular concern when the interpreter is retroactively added to an implementation, as we are doing; ideally, the implementation would natively support interpreting actions.
+%
+We try to minimize our changes and limit them to events that may be externally controlled, e.g. timeouts and message sends and receives, and implement only what is necessary to expose external control of such events.
 
 % this whole section could probably be explained better, with an example
 
-\item \textbf{Nondeterminism.} Nondeterministic specification actions typically correspond to some composition of implementation actions with a deterministic prefix. For example, a specification action might require that a message is sent when a variable has a certain value; an implementation is likely to send this message upon the variable's value changing as part of an earlier action. Decoupling these actions in the implementation is not always possible (if determinism is required) or desirable (if it would be a nontrivial implementation change). Not decoupling them would risk the linearization point being misplaced, but we choose this option instead, with a number of mitigating measures:
+\item \textbf{Nondeterminism.} Nondeterministic specification actions typically correspond to some composition of implementation actions with a deterministic prefix.
+%
+For example, a specification action might require that a message is sent when a variable has a certain value; an implementation is likely to send this message upon the variable's value changing as part of an earlier action.
+%
+Decoupling these actions in the implementation is not always possible (if determinism is required) or desirable (if it would be a nontrivial implementation change).
+%
+Not decoupling them would risk the linearization point being misplaced, but we choose this option instead, with a number of mitigating measures:
 
 \begin{enumerate}
-\item The specification could be rewritten to remove nondeterminism, so that actions have a deterministic prefix. This is always possible because sequences of actions generated by the model checker can be reordered if the actions commute, and if the specification actions corresponding to the composed implementation transition are the only ones modifying some particular part of the state, they would commute with all intervening ones and could be reordered and fused \cite{lipton1975reduction}.
+\item The specification could be rewritten to remove nondeterminism, so that actions have a deterministic prefix.
+%
+This is always possible because sequences of actions generated by the model checker can be reordered if the actions commute, and if the specification actions corresponding to the composed implementation transition are the only ones modifying some particular part of the state, they would commute with all intervening ones and could be reordered and fused \cite{lipton1975reduction}.
+
 \item The abstraction function could be used to remove state which would cause the linearization point to be misplaced.
 \end{enumerate}
 
@@ -100,7 +128,11 @@ There are a number of challenges to doing this.
 
 \subsubsection{Takeaways}
 
-It is not enough that the specification describes the essence of the implementation; it must be \emph{expressed} in such a way that the correspondence with the implementation is straightforward. This conclusion agrees with prior work \cite{Davis_2020}. Dually, the implementation should also support the execution of high-level actions for this technique to be easily applied.
+It is not enough that the specification describes the essence of the implementation; it must be \emph{expressed} in such a way that the correspondence with the implementation is straightforward.
+%
+This conclusion agrees with prior work \cite{Davis_2020}.
+%
+Dually, the implementation should also support the execution of high-level actions for this technique to be easily applied.
 
 % \renewcommand*{\bibfont}{\footnotesize}
 \printbibliography
