@@ -279,8 +279,8 @@ spec state: { atLeastOneLeader: true, logs: { 1: [{ term: 2, type: ValueEntry, v
 impl state: { atLeastOneLeader: true, logs: { 1: [{ term: 2, type: ValueEntry, value: 0 }], 2: [], 3: [] } }
 \end{lstlisting}
 % \restoregeometry
-\label{fig:output}
 \caption{Interpreter output for trace generated using \texttt{BecomeLeader} invariant}
+\label{fig:output}
 \end{figure}
 
 There are three outcomes to an interpreter run: it either terminates with matching or non-matching specification and implementation state, or does not terminate.
