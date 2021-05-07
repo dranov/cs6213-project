@@ -1190,7 +1190,7 @@ MajorityOfClusterRestarts == ~
         /\ (i < k)
         /\ history["global"][i].action = "Restart"
         /\ history["global"][k].action = "Restart"
-        ) => (i - k) >= 2
+        ) => (k - i) >= 6
 
 MajorityOfClusterRestarts_constraint ==
     \E s1, s2, s3 \in Server :
