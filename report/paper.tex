@@ -25,6 +25,9 @@
 \renewcommand{\@oddfoot}{\@evenfoot}
 \makeatother
 
+\newcommand{\tname}[1]{\textsc{#1}\xspace}
+\newcommand{\etcd}{\tname{etcd}}
+
 \newcommand*{\eg}{e.g.\@\xspace}
 \newcommand*{\ie}{i.e.\@\xspace}
 
@@ -60,6 +63,14 @@ We set out to answer the following research questions:
 
     \item \textbf{Empirical evaluation of conformance.} For real-world distributed systems that come with both TLA models and implementations, empirically, is there a correspondence between the model and the implementation?
 \end{enumerate}
+
+Our original intention was to select three open-source implementations of the Raft consensus protocol~\cite{ongaro_search_2014, ongaro_consensus_2014} and evaluate to what extent they match the behaviour of the TLA specification written by Diego Ongaro.
+
+Due to time constraints, we had to significantly reduce our ambitions.
+%
+In the end, we evaluated only the most widely used implementation, \etcd, and not nearly to the extent we had initially hoped.
+%
+Nonetheless, our experience has been instructive and leads us to believe there is potential in continuing this line of work.
 
 \section{Approach}
 
