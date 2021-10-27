@@ -1,9 +1,11 @@
 
 Results of running the entire model-based testing pipeline + scripts. The test cases are numbered in order of complexity.
 
-# Setup
+The instrumented version of etcd is [here](https://github.com/dariusf/etcd/tree/master/contrib/raftexample).
 
-Install all the prerequisites of the [interpreter](https://github.com/dariusf/etcd/tree/master/contrib/raftexample) and build it.
+# Generating traces
+
+You will need [tla2json](https://github.com/japgolly/tla2json/releases/tag/v1.0.1), [TLC](https://github.com/tlaplus/tlaplus/releases/tag/v1.7.1), and Java 14+.
 
 Make a copy of `env.sh` and modify it accordingly.
 
